@@ -1,0 +1,15 @@
+/* Make the map fill the screen and be responsive */
+#map {
+  width: 100%;
+  height: 100vh; // Full height of the viewport by default
+
+  // Adjust map height on mobile
+  @media (max-width: 600px) {
+    height: 60vh; // On small screens, set the map to 60% of the viewport height
+  }
+
+  // Adjust map height on tablets and medium devices
+  @media (max-width: 1024px) {
+    height: 75vh; // On tablets, set the map to 75% of the viewport height
+  }
+}
