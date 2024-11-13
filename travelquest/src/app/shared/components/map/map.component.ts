@@ -23,8 +23,17 @@ export class MapComponent implements AfterViewInit {
     if (isPlatformBrowser(this.platformId)) {
       const L = await import('leaflet');
 
-      // Set up the map with a default view
-      this.map = L.map('map').setView([40.73061, -73.935242], 12);
+      // Initialize map with zoom control at bottom-left
+      this.map = L.map('map', {
+        zoomControl: false, // Disable default zoom control
+      }).setView([40.73061, -73.935242], 12);
+
+      // Add custom zoom control at the bottom-right or bottom-left
+      L.control
+        .zoom({
+          position: 'bottomleft', // Change to 'bottomleft' if desired
+        })
+        .addTo(this.map);
 
       // Tile Layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -32,7 +41,7 @@ export class MapComponent implements AfterViewInit {
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
 
-      // Geolocation
+      // Geolocation and custom marker logic here...
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -41,7 +50,7 @@ export class MapComponent implements AfterViewInit {
               position.coords.longitude,
             ];
             this.map.setView(userCoords, 15);
-            this.addLocationMarker(userCoords, L); // Pass L as a parameter
+            this.addLocationMarker(userCoords, L);
           },
           (error) => {
             console.warn('Geolocation failed:', error);
@@ -52,7 +61,6 @@ export class MapComponent implements AfterViewInit {
   }
 
   private addLocationMarker(coords: [number, number], L: any): void {
-    // Custom Marker
     const userIcon = L.divIcon({
       className: 'custom-location-marker',
       html: '<div class="pin"></div><div class="pulse"></div>',
@@ -60,7 +68,6 @@ export class MapComponent implements AfterViewInit {
       iconAnchor: [15, 15],
     });
 
-    // Add the marker to the map
     this.locationMarker = L.marker(coords, { icon: userIcon }).addTo(this.map);
   }
 
