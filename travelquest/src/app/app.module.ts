@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-router.module';
 import { MapComponent } from './shared/components/map/map.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent, MapComponent],
@@ -13,6 +14,7 @@ import { MapComponent } from './shared/components/map/map.component';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    HttpClientModule,
   ],
   // Intercepters/config that needs to be loaded, gets added to providers
   providers: [],
