@@ -1,43 +1,45 @@
-/* Map container styling */
+/* Map container */
 #map {
   width: 100%;
-  height: 500px; /* Adjust height based on layout */
+  height: 500px; /* Adjust as per your design */
 }
 
-/* Custom location marker */
+/* Custom marker styling */
 .custom-location-marker .pin {
   width: 16px;
   height: 16px;
-  background-color: #ff3b30; /* Red marker */
+  background-color: #ff3b30; /* Red pin */
   border-radius: 50%;
-  border: 2px solid white;
+  border: 3px solid white; /* White border around the pin */
   position: absolute;
-  top: -8px;
-  left: -8px;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
 }
 
 .custom-location-marker .pulse {
   width: 24px;
   height: 24px;
-  background-color: rgba(255, 59, 48, 0.3);
+  background-color: rgba(255, 59, 48, 0.4); /* Light red pulse effect */
   border-radius: 50%;
   position: absolute;
-  top: -12px;
-  left: -12px;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
   animation: pulse-animation 2s infinite;
 }
 
 @keyframes pulse-animation {
   0% {
-    transform: scale(0.8);
-    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.7;
   }
   50% {
-    transform: scale(1);
-    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
   }
   100% {
-    transform: scale(1.5);
+    transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
   }
 }
@@ -50,6 +52,7 @@
   transform: translateX(-50%);
   width: 90%;
   max-width: 400px;
+  z-index: 1000; /* Ensure it shows on top of the map */
 }
 
 .map-controls input {
@@ -59,6 +62,5 @@
   border-radius: 5px;
   font-size: 16px;
   outline: none;
+  background-color: white;
 }
-
-/* Optional: Custom bottom buttons (e.g., zoom or recenter) */
