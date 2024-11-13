@@ -1,35 +1,38 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 
 @Component({
   selector: 'travelquest-login',
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
-  //   standalone: true,
 })
 export class RegisterComponent {
-  private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  form: FormGroup;
+  errorMessage: string | null = null;
 
-  form: FormGroup = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]], // Adds email validation
-    password: ['', Validators.required],
-  });
+  constructor(private fb: FormBuilder, private auth: Auth) {
+    this.form = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
+    });
+  }
 
-  onSubmit(): void {
-    if (this.form.valid) {
-      console.log('Register form submitted:', this.form.value);
-      // Implement registration logic here, for example:
-      // this.http.post('API_URL', this.form.value).subscribe(
-      //   response => this.router.navigate(['/login']),
-      //   error => console.error('Registration error:', error)
-      // );
-    } else {
-      console.log('Register form is invalid');
+  async onSubmit(): Promise<void> {
+    const { email, password, confirmPassword } = this.form.value;
+
+    if (password !== confirmPassword) {
+      this.errorMessage = 'Passwords do not match';
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(this.auth, email, password);
+      console.log('Registration successful');
+    } catch (error) {
+      this.errorMessage = 'Registration failed. Please try again.';
+      console.error('Registration error:', error);
     }
   }
 }
