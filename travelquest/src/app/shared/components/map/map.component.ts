@@ -99,11 +99,18 @@ export class MapComponent implements AfterViewInit {
     const userLon = this.locationMarker.getLatLng().lng;
 
     // Overpass API query to find coffee places near user location
+    //TODO
     const query = `
-      [out:json];
+    [out:json];
+    (
       node["amenity"="cafe"](around:1000,${userLat},${userLon});
-      out;
-    `;
+      node["shop"="coffee"](around:1000,${userLat},${userLon});
+      node["amenity"="coffee_shop"](around:1000,${userLat},${userLon});
+      node["name"~"coffee|espresso", i](around:1000,${userLat},${userLon});
+    );
+    out body;
+  `;
+
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(
       query
     )}`;
