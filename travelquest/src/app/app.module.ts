@@ -7,7 +7,7 @@ import { AppRoutingModule } from './app-router.module';
 import { MaterialModule } from './material/material.config';
 import { ReactiveFormsModule } from '@angular/forms';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { firebaseAuth } from './shared/data-services/firebase-config';
+// import { firebaseAuth } from './shared/data-services/firebase-config';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 // import {
 //   initializeAppCheck,
@@ -17,6 +17,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getStorage, provideStorage } from '@angular/fire/storage';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,6 +28,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
     AppRoutingModule,
     MaterialModule,
     ReactiveFormsModule,
+    MatIconModule,
   ],
   // Intercepters/config that needs to be loaded, gets added to providers
   providers: [

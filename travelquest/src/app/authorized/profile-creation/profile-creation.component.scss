@@ -1,0 +1,100 @@
+@import "../../../styles/colors";
+@import "../../../styles.scss";
+
+// Mat-card styling for consistent appearance
+mat-card {
+  width: 70%;
+  max-width: 500px;
+  margin: 5rem auto;
+  padding: 2rem;
+  background: none;
+  box-shadow: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  mat-form-field {
+    width: 100%;
+    color: white;
+  }
+
+  button {
+    align-self: flex-start;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    background-color: $action-color;
+    color: white;
+
+    &:hover {
+      background-color: darkorange;
+    }
+  }
+
+  .error {
+    color: red;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+}
+
+// File upload container styling
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  label {
+    cursor: pointer;
+    .profile-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid $action-color;
+    }
+
+    .placeholder {
+      width: 120px;
+      height: 120px;
+      border: 2px dashed $action-color;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.9rem;
+    }
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+}
+
+// ::ng-deep overrides for Material components
+:host ::ng-deep {
+  /* form appearance style */
+  .mdc-text-field--filled {
+    background-color: #ffffff00 !important;
+    padding-left: 3px;
+
+    /* input text */
+    .mdc-text-field__input {
+      color: rgb(255, 255, 255);
+    }
+  }
+}
+
+.mat-chip-option {
+  background-color: rgba(205, 50, 50, 0.714);
+  color: white;
+
+  &.mat-chip-selected {
+    background-color: $action-color;
+    color: rgb(168, 42, 42);
+  }
+}

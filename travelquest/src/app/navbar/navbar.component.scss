@@ -1,0 +1,40 @@
+@import "../../styles/colors";
+
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: $neutraul-white;
+  padding: 10px 0;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+
+  mat-icon {
+    color: $primary-color;
+  }
+  &.active mat-icon {
+    color: $action-color;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 50px;
+    padding: 20px 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+  }
+
+  .bottom-nav mat-icon {
+    margin: 20px 0;
+  }
+}
