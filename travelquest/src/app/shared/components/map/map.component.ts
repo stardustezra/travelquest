@@ -121,7 +121,17 @@ export class MapComponent implements AfterViewInit {
         const coffeeLat = element.lat;
         const coffeeLon = element.lon;
         const name = element.tags.name || 'Unnamed Cafe';
-        L.marker([coffeeLat, coffeeLon])
+
+        // Create a custom marker with a coffee emoji
+        const coffeeIcon = L.divIcon({
+          className: 'coffee-marker',
+          html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>', // Coffee emoji
+          iconSize: [30, 30], // Size of the emoji
+          iconAnchor: [15, 15], // Anchor the marker at the center
+        });
+
+        // Create a marker with the custom coffee emoji
+        L.marker([coffeeLat, coffeeLon], { icon: coffeeIcon })
           .addTo(this.map)
           .bindPopup(`<b>${name}</b>`)
           .openPopup();

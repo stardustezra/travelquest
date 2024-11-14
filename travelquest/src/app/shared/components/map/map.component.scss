@@ -111,14 +111,10 @@
   background-color: #45a049;
 }
 
-.custom-coffee-marker .pin {
-  background-color: #f44336; /* Red color for pin */
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+/* Coffee emoji marker */
+.coffee-marker {
+  font-size: 24px; /* Adjust size of the emoji */
+  line-height: 30px; /* Ensure proper alignment */
+  color: #6f4e37; /* Change color of the emoji if desired */
+  text-align: center; /* Center the emoji */
 }
