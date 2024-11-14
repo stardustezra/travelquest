@@ -5,21 +5,10 @@ import { AuthorizedComponent } from './authorized.component';
 import { AuthorizedRoutingModule } from './authorized-router.module';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { RouterModule, Routes } from '@angular/router';
-
-// Navbar routes
-const routes: Routes = [
-  // TODO: Add navbar routes example:
-  // { path: 'user', component: UserComponent },
-  { path: '', redirectTo: '/user', pathMatch: 'full' },
-];
+import { ProfileListComponent } from './profile/profile-list/profile-list.component';
 
 @NgModule({
-  declarations: [AuthorizedComponent, NavbarComponent],
-  imports: [
-    CommonModule,
-    SharedModule,
-    AuthorizedRoutingModule,
-    RouterModule.forRoot(routes),
-  ],
+  declarations: [AuthorizedComponent, NavbarComponent, ProfileListComponent],
+  imports: [CommonModule, SharedModule, AuthorizedRoutingModule],
 })
 export class AuthorizedModule {}

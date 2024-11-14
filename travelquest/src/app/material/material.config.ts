@@ -11,7 +11,6 @@ const materialComponents = [
   MatInputModule,
   MatButtonModule,
   MatFormFieldModule,
-  ,
   MatIconModule,
 ];
 

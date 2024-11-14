@@ -14,7 +14,11 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 //   ReCaptchaEnterpriseProvider,
 //   provideAppCheck,
 // } from '@angular/fire/app-check';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import {
+  FirestoreModule,
+  getFirestore,
+  provideFirestore,
+} from '@angular/fire/firestore';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,6 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
     MaterialModule,
     ReactiveFormsModule,
     MatIconModule,
+    FirestoreModule,
   ],
   providers: [
     provideFirebaseApp(() =>
