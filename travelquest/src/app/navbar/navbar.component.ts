@@ -10,6 +10,7 @@ export class NavbarComponent {
   constructor(private router: Router) {}
 
   navigateTo(path: string): void {
+    // TODO: Another way than delay to avoid double click?
     setTimeout(() => {
       this.router.navigate([path]);
     }, 100);
