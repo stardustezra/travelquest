@@ -26,23 +26,12 @@ export class MapComponent implements AfterViewInit {
   // Initializes the map when the component view has been initialized
   private async initMap(): Promise<void> {
     if (isPlatformBrowser(this.platformId)) {
-      const L = await import('leaflet');
+      const L = await import('leaflet'); // Dynamically load Leaflet
 
-      // Ensure Leaflet's default icons are properly loaded
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-        iconUrl:
-          'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-        shadowUrl:
-          'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-      });
-
-      // Initialize the map
+      // Initialize the map with a default view (New York coordinates)
       this.map = L.map('map', {
         zoomControl: false,
-      }).setView([40.73061, -73.935242], 12); // Initial view
+      }).setView([40.73061, -73.935242], 12); // Initial view of the map
 
       // Add custom zoom control at the bottom-left
       L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
@@ -62,7 +51,7 @@ export class MapComponent implements AfterViewInit {
               position.coords.longitude,
             ];
             this.map.setView(userCoords, 15); // Center map on user's location
-            this.addLocationMarker(userCoords, L); // Add user location marker
+            this.addLocationMarker(userCoords, L); // Add location marker
           },
           (error) => {
             console.warn('Geolocation failed:', error);
@@ -81,10 +70,11 @@ export class MapComponent implements AfterViewInit {
       iconAnchor: [15, 15],
     });
 
-    // Add or update the user's location marker
+    // If a location marker already exists, update it
     if (this.locationMarker) {
-      this.locationMarker.setLatLng(coords);
+      this.locationMarker.setLatLng(coords); // Update marker position
     } else {
+      // If no marker exists, create a new one
       this.locationMarker = L.marker(coords, { icon: userIcon }).addTo(
         this.map
       );
@@ -93,7 +83,7 @@ export class MapComponent implements AfterViewInit {
 
   // This is required to implement the AfterViewInit interface
   async ngAfterViewInit(): Promise<void> {
-    await this.initMap();
+    await this.initMap(); // Initialize map when the view has been initialized
   }
 
   // Finds nearby coffee places by querying Overpass API
@@ -104,40 +94,37 @@ export class MapComponent implements AfterViewInit {
       return;
     }
 
+    // Get current location of the user
     const userLat = this.locationMarker.getLatLng().lat;
     const userLon = this.locationMarker.getLatLng().lng;
 
+    // Overpass API query to find coffee places near user location
     const query = `
-      [out:json];
-      (
-        node["amenity"="cafe"](around:1000,${userLat},${userLon});
-        node["shop"="coffee"](around:1000,${userLat},${userLon});
-        node["amenity"="coffee_shop"](around:1000,${userLat},${userLon});
-        node["name"~"coffee|espresso", i](around:1000,${userLat},${userLon});
-      );
-      out body;
-    `;
+    [out:json];
+    (
+      node["amenity"="cafe"](around:1000,${userLat},${userLon});
+      node["shop"="coffee"](around:1000,${userLat},${userLon});
+      node["amenity"="coffee_shop"](around:1000,${userLat},${userLon});
+      node["name"~"coffee|espresso", i](around:1000,${userLat},${userLon});
+    );
+    out body;
+  `;
 
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(
       query
     )}`;
 
+    // Fetch coffee places from Overpass API
     this.http.get(url).subscribe((data: any) => {
+      // Add new markers for each coffee place found
       data.elements.forEach((element: any) => {
         const coffeeLat = element.lat;
         const coffeeLon = element.lon;
         const name = element.tags.name || 'Unnamed Cafe';
-
-        const coffeeIcon = L.divIcon({
-          className: 'custom-coffee-marker',
-          html: `<mat-icon>room</mat-icon>`,
-          iconSize: [36, 36],
-          iconAnchor: [18, 36],
-        });
-
-        L.marker([coffeeLat, coffeeLon], { icon: coffeeIcon })
+        L.marker([coffeeLat, coffeeLon])
           .addTo(this.map)
-          .bindPopup(`<b>${name}</b>`);
+          .bindPopup(`<b>${name}</b>`)
+          .openPopup();
       });
     });
   }
