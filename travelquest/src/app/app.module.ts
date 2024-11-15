@@ -22,7 +22,6 @@ import {
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { MatIconModule } from '@angular/material/icon';
-import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [AppComponent],
