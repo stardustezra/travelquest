@@ -1,0 +1,41 @@
+<mat-card>
+  <div class="profile-header">
+    <img
+      *ngIf="userProfile?.profilePic"
+      class="img__profile-picture"
+      [src]="userProfile.profilePic"
+      alt="Profile Picture"
+    />
+
+    <div class="profile-details">
+      <div class="profile-item">
+        <p>Travels</p>
+        <span>{{ userProfile.travels }}</span>
+      </div>
+      <div class="profile-item">
+        <p>Meetups</p>
+        <span>{{ userProfile.meetups }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-info">
+    <h2>{{ userProfile.name }}, {{ userProfile.age }}</h2>
+    <p>{{ userProfile.country }}</p>
+    <p>{{ userProfile.language }}</p>
+  </div>
+  <div class="edit-button">
+    <button mat-button class="styled-edit-button">Edit profile</button>
+  </div>
+  <p class="bio-title">Bio:</p>
+  <div class="bio-box">{{ userProfile.description }}</div>
+
+  <div class="action-buttons">
+    <button mat-button class="styled-button">
+      <mat-icon>pin_drop</mat-icon>Travel log
+    </button>
+    <button mat-button class="styled-button">
+      <mat-icon>settings</mat-icon>Settings
+    </button>
+  </div>
+</mat-card>
