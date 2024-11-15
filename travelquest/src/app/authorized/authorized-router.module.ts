@@ -20,12 +20,12 @@ export const routes: Routes = [
         component: HomeComponent,
       },
       {
-        path: 'profile-creation',
-        component: ProfileCreationComponent,
-      },
-      {
         path: 'profile',
         component: ProfileListComponent,
+      },
+      {
+        path: 'profile-creation',
+        component: ProfileCreationComponent,
       },
     ],
   },

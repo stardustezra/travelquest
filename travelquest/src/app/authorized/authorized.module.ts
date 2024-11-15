@@ -10,12 +10,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.config';
 import { ProfileListComponent } from './profile/profile-list/profile-list.component';
 
-const routes: Routes = [
-  // TODO: Add navbar routes example:
-  // { path: 'user', component: UserComponent },
-  { path: '', redirectTo: '/user', pathMatch: 'full' },
-];
-
 @NgModule({
   declarations: [
     AuthorizedComponent,
@@ -27,7 +21,6 @@ const routes: Routes = [
     CommonModule,
     SharedModule,
     AuthorizedRoutingModule,
-    RouterModule.forRoot(routes),
     ReactiveFormsModule,
     MaterialModule,
   ],
