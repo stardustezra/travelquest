@@ -1,35 +1,64 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Firestore, collection, addDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'travelquest-login',
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
-  //   standalone: true,
 })
 export class RegisterComponent {
-  private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  form: FormGroup;
+  errorMessage: string | null = null;
+  maxDate: Date;
 
-  form: FormGroup = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]], // Adds email validation
-    password: ['', Validators.required],
-  });
+  constructor(
+    private fb: FormBuilder,
+    private auth: Auth,
+    private firestore: Firestore
+  ) {
+    this.maxDate = new Date(); // Set the max date to today
+    this.form = this.fb.group({
+      name: ['', Validators.required],
+      dob: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
+    });
+  }
 
-  onSubmit(): void {
-    if (this.form.valid) {
-      console.log('Register form submitted:', this.form.value);
-      // Implement registration logic here, for example:
-      // this.http.post('API_URL', this.form.value).subscribe(
-      //   response => this.router.navigate(['/login']),
-      //   error => console.error('Registration error:', error)
-      // );
-    } else {
-      console.log('Register form is invalid');
+  async onSubmit(): Promise<void> {
+    const { name, dob, email, password, confirmPassword } = this.form.value;
+
+    if (password !== confirmPassword) {
+      this.errorMessage = 'Passwords do not match';
+      return;
+    }
+
+    try {
+      // Register the user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        this.auth,
+        email,
+        password
+      );
+
+      // Save user info to Firestore
+      const user = userCredential.user;
+      const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
+      await addDoc(usersCollection, {
+        uid: user.uid,
+        name: name,
+        dob: dob,
+        email: email,
+        createdAt: new Date().toISOString(),
+      });
+
+      console.log('Registration and Firestore save successful');
+    } catch (error) {
+      this.errorMessage = 'Registration failed. Please try again.';
+      console.error('Registration error:', error);
     }
   }
 }

@@ -59,3 +59,23 @@ body {
 
   background-repeat: repeat;
 }
+
+:root {
+  --primary-font: "Noto Sans", sans-serif;
+  --secondary-font: "Playwrite US Modern", serif;
+}
+
+h1,
+h2 {
+  font-family: var(--secondary-font);
+}
+
+body {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  mat-card {
+    width: 90%;
+  }
+}

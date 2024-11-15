@@ -5,10 +5,31 @@ import { AuthorizedComponent } from './authorized.component';
 import { AuthorizedRoutingModule } from './authorized-router.module';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { RouterModule, Routes } from '@angular/router';
+import { ProfileCreationComponent } from './profile-creation/profile-creation.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MaterialModule } from '../material/material.config';
 import { ProfileListComponent } from './profile/profile-list/profile-list.component';
 
+const routes: Routes = [
+  // TODO: Add navbar routes example:
+  // { path: 'user', component: UserComponent },
+  { path: '', redirectTo: '/user', pathMatch: 'full' },
+];
+
 @NgModule({
-  declarations: [AuthorizedComponent, NavbarComponent, ProfileListComponent],
-  imports: [CommonModule, SharedModule, AuthorizedRoutingModule],
+  declarations: [
+    AuthorizedComponent,
+    NavbarComponent,
+    ProfileCreationComponent,
+    ProfileListComponent,
+  ],
+  imports: [
+    CommonModule,
+    SharedModule,
+    AuthorizedRoutingModule,
+    RouterModule.forRoot(routes),
+    ReactiveFormsModule,
+    MaterialModule,
+  ],
 })
 export class AuthorizedModule {}
