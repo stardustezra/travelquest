@@ -25,12 +25,5 @@ export class ProfileListComponent implements OnInit {
     };
   }
 
-  ngOnInit(): void {
-    // Fetch the signed-in user's profile data when the component initializes
-    this.authService.getSignedInUserProfile().subscribe((profile) => {
-      if (profile) {
-        this.userProfile = profile;
-      }
-    });
-  }
+  ngOnInit(): void {}
 }
