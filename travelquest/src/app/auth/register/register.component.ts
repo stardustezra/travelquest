@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { Firestore, collection, addDoc } from '@angular/fire/firestore';
+import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 
 @Component({
   selector: 'travelquest-login',
@@ -15,8 +16,7 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private auth: Auth,
-    private firestore: Firestore
+    private readonly sessionStore: sessionStoreRepository
   ) {
     this.maxDate = new Date(); // Set the max date to today
     this.form = this.fb.group({
