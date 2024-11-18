@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../../auth/auth.service';
+import { sessionStoreRepository } from '../../../shared/stores/session-store.repository';
 
 @Component({
   selector: 'travelquest-profile-list',
@@ -7,23 +7,27 @@ import { AuthService } from '../../../auth/auth.service';
   styleUrls: ['./profile-list.component.scss'],
 })
 export class ProfileListComponent implements OnInit {
-  userProfile: any;
+  userProfile: any | null = null;
+  loading: boolean = true;
+  error: string | null = null;
 
-  constructor(private authService: AuthService) {
-    // Default profile data, can be overwritten by data from the service
-    this.userProfile = {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      profilePic: 'https://www.example.com/path/to/profile-pic.jpg',
-      name: 'John Doe',
-      age: 30,
-      country: 'USA',
-      language: 'English',
-      travels: 5,
-      meetups: 3,
-      description:
-        'I love traveling and meeting new people! I love traveling and meeting new people! I love traveling and meeting new people! ',
-    };
+  constructor(private readonly sessionStore: sessionStoreRepository) {}
+
+  ngOnInit(): void {
+    this.sessionStore.getSignedInUserProfile().subscribe({
+      next: (profile) => {
+        if (profile) {
+          this.userProfile = profile; // Set profile data
+        } else {
+          this.error = 'No profile data found for the signed-in user.';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'An error occurred while fetching the profile data.';
+        console.error(err);
+        this.loading = false;
+      },
+    });
   }
-
-  ngOnInit(): void {}
 }

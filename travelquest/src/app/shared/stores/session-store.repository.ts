@@ -64,7 +64,7 @@ export class sessionStoreRepository {
 
   // Fetch the profile data from Firestore for a specific UID
   getUserProfile(uid: string): Observable<any> {
-    const userDocRef = doc(this.firestore, `user/${uid}`);
+    const userDocRef = doc(this.firestore, `users/${uid}`);
     return from(getDoc(userDocRef)).pipe(
       map((docSnapshot) => (docSnapshot.exists() ? docSnapshot.data() : null))
     );
