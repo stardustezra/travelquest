@@ -33,12 +33,12 @@ export class LoginComponent {
     try {
       await signInWithEmailAndPassword(this.auth, email, password);
       console.log('Login successful');
-      this.router.navigate(['/home']); // Redirect to home
+      this.router.navigate(['/home']);
     } catch (error) {
       this.errorMessage = 'Invalid email or password';
       console.error('Login error:', error);
     } finally {
-      this.isSubmitting = false; // Reset submitting state
+      this.isSubmitting = false;
     }
   }
 
