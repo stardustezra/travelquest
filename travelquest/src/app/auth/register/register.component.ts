@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
-import { Firestore, collection, addDoc } from '@angular/fire/firestore';
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 
 @Component({
-  selector: 'travelquest-login',
+  selector: 'travelquest-register',
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
   form: FormGroup;
@@ -29,36 +27,30 @@ export class RegisterComponent {
   }
 
   async onSubmit(): Promise<void> {
-    const { name, dob, email, password, confirmPassword } = this.form.value;
-
-    if (password !== confirmPassword) {
-      this.errorMessage = 'Passwords do not match';
+    if (this.form.invalid) {
+      this.errorMessage = 'Please fill out all fields correctly.';
       return;
     }
 
-    try {
-      // Register the user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        this.auth,
-        email,
-        password
-      );
+    const { name, dob, email, password, confirmPassword } = this.form.value;
 
-      // Save user info to Firestore
-      const user = userCredential.user;
-      const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-      await addDoc(usersCollection, {
-        uid: user.uid,
-        name: name,
-        dob: dob,
-        email: email,
-        createdAt: new Date().toISOString(),
-      });
-
-      console.log('Registration and Firestore save successful');
-    } catch (error) {
-      this.errorMessage = 'Registration failed. Please try again.';
-      console.error('Registration error:', error);
+    if (password !== confirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
+      return;
     }
+
+    this.errorMessage = null; // Clear any existing error
+
+    this.sessionStore.register(email, name, password, dob).subscribe({
+      next: () => {
+        console.log('Registration successful');
+        this.errorMessage = null;
+      },
+      error: (error) => {
+        console.error('Registration error:', error);
+        this.errorMessage =
+          error?.message || 'Registration failed. Please try again.';
+      },
+    });
   }
 }

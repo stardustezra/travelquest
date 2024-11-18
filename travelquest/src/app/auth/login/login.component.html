@@ -3,13 +3,29 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill">
       <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" />
+      <input
+        matInput
+        type="email"
+        formControlName="email"
+        (input)="clearError()"
+      />
     </mat-form-field>
     <mat-form-field appearance="fill">
       <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" />
+      <input
+        matInput
+        type="password"
+        formControlName="password"
+        (input)="clearError()"
+      />
     </mat-form-field>
-    <button mat-raised-button type="submit">Login</button>
+    <button
+      mat-raised-button
+      type="submit"
+      [disabled]="form.invalid || isSubmitting"
+    >
+      Login
+    </button>
     <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
   </form>
 </mat-card>

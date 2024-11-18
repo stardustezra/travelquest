@@ -6,7 +6,13 @@ import {
   onAuthStateChanged,
   updateProfile,
 } from '@angular/fire/auth';
-import { Firestore, addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import {
+  Firestore,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+} from '@angular/fire/firestore';
 import { Observable, from, map, of, switchMap } from 'rxjs';
 
 export interface SessionStoreProps {
