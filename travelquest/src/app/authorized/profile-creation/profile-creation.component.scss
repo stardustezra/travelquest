@@ -75,6 +75,10 @@ form {
   }
 }
 
+input[matInput] {
+  display: inline-block;
+}
+
 // ::ng-deep overrides for Material components
 :host ::ng-deep {
   /* form appearance style */
@@ -96,5 +100,49 @@ form {
   &.mat-chip-selected {
     background-color: $action-color;
     color: rgb(168, 42, 42);
+  }
+}
+
+// Custom chip grid styling
+.mat-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1rem;
+
+  mat-chip {
+    background-color: rgba(
+      128,
+      0,
+      128,
+      0.8
+    ); // Purple background for custom hashtags
+    color: white;
+    border-radius: 16px;
+    font-size: 14px;
+    padding: 0.5rem 1rem;
+    line-height: 20px;
+
+    button[matChipRemove] {
+      color: white;
+
+      &:hover {
+        color: red;
+      }
+    }
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-top: 8px;
+
+    input[matInput] {
+      padding: 8px;
+      color: white;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
   }
 }

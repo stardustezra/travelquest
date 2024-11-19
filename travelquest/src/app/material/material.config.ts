@@ -7,8 +7,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatChipsModule } from '@angular/material/chips';
 
 const materialComponents = [
   MatCardModule,
@@ -20,6 +21,7 @@ const materialComponents = [
   MatSelectModule,
   MatChipsModule,
   MatIconModule,
+  MatTabsModule,
 ];
 
 @NgModule({

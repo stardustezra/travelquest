@@ -1,6 +1,7 @@
 <mat-card>
   <h1>Profile Creation</h1>
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+    <!-- Profile Photo Upload -->
     <div class="upload-container">
       <label for="fileInput">
         <img
@@ -22,6 +23,7 @@
       />
     </div>
 
+    <!-- Biography -->
     <mat-form-field appearance="fill">
       <mat-label>Biography</mat-label>
       <textarea
@@ -31,6 +33,7 @@
       ></textarea>
     </mat-form-field>
 
+    <!-- Languages -->
     <mat-form-field appearance="fill">
       <mat-label>Languages</mat-label>
       <mat-select formControlName="languages" multiple>
@@ -43,16 +46,39 @@
       </mat-select>
     </mat-form-field>
 
+    <!-- Hashtags -->
     <mat-label>Hashtags</mat-label>
-    <mat-chip-listbox formControlName="hashtags">
+    <mat-chip-grid #chipGrid>
+      <!-- Predefined Hashtags -->
       <mat-chip-option
-        *ngFor="let hashtag of availableHashtags"
-        [value]="hashtag"
+        *ngFor="let hashtag of predefinedHashtags"
+        [selected]="isHashtagSelected(hashtag.tag)"
+        (click)="toggleHashtag(hashtag.tag)"
       >
-        {{ hashtag }}
+        {{ hashtag.tag }}
       </mat-chip-option>
-    </mat-chip-listbox>
 
+      <!-- Custom Hashtags -->
+      <mat-chip
+        *ngFor="let customTag of customHashtags"
+        [removable]="true"
+        (removed)="removeCustomHashtag(customTag)"
+      >
+        {{ customTag }}
+        <button matChipRemove></button>
+      </mat-chip>
+
+      <!-- Input for Adding Custom Hashtags -->
+      <input
+        matInput
+        placeholder="Add custom hashtag (e.g., #example)"
+        [matChipInputFor]="chipGrid"
+        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        (matChipInputTokenEnd)="addCustomHashtag($event)"
+      />
+    </mat-chip-grid>
+
+    <!-- Submit Button -->
     <button
       mat-raised-button
       color="primary"

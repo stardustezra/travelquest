@@ -45,4 +45,7 @@ export class LoginComponent {
   clearError(): void {
     this.errorMessage = null;
   }
+  redirectToRegister(): void {
+    this.router.navigate(['auth/register']); // Adjust the path if necessary
+  }
 }

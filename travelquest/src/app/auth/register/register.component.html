@@ -36,4 +36,21 @@
     <button mat-raised-button color="primary" type="submit">Register</button>
     <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
   </form>
+
+  <div class="google-sign-in">
+    <p>Or</p>
+    <button
+      mat-flat-button
+      color="accent"
+      class="google-button"
+      (click)="signInWithGoogle()"
+    >
+      <img
+        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+        alt="Google Icon"
+        class="google-icon"
+      />
+      Sign up with Google
+    </button>
+  </div>
 </mat-card>

@@ -45,7 +45,7 @@ body {
 }
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Noto Sans, "Noto Sans", sans-serif;
   background-color: $background-color !important;
   background-image: radial-gradient(
       circle,
@@ -56,7 +56,6 @@ body {
 
   background-size: 100px 120px 70px;
   background-position: 0 0, 60px 90px;
-
   background-repeat: repeat;
 }
 
@@ -68,10 +67,6 @@ body {
 h1,
 h2 {
   font-family: var(--secondary-font);
-}
-
-body {
-  margin: 0;
 }
 
 @media (max-width: 768px) {
