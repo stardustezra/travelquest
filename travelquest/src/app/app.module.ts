@@ -20,6 +20,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [AppComponent, MapComponent],
@@ -32,6 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
     MaterialModule,
     ReactiveFormsModule,
     MatIconModule,
+    MatDialogModule,
   ],
   providers: [
     provideFirebaseApp(() =>
