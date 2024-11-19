@@ -1,120 +1,60 @@
-/* Map container */
 #map {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw; /* Full viewport width */
-  height: 100vh; /* Full viewport height */
-  z-index: 1; /* Ensure it stays below any controls/UI overlays */
+  height: 100%;
+  width: 100%;
+  position: relative;
 }
 
-/* Custom marker styling */
-.custom-location-marker .pin {
-  width: 16px;
-  height: 16px;
-  background-color: #f79449; /* Updated orange color for the pin */
-  border-radius: 50%;
-  border: 3px solid white; /* White border for contrast */
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-50%, -50%);
-}
-
-.custom-location-marker .pulse {
-  width: 24px;
-  height: 24px;
-  background-color: rgba(
-    247,
-    148,
-    73,
-    0.4
-  ); /* Pulse effect using lighter orange */
-  border-radius: 50%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate(-50%, -50%);
-  animation: pulse-animation 2s infinite ease-in-out;
-}
-
-@keyframes pulse-animation {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.4;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 0;
-  }
-}
-
-/* Search box styling */
 .map-controls {
   position: absolute;
   top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%; /* Ensure responsiveness */
-  max-width: 400px; /* Maximum width */
-  z-index: 1000; /* Ensure it shows on top of the map */
-  padding: 0 10px; /* Adding horizontal padding for small screens */
-}
-
-.map-controls input {
-  width: 90%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  outline: none;
-  background-color: white;
-}
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .map-controls {
-    width: 90%; /* Full width on smaller screens */
-    padding: 0 15px; /* Add more padding to fit smaller screens */
-  }
-
-  .map-controls input {
-    font-size: 14px; /* Smaller font size on mobile */
-    padding: 8px; /* Smaller padding for input field */
-  }
+  left: 10px;
+  z-index: 1000;
 }
 
 .round-button {
   position: absolute;
-  top: 20px;
+  bottom: 80px;
   right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #f7f7f7;
+  width: 60px;
+  height: 60px;
+  background-color: #ff5722;
   color: white;
-  font-size: 24px;
   border: none;
+  border-radius: 50%;
+  font-size: 24px;
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-  z-index: 1000; /* Ensure the button appears on top of the map */
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
-/* Coffee emoji marker */
-.coffee-marker {
-  font-size: 24px; /* Adjust size of the emoji */
-  line-height: 30px; /* Ensure proper alignment */
-  color: #6f4e37; /* Color of the coffee emoji */
-  text-align: center; /* Center the emoji */
-  background-color: #f7f7f7; /* Set background color to #F7F7F7 */
-  border-radius: 50%; /* Round the background around the emoji */
-  padding: 8px; /* Add padding around the emoji for spacing */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
+.round-button:hover {
+  background-color: #e64a19;
+}
+
+.safety-tips-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 120px;
+  height: 40px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.safety-tips-button:hover {
+  background-color: #0056b3;
 }

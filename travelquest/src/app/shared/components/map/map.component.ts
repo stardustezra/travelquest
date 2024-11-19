@@ -7,6 +7,8 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { SafetyTipsDialogComponent } from '../safety-tips-dialog/safety-tips-dialog.component';
 
 @Component({
   selector: 'app-map',
@@ -20,8 +22,17 @@ export class MapComponent implements AfterViewInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private http: HttpClient
+    private http: HttpClient,
+    private dialog: MatDialog
   ) {}
+
+  // Open the safety tips dialog
+  openSafetyTips(): void {
+    this.dialog.open(SafetyTipsDialogComponent, {
+      width: '300px',
+      data: {},
+    });
+  }
 
   // Initializes the map when the component view has been initialized
   private async initMap(): Promise<void> {
