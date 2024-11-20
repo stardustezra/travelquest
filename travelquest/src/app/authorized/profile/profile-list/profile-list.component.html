@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card *ngIf="!loading && !error">
   <div class="profile-header">
     <img
       *ngIf="userProfile?.profilePic"
@@ -10,25 +10,25 @@
     <div class="profile-details">
       <div class="profile-item">
         <p>Travels</p>
-        <span>{{ userProfile.travels }}</span>
+        <span>{{ userProfile?.travels || 0 }}</span>
       </div>
       <div class="profile-item">
         <p>Meetups</p>
-        <span>{{ userProfile.meetups }}</span>
+        <span>{{ userProfile?.meetups || 0 }}</span>
       </div>
     </div>
   </div>
 
   <div class="profile-info">
-    <p>{{ userProfile.name }}, {{ userProfile.age }}</p>
-    <p>{{ userProfile.country }}</p>
-    <p>{{ userProfile.language }}</p>
+    <p>{{ userProfile?.name }}, {{ userProfile?.age }}</p>
+    <p>{{ userProfile?.country }}</p>
+    <p>{{ userProfile?.language }}</p>
   </div>
   <div class="edit-button">
     <button mat-button class="styled-edit-button">Edit profile</button>
   </div>
   <p class="bio-title">Bio:</p>
-  <div class="bio-box">{{ userProfile.description }}</div>
+  <div class="bio-box">{{ userProfile?.description }}</div>
 
   <div class="action-buttons">
     <button mat-button class="styled-button">
@@ -39,3 +39,13 @@
     </button>
   </div>
 </mat-card>
+
+<!-- Loading State -->
+<div *ngIf="loading" class="loading-state">
+  <p>Loading profile...</p>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error" class="error-state">
+  <p>{{ error }}</p>
+</div>
