@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'travelquest-register',
@@ -14,9 +15,11 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private readonly sessionStore: sessionStoreRepository
+    private readonly sessionStore: sessionStoreRepository,
+    private readonly router: Router
   ) {
-    this.maxDate = new Date(); // Set the max date to today
+    this.maxDate = new Date();
+    // TODO: Set required date to 18 years ago
     this.form = this.fb.group({
       name: ['', Validators.required],
       dob: ['', Validators.required],
@@ -39,17 +42,30 @@ export class RegisterComponent {
       return;
     }
 
-    this.errorMessage = null; // Clear any existing error
+    this.errorMessage = null;
 
     this.sessionStore.register(email, name, password, dob).subscribe({
       next: () => {
         console.log('Registration successful');
-        this.errorMessage = null;
+        this.router.navigate(['/profile-creation']); // Navigate to home after successful registration
       },
       error: (error) => {
         console.error('Registration error:', error);
         this.errorMessage =
           error?.message || 'Registration failed. Please try again.';
+      },
+    });
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    this.sessionStore.googleSignIn().subscribe({
+      next: () => {
+        console.log('Google Sign-In successful');
+        this.router.navigate(['/profile-creation']); // Navigate to home after sign-in
+      },
+      error: (error) => {
+        console.error('Google Sign-In error:', error);
+        this.errorMessage = 'Google Sign-In failed. Please try again.';
       },
     });
   }

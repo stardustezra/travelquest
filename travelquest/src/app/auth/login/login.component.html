@@ -28,4 +28,13 @@
     </button>
     <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
   </form>
+
+  <div class="register-redirect">
+    <p>
+      Not a member?
+      <a (click)="redirectToRegister()" class="register-link"
+        >Create an account</a
+      >
+    </p>
+  </div>
 </mat-card>

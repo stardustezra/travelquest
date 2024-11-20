@@ -1,19 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
-import { Auth } from '@angular/fire/auth';
-import {
-  Storage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from '@angular/fire/storage';
+import { Router } from '@angular/router';
+import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
+
+interface Hashtag {
+  tag: string;
+  category: string;
+  color: string;
+}
 
 interface UserData {
   bio: string;
   languages: string[];
-  hashtags: string[];
-  photoURL?: string; // Optional property
+  hashtags: { tag: string; category: string }[];
+  photoURL?: string; // Ensure this property is optional and included in the UserData interface
 }
 
 @Component({
@@ -21,76 +22,184 @@ interface UserData {
   templateUrl: './profile-creation.component.html',
   styleUrls: ['./profile-creation.component.scss'],
 })
-export class ProfileCreationComponent {
+export class ProfileCreationComponent implements OnInit {
   profileForm: FormGroup;
   availableLanguages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
-  availableHashtags = [
-    '#hiking',
-    '#dancing',
-    '#cooking',
-    '#photography',
-    '#traveling',
-  ];
-
+  predefinedHashtags: Hashtag[] = [];
+  customHashtags: string[] = [];
+  selectedHashtags: { tag: string; category: string }[] = [];
+  separatorKeysCodes: number[] = [ENTER, COMMA];
   previewUrl: string | null = null;
   selectedFile: File | null = null;
+  isAuthenticated: boolean = false;
+  currentUser: any = null;
 
   constructor(
     private fb: FormBuilder,
-    private firestore: Firestore,
-    private auth: Auth,
-    private storage: Storage
+    private router: Router,
+    private sessionStore: sessionStoreRepository
   ) {
+    // Initialize form
     this.profileForm = this.fb.group({
       bio: ['', [Validators.required, Validators.maxLength(250)]],
       languages: [[], Validators.required],
-      hashtags: [[], Validators.required],
     });
+  }
+
+  ngOnInit(): void {
+    console.log('Initializing Profile Creation Component...');
+    this.fetchPredefinedHashtags();
+
+    // Fetch the current user's UID
+    this.sessionStore.getCurrentUserUID().subscribe({
+      next: (uid) => {
+        if (uid) {
+          this.isAuthenticated = true;
+          console.log('Authenticated User UID:', uid);
+
+          // Fetch user profile
+          this.sessionStore.getUserProfile(uid).subscribe({
+            next: (profile) => {
+              this.currentUser = profile;
+              console.log('Current User Profile:', profile);
+            },
+            error: (err) => console.error('Error fetching user profile:', err),
+          });
+        } else {
+          this.isAuthenticated = false;
+          console.warn('No authenticated user found.');
+        }
+      },
+      error: (err) => console.error('Error retrieving UID:', err),
+    });
+  }
+
+  async fetchPredefinedHashtags(): Promise<void> {
+    try {
+      console.log('Fetching predefined hashtags...');
+      this.predefinedHashtags =
+        await this.sessionStore.fetchPredefinedHashtags();
+      console.log('Fetched Hashtags:', this.predefinedHashtags);
+    } catch (error) {
+      console.error('Error fetching predefined hashtags:', error);
+    }
+  }
+
+  isHashtagSelected(tag: string): boolean {
+    return this.selectedHashtags.some((hashtag) => hashtag.tag === tag);
+  }
+
+  toggleHashtag(tag: string): void {
+    const category = this.findCategoryForTag(tag);
+    const existingIndex = this.selectedHashtags.findIndex(
+      (hashtag) => hashtag.tag === tag
+    );
+
+    if (existingIndex >= 0) {
+      this.selectedHashtags.splice(existingIndex, 1);
+    } else if (this.totalTagsSelected() < 10) {
+      this.selectedHashtags.push({ tag, category: category ?? 'custom' });
+    }
+    console.log('Selected Hashtags:', this.selectedHashtags);
+  }
+
+  addCustomHashtag(event: any): void {
+    const input = event.chipInput?.inputElement;
+    const value = (event.value || '').trim();
+
+    const isValidHashtag = /^#[a-zA-Z0-9-_]+$/.test(value);
+
+    if (isValidHashtag && this.totalTagsSelected() < 10) {
+      this.customHashtags.push(value);
+      console.log('Custom Hashtag Added:', value);
+    } else if (!isValidHashtag && value) {
+      console.error('Invalid hashtag format:', value);
+    }
+
+    if (input) {
+      input.value = '';
+    }
+    console.log('Custom Hashtags:', this.customHashtags);
+  }
+
+  removeCustomHashtag(tagToRemove: string): void {
+    this.customHashtags = this.customHashtags.filter(
+      (tag) => tag !== tagToRemove
+    );
+    console.log('Custom Hashtags after removal:', this.customHashtags);
+  }
+
+  totalTagsSelected(): number {
+    return this.selectedHashtags.length + this.customHashtags.length;
+  }
+
+  findCategoryForTag(tag: string): string | undefined {
+    const hashtag = this.predefinedHashtags.find((ht) => ht.tag === tag);
+    return hashtag?.category;
+  }
+
+  async onSubmit(): Promise<void> {
+    console.log('Submit button clicked.');
+
+    if (!this.isAuthenticated) {
+      console.error('User is not authenticated. Cannot save profile.');
+      alert('Please log in to save your profile.');
+      return;
+    }
+
+    if (this.profileForm.invalid) {
+      console.error('Form is invalid:', this.profileForm.value);
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    try {
+      console.log('Current User:', this.currentUser);
+
+      const hashtags = [
+        ...this.selectedHashtags,
+        ...this.customHashtags.map((tag) => ({ tag, category: 'custom' })),
+      ];
+
+      const userData: UserData = {
+        bio: this.profileForm.value.bio,
+        languages: this.profileForm.value.languages,
+        hashtags,
+      };
+
+      if (this.selectedFile) {
+        console.log('Uploading profile photo...');
+        const photoURL = await this.sessionStore.uploadProfilePhoto(
+          this.selectedFile
+        );
+        userData.photoURL = photoURL; // Ensure photoURL is set correctly
+        console.log('Profile photo uploaded. URL:', photoURL);
+      }
+
+      console.log('User Data to Save:', userData);
+      await this.sessionStore.saveUserProfile(userData);
+      console.log('Profile saved successfully!');
+
+      // Redirect to the home page
+      this.router.navigate(['/home']);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('An error occurred while saving your profile. Please try again.');
+    }
   }
 
   onFileSelected(event: Event): void {
     const fileInput = event.target as HTMLInputElement;
     if (fileInput.files && fileInput.files[0]) {
       this.selectedFile = fileInput.files[0];
+      console.log('Selected File:', this.selectedFile.name);
 
-      // Show a preview of the selected image
       const reader = new FileReader();
       reader.onload = () => {
         this.previewUrl = reader.result as string;
+        console.log('File preview updated.');
       };
       reader.readAsDataURL(this.selectedFile);
-    }
-  }
-
-  async onSubmit(): Promise<void> {
-    if (this.profileForm.invalid) return;
-
-    try {
-      const user = this.auth.currentUser;
-      if (!user) throw new Error('User not authenticated');
-
-      // Create user data object
-      const userData: UserData = {
-        bio: this.profileForm.value.bio,
-        languages: this.profileForm.value.languages,
-        hashtags: this.profileForm.value.hashtags,
-      };
-
-      // Upload Profile Photo to Firebase Storage
-      if (this.selectedFile) {
-        const photoRef = ref(this.storage, `profilePhotos/${user.uid}`);
-        await uploadBytes(photoRef, this.selectedFile);
-        const photoURL = await getDownloadURL(photoRef);
-        userData.photoURL = photoURL; // Add photo URL to user data
-      }
-
-      // Save User Data to Firestore
-      const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      await setDoc(userDocRef, userData, { merge: true });
-
-      console.log('Profile saved successfully');
-    } catch (error) {
-      console.error('Error saving profile:', error);
     }
   }
 }

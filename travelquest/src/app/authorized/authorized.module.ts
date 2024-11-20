@@ -4,7 +4,7 @@ import { SharedModule } from '../shared/shared.module';
 import { AuthorizedComponent } from './authorized.component';
 import { AuthorizedRoutingModule } from './authorized-router.module';
 import { NavbarComponent } from '../navbar/navbar.component';
-import { RouterModule, Routes } from '@angular/router';
+// import { RouterModule, Routes } from '@angular/router';
 import { ProfileCreationComponent } from './profile-creation/profile-creation.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.config';
