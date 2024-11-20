@@ -1,10 +1,10 @@
 <mat-card *ngIf="!loading && !error">
   <div class="profile-header">
     <img
-      *ngIf="userProfile?.profilePic"
-      class="img__profile-picture"
-      [src]="userProfile.profilePic"
+      *ngIf="!userProfile?.profilePic"
+      [src]="defaultProfilePic"
       alt="Profile Picture"
+      class="img__profile-picture"
     />
 
     <div class="profile-details">
@@ -22,13 +22,33 @@
   <div class="profile-info">
     <p>{{ userProfile?.name }}, {{ userProfile?.age }}</p>
     <p>{{ userProfile?.country }}</p>
-    <p>{{ userProfile?.language }}</p>
+    <p>{{ userProfile?.languages }}</p>
   </div>
   <div class="edit-button">
-    <button mat-button class="styled-edit-button">Edit profile</button>
+    <button
+      mat-button
+      class="styled-edit-button"
+      (click)="navigateToEditProfile()"
+    >
+      Edit profile
+    </button>
   </div>
+
+  <p class="hashtag-title">Hashtags</p>
+  <div class="hashtags-box">
+    <div
+      *ngFor="let hashtag of userProfile.hashtags"
+      class="hashtag-item"
+      [style.backgroundColor]="
+        categoryColors[hashtag.category] || categoryColors['Default']
+      "
+    >
+      {{ hashtag.tag }}
+    </div>
+  </div>
+
   <p class="bio-title">Bio:</p>
-  <div class="bio-box">{{ userProfile?.description }}</div>
+  <div class="bio-box">{{ userProfile?.bio }}</div>
 
   <div class="action-buttons">
     <button mat-button class="styled-button">

@@ -1,0 +1,27 @@
+@import "../../../../styles/colors";
+
+mat-card {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: transparent;
+  box-shadow: none !important;
+}
+
+.profile-edit-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+input.mat-input-element,
+textarea.mat-input-element {
+  width: 100%;
+}

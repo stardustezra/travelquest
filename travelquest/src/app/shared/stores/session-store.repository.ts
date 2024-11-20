@@ -10,6 +10,7 @@ import {
 } from '@angular/fire/auth';
 import {
   Firestore,
+  Timestamp,
   collection,
   doc,
   getDoc,
@@ -55,6 +56,9 @@ export class sessionStoreRepository {
       // Update the user's profile with the display name
       await updateProfile(user, { displayName: name });
 
+      // Convert the dob string to a Firestore Timestamp
+      const dobTimestamp = Timestamp.fromDate(new Date(dob));
+
       // Save user info to Firestore
       const userDocRef = doc(this.firestore, `users/${user.uid}`);
       const userDoc = await getDoc(userDocRef);
@@ -64,7 +68,7 @@ export class sessionStoreRepository {
         await setDoc(userDocRef, {
           uid: user.uid,
           name: name,
-          dob: dob,
+          dob: dobTimestamp,
           email: email,
           createdAt: new Date().toISOString(),
         });
@@ -126,7 +130,30 @@ export class sessionStoreRepository {
 
   getSignedInUserProfile(): Observable<any> {
     return this.getCurrentUserUID().pipe(
-      switchMap((uid) => (uid ? this.getUserProfile(uid) : of(null)))
+      switchMap((uid) =>
+        uid
+          ? this.getUserProfile(uid).pipe(
+              map((profile) => {
+                if (profile && profile.dob instanceof Timestamp) {
+                  // Calculate the age using the dob as a Firestore Timestamp
+                  const dob = profile.dob.toDate();
+                  const currentDate = new Date();
+                  const age = currentDate.getFullYear() - dob.getFullYear();
+                  const month = currentDate.getMonth() - dob.getMonth();
+                  if (
+                    month < 0 ||
+                    (month === 0 && currentDate.getDate() < dob.getDate())
+                  ) {
+                    // Subtract one year if the birthday hasn't occurred yet this year
+                    return { ...profile, age: age - 1 };
+                  }
+                  return { ...profile, age: age }; // Return profile with calculated age
+                }
+                return profile;
+              })
+            )
+          : of(null)
+      )
     );
   }
 

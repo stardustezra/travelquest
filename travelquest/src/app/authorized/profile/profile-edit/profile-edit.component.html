@@ -1,0 +1,51 @@
+<div class="profile-edit-container">
+  <mat-card *ngIf="profileForm">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Enter your name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          placeholder="Enter your email"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Date of Birth</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="dob"
+          placeholder="Enter your date of birth"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Bio</mat-label>
+        <textarea
+          matInput
+          formControlName="bio"
+          placeholder="Write your bio"
+        ></textarea>
+      </mat-form-field>
+
+      <div class="profile-edit-buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="profileForm.invalid"
+        >
+          Update
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

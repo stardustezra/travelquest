@@ -6,6 +6,7 @@
   box-shadow: none !important;
   border-radius: 0 !important;
   padding: 16px !important;
+  margin-left: 15px;
 }
 
 .img__profile-picture {
@@ -21,14 +22,13 @@
 .profile-header {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .img__profile-picture {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  margin-right: 16px;
 }
 
 .profile-details {
@@ -54,14 +54,12 @@
 }
 
 .profile-info {
-  margin-left: 15px;
   color: $primary-text-color;
 }
 
 /* Style for the edit button container */
 .edit-button {
   display: flex;
-  margin-left: 15px;
 }
 
 /* Styling the edit button */
@@ -73,10 +71,25 @@
   border-radius: 4px; /* Rounded corners */
 }
 
-.bio-title {
+.bio-title,
+.hashtag-title {
   color: $primary-text-color;
-  margin-left: 15px;
   margin-top: 25px;
+}
+
+.hashtags-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: 5px;
+}
+
+.hashtag-item {
+  padding: 8px 12px;
+  background-color: #007bff; /* Default color if none is provided */
+  color: $neutraul-white;
+  border-radius: 8px;
+  display: inline-block;
 }
 
 .bio-box {
