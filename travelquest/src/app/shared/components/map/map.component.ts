@@ -69,9 +69,6 @@ export class MapComponent implements AfterViewInit {
           }
         );
       }
-
-      // Add the safety button at the bottom
-      this.addSafetyButton(L);
     }
   }
 
@@ -151,27 +148,5 @@ export class MapComponent implements AfterViewInit {
           .openPopup();
       });
     });
-  }
-
-  // Add the safety button at the bottom-right of the map
-  private addSafetyButton(L: any): void {
-    const safetyButtonControl = L.control({ position: 'bottomright' }); // Set position to bottom-right
-
-    safetyButtonControl.onAdd = () => {
-      const div = L.DomUtil.create('div', 'safety-button-container');
-      div.innerHTML = `
-        <button class="round-button safety-button" title="Safety Tips">
-          🛡️
-        </button>
-      `;
-
-      L.DomEvent.on(div, 'click', () => {
-        this.openSafetyTips();
-      });
-
-      return div;
-    };
-
-    safetyButtonControl.addTo(this.map);
   }
 }

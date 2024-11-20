@@ -1,0 +1,92 @@
+:host {
+  display: block;
+  font-family: "Arial", sans-serif;
+
+  // Container for the entire modal
+  mat-dialog-container {
+    border-radius: 10px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fefefe;
+    width: 90%;
+    max-width: 400px;
+    overflow: hidden;
+    padding: 20px;
+  }
+
+  // Main safety tips wrapper
+  .safety-tips {
+    padding: 20px;
+    position: relative;
+    text-align: center;
+
+    // Close button styles
+    .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #1a3c35;
+      cursor: pointer;
+
+      &:hover {
+        color: #ff914d;
+      }
+    }
+
+    // Title styles
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1a3c35;
+      margin-bottom: 20px;
+    }
+
+    // Ordered list styles
+    ol {
+      list-style: none; /* Remove default list styling */
+      counter-reset: item; /* Reset custom numbering */
+      padding: 0;
+      margin: 0;
+
+      // List item styles
+      li {
+        counter-increment: item; /* Increment for each <li> */
+        margin: 20px 0; /* Add vertical spacing between items */
+        font-size: 16px;
+        color: #555;
+        display: flex;
+        align-items: flex-start;
+
+        &::before {
+          content: counter(item) "."; /* Display custom number with a dot */
+          color: #ffa600; /* Orange color for numbers */
+          font-weight: bold;
+          font-size: 18px; /* Slightly larger font size for numbers */
+          margin-right: 10px; /* Space between the number and text */
+        }
+      }
+    }
+  }
+
+  // Actions section at the bottom
+  mat-dialog-actions {
+    justify-content: center;
+    padding: 20px;
+
+    button {
+      background-color: #1a3c35;
+      color: #fff;
+      padding: 10px 25px;
+      font-size: 14px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #ff914d;
+      }
+    }
+  }
+}

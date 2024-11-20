@@ -53,42 +53,107 @@
   }
 }
 
-/* Safety button container at the bottom-right */
-.safety-button-container {
-  bottom: 20px;
-  right: 20px;
+/* Search box styling */
+.map-controls {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%; /* Ensure responsiveness */
+  max-width: 400px; /* Maximum width */
+  z-index: 1000; /* Ensure it shows on top of the map */
+  padding: 0 10px; /* Adding horizontal padding for small screens */
 }
 
-/* Button styles for the safety button */
+.map-controls input {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+  background-color: white;
+}
+
+/* Button container for coffee button (top-right) */
 .round-button {
   position: absolute;
+  top: 20px; /* Position at the top */
+  right: 20px; /* Position at the right */
   width: 50px;
   height: 50px;
   border-radius: 50%;
   background-color: #f7f7f7;
-  color: white;
+  color: #6f4e37; /* Coffee color */
   font-size: 24px;
   border: none;
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-  z-index: 1000; /* Ensure the button appears on top of the map */
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000; /* Ensure it appears above the map */
 }
 
-.safety-button {
-  background-color: #f79449; /* Orange color */
-  color: white;
+/* Button container for safety tips button (bottom-right) */
+.safety-tips-button {
+  position: absolute;
+  bottom: 80px; /* Position at the bottom, adjusted for Drop Pin button */
+  right: 20px; /* Position at the right */
+  width: 50px; /* Adjust width for text */
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  color: #f79449;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above the map */
 }
 
-.coffee-marker {
-  font-size: 24px; /* Adjust size of the emoji */
-  line-height: 30px; /* Ensure proper alignment */
-  color: #6f4e37; /* Color of the coffee emoji */
-  text-align: center; /* Center the emoji */
-  background-color: #f7f7f7; /* Set background color to #F7F7F7 */
-  border-radius: 50%; /* Round the background around the emoji */
-  padding: 8px; /* Add padding around the emoji for spacing */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for depth */
+/* Button container for drop pin button (below safety tips) */
+.drop-pin {
+  position: absolute;
+  bottom: 20px; /* Position the Drop Pin button just below the Safety Tips button */
+  right: 20px; /* Keep it aligned to the right */
+  width: 120px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: white;
+  color: #f79449;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above the map */
+}
+
+.drop-pin p {
+  color: black;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .map-controls {
+    width: 90%; /* Full width on smaller screens */
+    padding: 0 15px; /* Add more padding to fit smaller screens */
+  }
+
+  .map-controls input {
+    font-size: 14px; /* Smaller font size on mobile */
+    padding: 8px; /* Smaller padding for input field */
+  }
+
+  .safety-tips-button,
+  .drop-pin {
+    width: 50px; /* Adjust width for small screens */
+    font-size: 14px; /* Smaller text size */
+  }
 }

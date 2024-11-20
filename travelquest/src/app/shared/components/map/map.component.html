@@ -2,7 +2,17 @@
 <div class="map-controls">
   <input type="text" placeholder="Search location..." />
 </div>
-<button class="round-button" (click)="findNearbyCoffeePlaces()">☕</button>
-<button class="safety-tips-button" (click)="openSafetyTips()">
-  Safety Tips
-</button>
+<div class="button-container">
+  <button class="round-button" (click)="findNearbyCoffeePlaces()">
+    <mat-icon>local_cafe</mat-icon>
+  </button>
+  <button class="safety-tips-button" (click)="openSafetyTips()">
+    <mat-icon>support</mat-icon>
+  </button>
+  <button class="drop-pin">
+    <mat-icon>pin_drop</mat-icon>
+    <p>Drop a pin</p>
+  </button>
+</div>
+
+<!-- TODO add function to drop pin -->
