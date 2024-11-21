@@ -1,14 +1,35 @@
 <div class="navbar">
-  <div class="navbar-item" [routerLink]="'/user'" routerLinkActive="active">
+  <button
+    mat-icon-button
+    class="navbar-item"
+    (click)="navigateTo('/profile')"
+    routerLinkActive="active"
+    [routerLink]="['/profile']"
+  >
     <mat-icon>person</mat-icon>
-  </div>
-  <div class="navbar-item" [routerLink]="'/tag'" routerLinkActive="active">
+  </button>
+  <button
+    mat-icon-button
+    class="navbar-item"
+    (click)="navigateTo('/tag')"
+    routerLinkActive="active"
+  >
     <mat-icon>tag</mat-icon>
-  </div>
-  <div class="navbar-item" [routerLink]="'/map'" routerLinkActive="active">
+  </button>
+  <button
+    mat-icon-button
+    class="navbar-item"
+    (click)="navigateTo('/map')"
+    routerLinkActive="active"
+  >
     <mat-icon>map</mat-icon>
-  </div>
-  <div class="navbar-item" [routerLink]="'/mail'" routerLinkActive="active">
+  </button>
+  <button
+    mat-icon-button
+    class="navbar-item"
+    (click)="navigateTo('/mail')"
+    routerLinkActive="active"
+  >
     <mat-icon>mail</mat-icon>
-  </div>
+  </button>
 </div>

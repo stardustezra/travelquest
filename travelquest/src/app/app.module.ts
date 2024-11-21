@@ -4,7 +4,7 @@ import { SharedModule } from './shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-router.module';
-import { MapComponent } from './shared/components/map/map.component';
+import { MapComponent } from './authorized/map/map.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './material/material.config';
 import { ReactiveFormsModule } from '@angular/forms';

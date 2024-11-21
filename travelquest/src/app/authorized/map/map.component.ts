@@ -8,7 +8,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { SafetyTipsDialogComponent } from '../safety-tips-dialog/safety-tips-dialog.component';
+import { SafetyTipsDialogComponent } from '../../shared/components/safety-tips-dialog/safety-tips-dialog.component';
 
 @Component({
   selector: 'app-map',
