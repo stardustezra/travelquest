@@ -24,6 +24,7 @@ import {
   getDownloadURL,
 } from '@angular/fire/storage';
 import { Observable, from, map, of, switchMap } from 'rxjs';
+import { runTransaction } from 'firebase/firestore';
 
 export interface SessionStoreProps {
   logoutTime: string | null;
@@ -122,7 +123,6 @@ export class sessionStoreRepository {
   // Fetch the profile data from Firestore for a specific UID
   getUserProfile(uid: string): Observable<any> {
     const userDocRef = doc(this.firestore, `users/${uid}`);
-    console.log('Fetching document at path:', userDocRef.path);
     return from(getDoc(userDocRef)).pipe(
       map((docSnapshot) => (docSnapshot.exists() ? docSnapshot.data() : null))
     );
@@ -177,9 +177,8 @@ export class sessionStoreRepository {
     if (!user) throw new Error('User not authenticated');
 
     const userDocRef = doc(this.firestore, `users/${user.uid}`);
-    console.log('Updating user profile:', data);
 
-    return setDoc(userDocRef, data, { merge: true }) // Use merge to only update fields
+    return setDoc(userDocRef, data, { merge: true })
       .then(() => console.log('Profile updated successfully!'))
       .catch((error) => console.error('Error updating profile:', error));
   }
@@ -195,6 +194,49 @@ export class sessionStoreRepository {
     return snapshot.docs.map(
       (doc) => doc.data() as { tag: string; category: string; color: string }
     );
+  }
+
+  signOut(): Promise<void> {
+    return this.firebaseAuth
+      .signOut()
+      .then(() => {
+        console.log('Successfully signed out');
+        // Additional logic for clearing session data can be added here
+      })
+      .catch((error) => {
+        console.error('Error signing out:', error);
+        throw error;
+      });
+  }
+
+  deleteAccount(): Promise<void> {
+    const user = this.firebaseAuth.currentUser;
+    if (user) {
+      const userDocRef = doc(this.firestore, `users/${user.uid}`);
+      //TODO: Maybe write about runTransaction in rapport
+      return runTransaction(this.firestore, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+
+        if (!userDoc.exists()) {
+          throw new Error('User data not found in Firestore');
+        }
+
+        transaction.delete(userDocRef);
+      })
+        .then(() => {
+          return user.delete();
+        })
+        .then(() => {
+          console.log('User account and associated data deleted');
+          // Additional logic (e.g., clearing session data, redirecting, etc.)
+        })
+        .catch((error) => {
+          console.error('Error deleting user data or account:', error);
+          throw error; // Ensure errors are thrown if something goes wrong
+        });
+    } else {
+      return Promise.reject('No user is currently signed in');
+    }
   }
 
   private createStore(): typeof store {

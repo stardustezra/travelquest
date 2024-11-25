@@ -13,7 +13,33 @@ mat-card {
 .profile-edit-buttons {
   margin-top: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+}
+
+.mat-mdc-raised-button:not(:disabled) {
+  background-color: $action-color;
+  color: white;
+  border: none;
+}
+
+button {
+  font-size: 18px;
+  padding: 12px 24px;
+  width: 250px;
+  min-height: 50px;
+}
+
+:host ::ng-deep {
+  /* form appearance style */
+  .mdc-text-field--filled {
+    background-color: $neutraul-white !important;
+    padding-left: 3px;
+    color: $primary-text-color !important;
+  }
+}
+
+.matInput {
+  margin-left: 10px;
 }
 
 mat-form-field {
@@ -21,7 +47,6 @@ mat-form-field {
   margin-bottom: 16px;
 }
 
-input.mat-input-element,
-textarea.mat-input-element {
-  width: 100%;
+.header-title {
+  margin-left: 20px;
 }

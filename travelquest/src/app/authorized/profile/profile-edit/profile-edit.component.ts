@@ -10,6 +10,7 @@ import { sessionStoreRepository } from '../../../shared/stores/session-store.rep
 })
 export class ProfileEditComponent implements OnInit {
   profileForm!: FormGroup;
+  languages: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -18,6 +19,12 @@ export class ProfileEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Fetch languages from session store
+    const storedLanguages = sessionStorage.getItem('languages');
+    if (storedLanguages) {
+      this.languages = JSON.parse(storedLanguages);
+    }
+
     // Initialize form with existing user data
     this.sessionStore.getSignedInUserProfile().subscribe((userProfile) => {
       this.profileForm = this.fb.group({
@@ -31,28 +38,23 @@ export class ProfileEditComponent implements OnInit {
           Validators.required,
         ],
         bio: [userProfile?.bio || ''],
+        languages: [userProfile?.languages || []],
+        country: [userProfile?.country || ''],
       });
     });
   }
 
   onSubmit(): void {
     if (this.profileForm.valid) {
-      // Save the updated profile data
       this.sessionStore
         .saveUserProfile(this.profileForm.value)
         .then(() => {
           console.log('Profile updated successfully!');
-          // Navigate back to the profile view
           this.router.navigate(['/profile']);
         })
         .catch((error) => {
           console.error('Error updating profile:', error);
         });
     }
-  }
-
-  cancelEdit(): void {
-    this.profileForm.reset();
-    this.router.navigate(['/profile']);
   }
 }

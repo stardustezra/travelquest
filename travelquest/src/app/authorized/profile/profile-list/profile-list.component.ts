@@ -12,8 +12,6 @@ export class ProfileListComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
 
-  defaultProfilePic = 'assets/icons/default-profile-pic.png';
-
   categoryColors: { [key: string]: string } = {
     food: '#E7C933',
     culture: '#C852A2',
@@ -47,5 +45,9 @@ export class ProfileListComponent implements OnInit {
 
   navigateToEditProfile() {
     this.router.navigate(['/profile-edit']);
+  }
+
+  navigateToSettings(): void {
+    this.router.navigate(['/settings']);
   }
 }

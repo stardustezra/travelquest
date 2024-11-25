@@ -1,18 +1,10 @@
 <div class="profile-edit-container">
+  <h1 class="header-title">Edit profile</h1>
   <mat-card *ngIf="profileForm">
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="fill">
         <mat-label>Name</mat-label>
-        <input matInput formControlName="name" placeholder="Enter your name" />
-      </mat-form-field>
-
-      <mat-form-field appearance="fill">
-        <mat-label>Email</mat-label>
-        <input
-          matInput
-          formControlName="email"
-          placeholder="Enter your email"
-        />
+        <input matInput formControlName="name" placeholder="Update your name" />
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -21,10 +13,37 @@
           matInput
           [matDatepicker]="picker"
           formControlName="dob"
-          placeholder="Enter your date of birth"
+          placeholder="Update your date of birth"
         />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          formControlName="email"
+          placeholder="Update your email"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Country</mat-label>
+        <input
+          matInput
+          formControlName="country"
+          placeholder="Enter your country"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Languages</mat-label>
+        <mat-select formControlName="languages" multiple>
+          <mat-option *ngFor="let language of languages" [value]="language">
+            {{ language }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
@@ -32,7 +51,7 @@
         <textarea
           matInput
           formControlName="bio"
-          placeholder="Write your bio"
+          placeholder="Update your bio"
         ></textarea>
       </mat-form-field>
 

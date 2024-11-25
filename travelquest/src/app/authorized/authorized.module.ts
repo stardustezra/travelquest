@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.config';
 import { ProfileListComponent } from './profile/profile-list/profile-list.component';
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
+import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { ProfileEditComponent } from './profile/profile-edit/profile-edit.compon
     ProfileCreationComponent,
     ProfileListComponent,
     ProfileEditComponent,
+    ProfileSettingsComponent,
   ],
   imports: [
     CommonModule,

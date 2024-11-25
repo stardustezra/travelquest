@@ -5,6 +5,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileListComponent } from './profile/profile-list/profile-list.component';
 import { ProfileCreationComponent } from './profile-creation/profile-creation.component';
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
+import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
 
 export const routes: Routes = [
   {
@@ -31,6 +32,10 @@ export const routes: Routes = [
       {
         path: 'profile-edit',
         component: ProfileEditComponent,
+      },
+      {
+        path: 'settings',
+        component: ProfileSettingsComponent,
       },
     ],
   },

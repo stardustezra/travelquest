@@ -1,11 +1,6 @@
 <mat-card *ngIf="!loading && !error">
   <div class="profile-header">
-    <img
-      *ngIf="!userProfile?.profilePic"
-      [src]="defaultProfilePic"
-      alt="Profile Picture"
-      class="img__profile-picture"
-    />
+    <mat-icon class="profile-pic">account_circle</mat-icon>
 
     <div class="profile-details">
       <div class="profile-item">
@@ -43,7 +38,7 @@
         categoryColors[hashtag.category] || categoryColors['Default']
       "
     >
-      {{ hashtag.tag }}
+      #{{ hashtag.tag }}
     </div>
   </div>
 
@@ -54,7 +49,7 @@
     <button mat-button class="styled-button">
       <mat-icon>pin_drop</mat-icon>Travel log
     </button>
-    <button mat-button class="styled-button">
+    <button mat-button class="styled-button" (click)="navigateToSettings()">
       <mat-icon>settings</mat-icon>Settings
     </button>
   </div>

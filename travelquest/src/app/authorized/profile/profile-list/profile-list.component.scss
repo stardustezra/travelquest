@@ -9,6 +9,13 @@
   margin-left: 15px;
 }
 
+.profile-pic {
+  color: $neutraul-white;
+  width: 120px !important;
+  height: 120px !important;
+  font-size: 110px;
+}
+
 .img__profile-picture {
   width: 120px;
   height: 120px;
@@ -57,18 +64,16 @@
   color: $primary-text-color;
 }
 
-/* Style for the edit button container */
 .edit-button {
   display: flex;
 }
 
-/* Styling the edit button */
 .styled-edit-button {
   background-color: $primary-text-color;
-  color: white !important; /* Set text color to white */
-  border: none; /* Remove border */
-  font-size: 12px; /* Font size */
-  border-radius: 4px; /* Rounded corners */
+  color: white !important;
+  border: none;
+  font-size: 12px;
+  border-radius: 4px;
 }
 
 .bio-title,
@@ -86,7 +91,6 @@
 
 .hashtag-item {
   padding: 8px 12px;
-  background-color: #007bff; /* Default color if none is provided */
   color: $neutraul-white;
   border-radius: 8px;
   display: inline-block;
@@ -101,7 +105,6 @@
   margin-bottom: 10px;
 }
 
-/* Layout for the action buttons */
 .action-buttons {
   display: flex;
   justify-content: center;
@@ -109,7 +112,6 @@
   margin-top: 16px;
 }
 
-/* Styling for the buttons */
 .action-buttons button {
   background-color: $neutraul-white;
   border: 1px solid $neutraul-white;
@@ -123,7 +125,6 @@
   color: $primary-text-color !important;
 }
 
-/* Additional styles for the icon inside the button */
 .action-buttons button mat-icon {
   margin-right: 8px;
   font-size: 18px;
