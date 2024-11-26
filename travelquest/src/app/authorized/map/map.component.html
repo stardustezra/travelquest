@@ -1,7 +1,12 @@
+<!-- Map Container -->
 <div id="map"></div>
+
+<!-- Map Controls -->
 <div class="map-controls">
   <input type="text" placeholder="Search location..." />
 </div>
+
+<!-- Action Buttons -->
 <div class="button-container">
   <button class="round-button" (click)="findNearbyCoffeePlaces()">
     <mat-icon>local_cafe</mat-icon>
@@ -13,6 +18,19 @@
     <mat-icon>pin_drop</mat-icon>
     <p>Drop a pin</p>
   </button>
+</div>
+
+<!-- Location Details Menu -->
+<div *ngIf="isMenuOpen" class="menu">
+  <div class="menu-header">
+    <h3>{{ selectedLocation.name }}</h3>
+    <button (click)="isMenuOpen = false" class="close-btn">X</button>
+  </div>
+  <p>{{ selectedLocation.address }}</p>
+  <p><strong>Opening Hours:</strong> {{ selectedLocation.openingHours }}</p>
+  <div class="tags">
+    <span *ngFor="let tag of selectedLocation.tags" class="tag">{{ tag }}</span>
+  </div>
 </div>
 
 <!-- TODO add function to drop pin -->

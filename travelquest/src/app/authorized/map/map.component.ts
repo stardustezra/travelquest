@@ -18,7 +18,10 @@ import { SafetyTipsDialogComponent } from '../../shared/components/safety-tips-d
 })
 export class MapComponent implements AfterViewInit {
   private map: any;
-  private locationMarker: any; // The marker for the user's location
+  private locationMarker: any;
+  private markers: any[] = []; // Stores all coffee shop markers
+  public selectedLocation: any = null; // Details of the selected marker
+  public isMenuOpen: boolean = false; // Controls the visibility of the details menu
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -26,39 +29,28 @@ export class MapComponent implements AfterViewInit {
     private dialog: MatDialog
   ) {}
 
-  // Open the safety tips dialog
-  openSafetyTips(): void {
-    this.dialog.open(SafetyTipsDialogComponent, {
-      width: '300px',
-      data: {},
-    });
+  async ngAfterViewInit(): Promise<void> {
+    await this.initMap();
   }
 
-  // Initializes the map when the component view has been initialized
   private async initMap(): Promise<void> {
     if (isPlatformBrowser(this.platformId)) {
-      const L = await import('leaflet'); // Dynamically load Leaflet
-
-      // Check if the device is mobile based on screen width
+      const L = await import('leaflet');
       const isMobile = window.innerWidth <= 600;
 
-      // Initialize the map with zoom control for PC (no zoom controls for mobile)
       this.map = L.map('map', {
-        zoomControl: !isMobile, // Disable zoom controls on mobile (screen <= 600px)
-      }).setView([40.73061, -73.935242], 12); // Initial view of the map
+        zoomControl: !isMobile,
+      }).setView([40.73061, -73.935242], 12);
 
-      // Add custom zoom control at the bottom-left if it's not mobile
       if (!isMobile) {
         L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
       }
 
-      // Tile Layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
 
-      // Try to get the user's geolocation
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -66,18 +58,16 @@ export class MapComponent implements AfterViewInit {
               position.coords.latitude,
               position.coords.longitude,
             ];
-            this.map.setView(userCoords, 15); // Center map on user's location
-            this.addLocationMarker(userCoords, L); // Add location marker
+            this.map.setView(userCoords, 15);
+            this.addLocationMarker(userCoords, L);
           },
-          (error) => {
-            console.warn('Geolocation failed:', error);
-          }
+          (error) => console.warn('Geolocation failed:', error)
         );
       }
     }
   }
 
-  // Add the user's location marker to the map
+  // Add user location marker
   private addLocationMarker(coords: [number, number], L: any): void {
     const userIcon = L.divIcon({
       className: 'custom-location-marker',
@@ -86,23 +76,66 @@ export class MapComponent implements AfterViewInit {
       iconAnchor: [15, 15],
     });
 
-    // If a location marker already exists, update it
     if (this.locationMarker) {
-      this.locationMarker.setLatLng(coords); // Update marker position
+      this.locationMarker.setLatLng(coords);
     } else {
-      // If no marker exists, create a new one
       this.locationMarker = L.marker(coords, { icon: userIcon }).addTo(
         this.map
       );
     }
   }
 
-  // This is required to implement the AfterViewInit interface
-  async ngAfterViewInit(): Promise<void> {
-    await this.initMap(); // Initialize map when the view has been initialized
+  // Fetch address from Nominatim API
+  private fetchAddress(lat: number, lon: number): Promise<string> {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+    return this.http
+      .get<any>(url)
+      .toPromise()
+      .then((data) => {
+        return data.display_name || 'Address not found';
+      });
   }
 
-  // Finds nearby coffee places by querying Overpass API
+  // Add coffee shop marker with click functionality
+  private addCoffeeMarker(
+    coords: [number, number],
+    name: string,
+    L: any
+  ): void {
+    const coffeeIcon = L.divIcon({
+      className: 'coffee-marker',
+      html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+    });
+
+    const marker = L.marker(coords, { icon: coffeeIcon }).addTo(this.map);
+
+    // Attach click event to the marker
+    marker.on('click', async () => {
+      await this.showLocationDetails(marker.getLatLng(), name);
+    });
+
+    this.markers.push(marker);
+  }
+
+  // Show location details menu
+  async showLocationDetails(
+    coords: { lat: number; lng: number },
+    name: string
+  ): Promise<void> {
+    const address = await this.fetchAddress(coords.lat, coords.lng);
+
+    this.selectedLocation = {
+      name,
+      address,
+      openingHours: '8:00 AM - 8:00 PM',
+      tags: ['#coffee', '#cozy', '#wifi'],
+    };
+    this.isMenuOpen = true;
+  }
+
+  // Find nearby coffee shops using Overpass API
   async findNearbyCoffeePlaces(): Promise<void> {
     const L = await import('leaflet');
     if (!this.locationMarker) {
@@ -110,48 +143,60 @@ export class MapComponent implements AfterViewInit {
       return;
     }
 
-    // Get current location of the user
     const userLat = this.locationMarker.getLatLng().lat;
     const userLon = this.locationMarker.getLatLng().lng;
 
-    // Overpass API query to find coffee places near user location
     const query = `
-    [out:json];
+      [out:json];
     (
       node["amenity"="cafe"](around:1000,${userLat},${userLon});
       node["shop"="coffee"](around:1000,${userLat},${userLon});
       node["amenity"="coffee_shop"](around:1000,${userLat},${userLon});
       node["name"~"coffee|espresso", i](around:1000,${userLat},${userLon});
     );
-    out body;
-  `;
+      out body;
+    `;
 
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(
       query
     )}`;
 
-    // Fetch coffee places from Overpass API
     this.http.get(url).subscribe((data: any) => {
-      // Add new markers for each coffee place found
       data.elements.forEach((element: any) => {
         const coffeeLat = element.lat;
         const coffeeLon = element.lon;
         const name = element.tags.name || 'Unnamed Cafe';
 
-        // Create a custom marker with a coffee emoji
-        const coffeeIcon = L.divIcon({
-          className: 'coffee-marker',
-          html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>', // Coffee emoji
-          iconSize: [30, 30], // Size of the emoji
-          iconAnchor: [15, 15], // Anchor the marker at the center
-        });
-
-        // Create a marker with the custom coffee emoji
-        L.marker([coffeeLat, coffeeLon], { icon: coffeeIcon })
-          .addTo(this.map)
-          .bindPopup(`<b>${name}</b>`)
-          .openPopup();
+        // Add a marker for each coffee shop
+        this.addCoffeeMarker([coffeeLat, coffeeLon], name, L);
       });
+    });
+  }
+
+  // Drop a pin on the map
+  async dropPin(): Promise<void> {
+    const L = await import('leaflet');
+    const center = this.map.getCenter();
+    const coords: [number, number] = [center.lat, center.lng];
+
+    const pinIcon = L.divIcon({
+      className: 'drop-pin-marker',
+      html: '<div style="color: red;">📍</div>',
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+    });
+
+    L.marker(coords, { icon: pinIcon }).addTo(this.map);
+
+    const address = await this.fetchAddress(center.lat, center.lng);
+    alert(`Pin dropped at: ${address}`);
+  }
+
+  // Open safety tips dialog
+  openSafetyTips(): void {
+    this.dialog.open(SafetyTipsDialogComponent, {
+      width: '300px',
+      data: {},
     });
   }
 }
