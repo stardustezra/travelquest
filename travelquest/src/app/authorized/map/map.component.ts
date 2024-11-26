@@ -132,7 +132,7 @@ export class MapComponent implements AfterViewInit {
       openingHours: '8:00 AM - 8:00 PM',
       tags: ['#coffee', '#cozy', '#wifi'],
     };
-    this.isMenuOpen = true;
+    this.isMenuOpen = true; // Open the location details menu
   }
 
   // Find nearby coffee shops using Overpass API

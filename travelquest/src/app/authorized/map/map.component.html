@@ -20,16 +20,14 @@
   </button>
 </div>
 
-<!-- Location Details Menu -->
-<div *ngIf="isMenuOpen" class="menu">
-  <div class="menu-header">
-    <h3>{{ selectedLocation.name }}</h3>
-    <button (click)="isMenuOpen = false" class="close-btn">X</button>
-  </div>
-  <p>{{ selectedLocation.address }}</p>
-  <p><strong>Opening Hours:</strong> {{ selectedLocation.openingHours }}</p>
+<!-- Location Details Panel (Initially Hidden) -->
+<div class="location-details" *ngIf="isMenuOpen">
+  <button class="close-button" (click)="isMenuOpen = false">×</button>
+  <h2>{{ selectedLocation?.name }}</h2>
+  <p>{{ selectedLocation?.address }}</p>
+  <p><strong>Opening Hours:</strong> {{ selectedLocation?.openingHours }}</p>
   <div class="tags">
-    <span *ngFor="let tag of selectedLocation.tags" class="tag">{{ tag }}</span>
+    <span *ngFor="let tag of selectedLocation?.tags">{{ tag }}</span>
   </div>
 </div>
 
