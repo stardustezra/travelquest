@@ -39,13 +39,18 @@ export class MapComponent implements AfterViewInit {
     if (isPlatformBrowser(this.platformId)) {
       const L = await import('leaflet'); // Dynamically load Leaflet
 
-      // Initialize the map with a default view (New York coordinates)
+      // Check if the device is mobile based on screen width
+      const isMobile = window.innerWidth <= 600;
+
+      // Initialize the map with zoom control for PC (no zoom controls for mobile)
       this.map = L.map('map', {
-        zoomControl: false,
+        zoomControl: !isMobile, // Disable zoom controls on mobile (screen <= 600px)
       }).setView([40.73061, -73.935242], 12); // Initial view of the map
 
-      // Add custom zoom control at the bottom-left
-      L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
+      // Add custom zoom control at the bottom-left if it's not mobile
+      if (!isMobile) {
+        L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
+      }
 
       // Tile Layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

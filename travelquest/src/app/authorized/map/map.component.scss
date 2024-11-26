@@ -56,21 +56,22 @@
 /* Search box styling */
 .map-controls {
   position: absolute;
-  top: 10px;
-  left: 50%;
+  top: 10px; /* Position at the top */
+  left: 50%; /* Center horizontally */
   transform: translateX(-50%);
-  width: 90%; /* Ensure responsiveness */
-  max-width: 400px; /* Maximum width */
+  width: 80%; /* Compact width for better responsiveness */
+  max-width: 300px; /* Reduce maximum width */
   z-index: 1000; /* Ensure it shows on top of the map */
-  padding: 0 10px; /* Adding horizontal padding for small screens */
+  padding: 0 5px; /* Adding small padding for small screens */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow for visibility */
 }
 
 .map-controls input {
-  width: 90%;
-  padding: 10px;
+  width: 100%; /* Full width inside container */
+  padding: 6px 10px; /* Compact padding */
   border: 1px solid #ccc;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 14px; /* Smaller font size */
   outline: none;
   background-color: white;
 }
@@ -78,7 +79,7 @@
 /* Button container for coffee button (top-right) */
 .round-button {
   position: absolute;
-  top: 20px; /* Stay at the top */
+  top: 60px; /* Moved down to create space below the search bar */
   right: 20px; /* Stay aligned to the right */
   width: 50px;
   height: 50px;
@@ -120,12 +121,12 @@
   position: absolute;
   bottom: 20px; /* Stay aligned below the Safety Tips button */
   right: 20px; /* Stay aligned to the right */
-  width: 120px;
-  height: 50px;
-  border-radius: 25px;
+  width: 100px; /* Slightly narrower for better responsiveness */
+  height: 40px; /* Smaller height */
+  border-radius: 20px;
   background-color: white;
   color: #f79449;
-  font-size: 16px;
+  font-size: 14px; /* Smaller font size */
   border: none;
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
@@ -137,25 +138,28 @@
 
 .drop-pin p {
   color: black;
+  font-size: 12px; /* Smaller text */
 }
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .map-controls {
-    width: 100%; /* Full width on smaller screens */
-    padding: 0 15px;
+    top: 5px; /* Slightly closer to the top on small screens */
+    width: 90%; /* Adjust to almost full screen width */
+    max-width: 250px; /* Reduce max width further for smaller devices */
+    padding: 0 5px; /* Smaller padding */
   }
 
   .map-controls input {
-    font-size: 14px; /* Smaller font size on mobile */
-    padding: 8px; /* Smaller padding for input field */
+    font-size: 12px; /* Smaller font size on mobile */
+    padding: 4px 8px; /* Compact padding for input field */
   }
 
   .round-button {
     width: 40px;
     height: 40px;
     font-size: 20px; /* Adjust font size for smaller buttons */
-    top: 15px; /* Maintain positioning */
+    top: 50px; /* Maintain positioning but moved lower */
     right: 15px;
   }
 
@@ -163,19 +167,19 @@
     width: 40px;
     height: 40px;
     font-size: 14px; /* Smaller text */
-    bottom: 75px; /* Maintain spacing */
+    bottom: 70px; /* Maintain spacing */
     right: 15px; /* Slightly adjusted for smaller screens */
   }
 
   .drop-pin {
-    width: 100px; /* Narrower for mobile */
-    height: 40px;
-    font-size: 14px; /* Smaller font size */
+    width: 90px; /* Narrower for mobile */
+    height: 35px; /* Smaller height */
+    font-size: 12px; /* Smaller font size */
     bottom: 15px; /* Maintain spacing from the edge */
     right: 15px; /* Adjust alignment */
   }
 
   .drop-pin p {
-    font-size: 12px; /* Smaller text size */
+    font-size: 10px; /* Smaller text size */
   }
 }
