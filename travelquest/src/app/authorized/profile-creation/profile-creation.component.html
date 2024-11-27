@@ -33,6 +33,19 @@
       ></textarea>
     </mat-form-field>
 
+    <!-- Country -->
+    <mat-form-field appearance="fill">
+      <mat-label>Country</mat-label>
+      <mat-select formControlName="country">
+        <mat-option
+          *ngFor="let country of availableCountries"
+          [value]="country"
+        >
+          {{ country }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <!-- Languages -->
     <mat-form-field appearance="fill">
       <mat-label>Languages</mat-label>
@@ -49,7 +62,6 @@
     <!-- Hashtags -->
     <mat-label>Hashtags</mat-label>
     <mat-chip-grid #chipGrid>
-      <!-- Predefined Hashtags -->
       <mat-chip-option
         *ngFor="let hashtag of predefinedHashtags"
         [selected]="isHashtagSelected(hashtag.tag)"
@@ -57,8 +69,6 @@
       >
         {{ hashtag.tag }}
       </mat-chip-option>
-
-      <!-- Custom Hashtags -->
       <mat-chip
         *ngFor="let customTag of customHashtags"
         [removable]="true"
@@ -67,8 +77,6 @@
         {{ customTag }}
         <button matChipRemove></button>
       </mat-chip>
-
-      <!-- Input for Adding Custom Hashtags -->
       <input
         matInput
         placeholder="Add custom hashtag (e.g., #example)"
