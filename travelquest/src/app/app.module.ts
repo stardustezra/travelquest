@@ -8,6 +8,7 @@ import { MapComponent } from './authorized/map/map.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './material/material.config';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 /* import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { firebaseAuth } from './shared/data-services/firebase-config'; */
 //import { provideAuth, getAuth } from '@angular/fire/auth';
@@ -34,6 +35,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     ReactiveFormsModule,
     MatIconModule,
     MatDialogModule,
+    FormsModule,
   ],
   /*   providers: [
     provideFirebaseApp(() =>

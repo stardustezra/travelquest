@@ -5,6 +5,7 @@ import {
   PLATFORM_ID,
   ViewEncapsulation,
 } from '@angular/core';
+import * as L from 'leaflet';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,6 +23,7 @@ export class MapComponent implements AfterViewInit {
   private markers: any[] = []; // Stores all coffee shop markers
   public selectedLocation: any = null; // Details of the selected marker
   public isMenuOpen: boolean = false; // Controls the visibility of the details menu
+  public searchQuery: string = ''; // Holds the search query
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -197,6 +199,31 @@ export class MapComponent implements AfterViewInit {
     this.dialog.open(SafetyTipsDialogComponent, {
       width: '300px',
       data: {},
+    });
+  }
+
+  // Handle location search
+  searchLocation(searchTerm: string): void {
+    if (!searchTerm) return;
+
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+      searchTerm
+    )}`;
+
+    this.http.get<any[]>(url).subscribe((data) => {
+      if (data && data.length > 0) {
+        const location = data[0];
+        const coords: [number, number] = [
+          parseFloat(location.lat),
+          parseFloat(location.lon),
+        ];
+
+        // Center the map on the new coordinates and place a marker
+        this.map.setView(coords, 15);
+        this.addLocationMarker(coords, L);
+      } else {
+        alert('Location not found');
+      }
     });
   }
 }

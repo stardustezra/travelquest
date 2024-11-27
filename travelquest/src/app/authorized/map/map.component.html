@@ -3,7 +3,14 @@
 
 <!-- Map Controls -->
 <div class="map-controls">
-  <input type="text" placeholder="Search location..." />
+  <!-- Search Bar with ngModel Binding -->
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    (keyup.enter)="searchLocation(searchQuery)"
+    placeholder="Search location..."
+  />
+  <button (click)="searchLocation(searchQuery)">Search</button>
 </div>
 
 <!-- Action Buttons -->
@@ -30,5 +37,3 @@
     <span *ngFor="let tag of selectedLocation?.tags">{{ tag }}</span>
   </div>
 </div>
-
-<!-- TODO add function to drop pin -->
