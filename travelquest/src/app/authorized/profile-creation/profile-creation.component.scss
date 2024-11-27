@@ -94,7 +94,6 @@ input[matInput] {
 }
 
 .mat-chip-option {
-  background-color: rgba(205, 50, 50, 0.714);
   color: white;
 
   &.mat-chip-selected {
@@ -111,24 +110,12 @@ input[matInput] {
   margin-top: 1rem;
 
   mat-chip {
-    background-color: rgba(
-      128,
-      0,
-      128,
-      0.8
-    ); // Purple background for custom hashtags
-    color: white;
-    border-radius: 16px;
     font-size: 14px;
     padding: 0.5rem 1rem;
     line-height: 20px;
 
     button[matChipRemove] {
       color: white;
-
-      &:hover {
-        color: red;
-      }
     }
   }
 
@@ -144,5 +131,15 @@ input[matInput] {
         color: rgba(255, 255, 255, 0.6);
       }
     }
+  }
+}
+
+mat-mdc-chip-list-input {
+  width: 100%;
+  margin-top: 8px;
+
+  input[matInput] {
+    padding: 8px;
+    color: white;
   }
 }

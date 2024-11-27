@@ -3,6 +3,8 @@ import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
+import ISO6391 from 'iso-639-1';
+import ISO3166 from 'iso-3166-1';
 
 interface Hashtag {
   tag: string;
@@ -13,8 +15,9 @@ interface Hashtag {
 interface UserData {
   bio: string;
   languages: string[];
+  country: string;
   hashtags: { tag: string; category: string }[];
-  photoURL?: string; // Ensure this property is optional and included in the UserData interface
+  photoURL?: string;
 }
 
 @Component({
@@ -24,7 +27,8 @@ interface UserData {
 })
 export class ProfileCreationComponent implements OnInit {
   profileForm: FormGroup;
-  availableLanguages = ['English', 'Spanish', 'French', 'German', 'Chinese'];
+  availableLanguages: string[] = [];
+  availableCountries: string[] = [];
   predefinedHashtags: Hashtag[] = [];
   customHashtags: string[] = [];
   selectedHashtags: { tag: string; category: string }[] = [];
@@ -41,14 +45,17 @@ export class ProfileCreationComponent implements OnInit {
   ) {
     // Initialize form
     this.profileForm = this.fb.group({
-      bio: ['', [Validators.required, Validators.maxLength(250)]],
+      bio: ['', [Validators.maxLength(250)]],
       languages: [[], Validators.required],
+      country: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
     console.log('Initializing Profile Creation Component...');
+    this.fetchAvailableLanguages();
     this.fetchPredefinedHashtags();
+    this.fetchAvailableCountries();
 
     // Fetch the current user's UID
     this.sessionStore.getCurrentUserUID().subscribe({
@@ -72,6 +79,32 @@ export class ProfileCreationComponent implements OnInit {
       },
       error: (err) => console.error('Error retrieving UID:', err),
     });
+  }
+
+  // Fetch all available languages using iso-639-1
+  fetchAvailableLanguages(): void {
+    this.availableLanguages = ISO6391.getAllNames().sort(
+      (a, b) => a.localeCompare(b) // Sort alphabetically
+    );
+    console.log(
+      'Available Languages (Alphabetically Sorted):',
+      this.availableLanguages
+    );
+  }
+
+  // Fetch all available countries using iso-3166-1
+  fetchAvailableCountries(): void {
+    const countries = ISO3166.all();
+
+    if (!countries || countries.length === 0) {
+      console.error('ISO3166.all() returned no data or an empty array');
+      return;
+    }
+
+    // Map and sort
+    this.availableCountries = countries
+      .map((country: any) => country.country) // Use 'country' for mapping
+      .sort();
   }
 
   async fetchPredefinedHashtags(): Promise<void> {
@@ -164,6 +197,7 @@ export class ProfileCreationComponent implements OnInit {
       const userData: UserData = {
         bio: this.profileForm.value.bio,
         languages: this.profileForm.value.languages,
+        country: this.profileForm.value.country,
         hashtags,
       };
 
@@ -172,7 +206,7 @@ export class ProfileCreationComponent implements OnInit {
         const photoURL = await this.sessionStore.uploadProfilePhoto(
           this.selectedFile
         );
-        userData.photoURL = photoURL; // Ensure photoURL is set correctly
+        userData.photoURL = photoURL;
         console.log('Profile photo uploaded. URL:', photoURL);
       }
 
