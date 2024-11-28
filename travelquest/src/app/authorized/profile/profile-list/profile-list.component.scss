@@ -10,12 +10,13 @@
   margin-left: 15px;
 }
 
-// Profile picture styles
 .profile-pic {
-  color: $neutraul-white;
-  width: 120px !important;
-  height: 120px !important;
-  font-size: 110px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: $neutraul-white;
+  margin-right: 10px;
 }
 
 .img__profile-picture {
@@ -31,7 +32,8 @@
 .profile-header {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .profile-details {

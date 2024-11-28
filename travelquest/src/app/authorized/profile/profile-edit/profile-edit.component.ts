@@ -8,7 +8,7 @@ import { ENTER, COMMA } from '@angular/cdk/keycodes';
 interface Hashtag {
   tag: string;
   category: string;
-  color: string;
+  // color: string;
 }
 
 @Component({
@@ -52,7 +52,7 @@ export class ProfileEditComponent implements OnInit {
         bio: [userProfile?.bio || ''],
         languages: [userProfile?.languages || [], Validators.required],
         country: [userProfile?.country || ''],
-        hashtags: [selectedHashtags, Validators.required], // Pre-populate with picked hashtags
+        hashtags: [selectedHashtags],
       });
     });
   }
