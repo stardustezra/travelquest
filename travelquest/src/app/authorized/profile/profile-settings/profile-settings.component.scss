@@ -1,16 +1,55 @@
-.profile-settings-container {
+@import "../../../../styles/colors";
+
+.settings-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
+  justify-content: flex-start; /* Ensure content starts at the top */
+  box-sizing: border-box;
 
-button {
-  margin-top: 15px;
-  font-size: 16px;
-  width: 200px;
-}
+  .settings-title {
+    font-size: 26px;
+    color: $primary-color;
+  }
 
-button:hover {
-  background-color: #f44336; /* Red for delete account button */
+  .settings-section {
+    margin-bottom: 1.5rem;
+
+    .section-title {
+      font-size: 20px;
+      color: $neutral-black;
+    }
+  }
+
+  .end-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 210px;
+
+    .sign-off-text {
+      font-size: 20px;
+      color: $neutral-black;
+      cursor: pointer;
+    }
+
+    .delete-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background-color: #f44336;
+      border-radius: 8px;
+      border: none !important;
+
+      mat-icon {
+        font-size: 24px;
+        color: $neutraul-white;
+      }
+    }
+  }
 }

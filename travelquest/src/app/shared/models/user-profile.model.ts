@@ -14,4 +14,5 @@ export interface UserProfile {
   bio: string;
   travels: string;
   meetups: string;
+  profilePicture: string;
 }

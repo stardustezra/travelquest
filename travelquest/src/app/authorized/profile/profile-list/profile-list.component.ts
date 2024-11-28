@@ -46,6 +46,13 @@ export class ProfileListComponent implements OnInit {
     });
   }
 
+  get profilePictureUrl(): string {
+    if (this.userProfile?.profilePicture) {
+      return 'assets/' + this.userProfile.profilePicture;
+    }
+    return 'assets/icons/default-profile-pic.png';
+  }
+
   navigateToEditProfile() {
     this.router.navigate(['/profile-edit']);
   }

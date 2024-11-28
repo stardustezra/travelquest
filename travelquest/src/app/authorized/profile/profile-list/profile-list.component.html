@@ -1,6 +1,19 @@
 <mat-card *ngIf="!loading && !error">
   <div class="profile-header">
-    <mat-icon class="profile-pic">account_circle</mat-icon>
+    <img
+      *ngIf="userProfile?.profilePicture; else defaultProfilePic"
+      [src]="'assets/' + userProfile?.profilePicture"
+      alt="Profile Picture"
+      class="profile-picture"
+    />
+
+    <ng-template #defaultProfilePic>
+      <img
+        [src]="'assets/icons/default-profile-pic.png'"
+        alt="Default Profile Picture"
+        class="profile-picture"
+      />
+    </ng-template>
 
     <div class="profile-details">
       <div class="profile-item">

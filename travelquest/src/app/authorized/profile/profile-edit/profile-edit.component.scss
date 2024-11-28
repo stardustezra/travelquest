@@ -14,6 +14,7 @@ mat-card {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+  margin-bottom: 70px;
 }
 
 .mat-mdc-raised-button:not(:disabled) {
@@ -33,7 +34,6 @@ button {
   /* form appearance style */
   .mdc-text-field--filled {
     background-color: $neutraul-white !important;
-    padding-left: 3px;
     color: $primary-text-color !important;
   }
 }
@@ -50,3 +50,5 @@ mat-form-field {
 .header-title {
   margin-left: 20px;
 }
+
+// Add to global styling

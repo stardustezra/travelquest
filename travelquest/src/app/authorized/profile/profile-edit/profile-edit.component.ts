@@ -33,6 +33,7 @@ export class ProfileEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchPredefinedHashtags();
+    this.fetchAvailableLanguages();
 
     this.sessionStore.getSignedInUserProfile().subscribe((userProfile) => {
       const selectedHashtags = userProfile?.hashtags || [];

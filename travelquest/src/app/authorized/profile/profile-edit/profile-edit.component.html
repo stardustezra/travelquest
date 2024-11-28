@@ -1,5 +1,5 @@
 <div class="profile-edit-container">
-  <h1 class="header-title">Edit profile</h1>
+  <h1 class="header-title">Edit your profile</h1>
   <mat-card *ngIf="profileForm">
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="fill">
@@ -50,7 +50,7 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-        <mat-label>Bio</mat-label>
+        <mat-label>About me</mat-label>
         <textarea
           matInput
           formControlName="bio"

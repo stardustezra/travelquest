@@ -1,0 +1,12 @@
+<p class="hashtag-title">Hashtags</p>
+<div class="hashtags-box">
+  <div
+    *ngFor="let hashtag of hashtags"
+    class="hashtag-item"
+    [style.backgroundColor]="
+      categoryColors[hashtag.category] || categoryColors['custom']
+    "
+  >
+    #{{ hashtag.tag }}
+  </div>
+</div>
