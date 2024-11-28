@@ -3,6 +3,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { sessionStoreRepository } from '../../../shared/stores/session-store.repository';
 import ISO6391 from 'iso-639-1';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
+
+interface Hashtag {
+  tag: string;
+  category: string;
+  color: string;
+}
 
 @Component({
   selector: 'travelquest-profile-edit',
@@ -11,10 +18,12 @@ import ISO6391 from 'iso-639-1';
 })
 export class ProfileEditComponent implements OnInit {
   profileForm!: FormGroup;
+  languages: string[] = [];
   availableLanguages: string[] = [];
-  predefinedHashtags: { tag: string; category: string }[] = [];
+  predefinedHashtags: Hashtag[] = [];
   customHashtags: string[] = [];
-  userProfile: any; // Assuming userProfile is available from sessionStore
+  selectedHashtags: { tag: string; category: string }[] = [];
+  separatorKeysCodes: number[] = [ENTER, COMMA];
 
   constructor(
     private fb: FormBuilder,
@@ -23,12 +32,11 @@ export class ProfileEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.fetchPredefinedHashtags();
     this.fetchAvailableLanguages();
 
-    // Assuming user profile is available via sessionStore
     this.sessionStore.getSignedInUserProfile().subscribe((userProfile) => {
-      this.userProfile = userProfile;
-      this.predefinedHashtags = userProfile?.hashtags || []; // Assuming predefined hashtags are part of the user profile
+      const selectedHashtags = userProfile?.hashtags || [];
       this.customHashtags = userProfile?.customHashtags || [];
 
       this.profileForm = this.fb.group({
@@ -44,28 +52,57 @@ export class ProfileEditComponent implements OnInit {
         bio: [userProfile?.bio || ''],
         languages: [userProfile?.languages || [], Validators.required],
         country: [userProfile?.country || ''],
+        hashtags: [selectedHashtags, Validators.required], // Pre-populate with picked hashtags
       });
     });
   }
 
   fetchAvailableLanguages(): void {
-    this.availableLanguages = ISO6391.getAllNames().sort((a, b) =>
-      a.localeCompare(b)
+    this.availableLanguages = ISO6391.getAllNames().sort(
+      (a, b) => a.localeCompare(b) // Sort alphabetically
+    );
+    console.log(
+      'Available Languages (Alphabetically Sorted):',
+      this.availableLanguages
     );
   }
 
-  updateSelectedHashtags(
-    updatedHashtags: { tag: string; category: string }[]
-  ): void {
-    this.predefinedHashtags = updatedHashtags;
+  fetchPredefinedHashtags(): void {
+    this.sessionStore.fetchPredefinedHashtags().then((hashtags) => {
+      this.predefinedHashtags = hashtags; // Populate predefined hashtags
+    });
+  }
+
+  addCustomHashtag(event: any): void {
+    const input = event.input;
+    const value = event.value;
+
+    // Add custom hashtag if it exists
+    if ((value || '').trim()) {
+      this.customHashtags.push(value.trim());
+    }
+
+    // Clear input field
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  removeCustomHashtag(tag: string): void {
+    const index = this.customHashtags.indexOf(tag);
+
+    if (index >= 0) {
+      this.customHashtags.splice(index, 1);
+    }
   }
 
   onSubmit(): void {
     if (this.profileForm.valid) {
       const updatedData = {
         ...this.profileForm.value,
-        predefinedHashtags: this.predefinedHashtags,
-        customHashtags: this.customHashtags,
+        hashtags: this.predefinedHashtags
+          .filter((h) => this.profileForm.value.hashtags.includes(h.tag))
+          .map((h) => ({ tag: h.tag, category: h.category })),
       };
 
       this.sessionStore
