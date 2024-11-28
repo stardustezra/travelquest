@@ -22,6 +22,7 @@ import {
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { MatIconModule } from '@angular/material/icon';
+import { provideHttpClient } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
@@ -55,6 +56,7 @@ import { MatIconModule } from '@angular/material/icon';
     provideFirestore(() => getFirestore()),
     provideMessaging(() => getMessaging()),
     provideStorage(() => getStorage()),
+    provideHttpClient(),
   ],
   bootstrap: [AppComponent],
 })

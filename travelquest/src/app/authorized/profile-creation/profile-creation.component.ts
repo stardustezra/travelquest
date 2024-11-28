@@ -21,7 +21,7 @@ interface UserData {
 }
 
 @Component({
-  selector: 'app-profile-creation',
+  selector: 'travelquest-profile-creation',
   templateUrl: './profile-creation.component.html',
   styleUrls: ['./profile-creation.component.scss'],
 })

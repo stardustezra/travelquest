@@ -11,6 +11,7 @@ import { MaterialModule } from '../material/material.config';
 import { ProfileListComponent } from './profile/profile-list/profile-list.component';
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
 import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ProfileSettingsComponent } from './profile/profile-settings/profile-set
     ProfileListComponent,
     ProfileEditComponent,
     ProfileSettingsComponent,
+    HomeComponent,
   ],
   imports: [
     CommonModule,

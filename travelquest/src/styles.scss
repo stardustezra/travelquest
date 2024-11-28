@@ -69,6 +69,24 @@ h2 {
   font-family: var(--secondary-font);
 }
 
+mat-card {
+  background: none;
+  box-shadow: none;
+}
+
+// ::ng-deep overrides for Material components
+:host ::ng-deep {
+  /* form appearance style */
+  .mdc-text-field--filled {
+    background-color: #ffffff00 !important;
+
+    /* input text */
+    .mdc-text-field__input {
+      color: rgb(255, 255, 255);
+    }
+  }
+}
+
 @media (max-width: 768px) {
   mat-card {
     width: 90%;
