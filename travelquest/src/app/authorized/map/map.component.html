@@ -3,14 +3,21 @@
 
 <!-- Map Controls -->
 <div class="map-controls">
-  <!-- Search Bar with ngModel Binding -->
   <input
     type="text"
     [(ngModel)]="searchQuery"
-    (keyup.enter)="searchLocation(searchQuery)"
+    (keyup)="searchLocation(searchQuery)"
     placeholder="Search location..."
   />
-  <button (click)="searchLocation(searchQuery)">Search</button>
+
+  <!-- Dropdown for search results -->
+  <div *ngIf="searchResults.length > 0" class="dropdown">
+    <ul>
+      <li *ngFor="let result of searchResults" (click)="selectLocation(result)">
+        {{ result.display_name }}
+      </li>
+    </ul>
+  </div>
 </div>
 
 <!-- Action Buttons -->
@@ -21,7 +28,7 @@
   <button class="safety-tips-button" (click)="openSafetyTips()">
     <mat-icon>support</mat-icon>
   </button>
-  <button class="drop-pin">
+  <button class="drop-pin" (click)="dropPin()">
     <mat-icon>pin_drop</mat-icon>
     <p>Drop a pin</p>
   </button>
