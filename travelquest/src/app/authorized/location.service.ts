@@ -41,7 +41,7 @@ export class LocationService {
     // Construct the API query URL with bounding box and proximity
     const url = `${this.apiUrl}?q=${query}&format=json&addressdetails=1&bounded=1&viewbox=${minLon},${maxLat},${maxLon},${minLat}`;
 
-    // Perform the HTTP GET request
+    // Perform the HTTP GET requestt
     return this.http.get<any[]>(url);
   }
 }
