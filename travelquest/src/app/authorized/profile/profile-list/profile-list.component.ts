@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { sessionStoreRepository } from '../../../shared/stores/session-store.repository';
 import { Router } from '@angular/router';
+import { UserProfile } from '../../../shared/models/user-profile.model';
 
 @Component({
   selector: 'travelquest-profile-list',
@@ -8,11 +9,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./profile-list.component.scss'],
 })
 export class ProfileListComponent implements OnInit {
-  userProfile: any | null = null;
+  userProfile: UserProfile | null = null;
   loading: boolean = true;
   error: string | null = null;
 
-  categoryColors: { [key: string]: string } = {
+  categoryColors: {
+    [key: string]: string;
+  } = {
     food: '#E7C933',
     culture: '#C852A2',
     activities: '#79D27F',

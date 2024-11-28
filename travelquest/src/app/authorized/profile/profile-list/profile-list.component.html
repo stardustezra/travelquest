@@ -32,17 +32,17 @@
   <p class="hashtag-title">Hashtags</p>
   <div class="hashtags-box">
     <div
-      *ngFor="let hashtag of userProfile.hashtags"
+      *ngFor="let hashtag of userProfile?.hashtags"
       class="hashtag-item"
       [style.backgroundColor]="
-        categoryColors[hashtag.category] || categoryColors['Default']
+        categoryColors[hashtag.category] || categoryColors['custom']
       "
     >
       #{{ hashtag.tag }}
     </div>
   </div>
 
-  <p class="bio-title">Bio:</p>
+  <p class="bio-title">About me</p>
   <div class="bio-box">{{ userProfile?.bio }}</div>
 
   <div class="action-buttons">
