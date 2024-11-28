@@ -202,7 +202,7 @@ export class MapComponent implements AfterViewInit {
   dropPin(): void {
     if (this.locationMarker) {
       const coords = this.locationMarker.getLatLng();
-      const L = (window as any).L; // Access Leaflet globally
+      const L = (window as any).L;
 
       const pinIcon = L.divIcon({
         className: 'custom-pin',
