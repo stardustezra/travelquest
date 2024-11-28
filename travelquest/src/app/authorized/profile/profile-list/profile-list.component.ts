@@ -13,16 +13,6 @@ export class ProfileListComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
 
-  categoryColors: {
-    [key: string]: string;
-  } = {
-    food: '#E7C933',
-    culture: '#C852A2',
-    activities: '#79D27F',
-    sightseeing: '#5797EB',
-    custom: '#8E77D2',
-  };
-
   constructor(
     private readonly sessionStore: sessionStoreRepository,
     private readonly router: Router

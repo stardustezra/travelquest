@@ -32,6 +32,7 @@
     <p>{{ userProfile?.country }}</p>
     <p>{{ userProfile?.languages }}</p>
   </div>
+
   <div class="edit-button">
     <button
       mat-button
@@ -42,18 +43,9 @@
     </button>
   </div>
 
-  <p class="hashtag-title">Hashtags</p>
-  <div class="hashtags-box">
-    <div
-      *ngFor="let hashtag of userProfile?.hashtags"
-      class="hashtag-item"
-      [style.backgroundColor]="
-        categoryColors[hashtag.category] || categoryColors['custom']
-      "
-    >
-      #{{ hashtag.tag }}
-    </div>
-  </div>
+  <travelquest-hashtag-list
+    [hashtags]="userProfile?.hashtags || []"
+  ></travelquest-hashtag-list>
 
   <p class="bio-title">About me</p>
   <div class="bio-box">{{ userProfile?.bio }}</div>
