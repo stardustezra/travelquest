@@ -36,8 +36,11 @@ export class ProfileEditComponent implements OnInit {
     this.fetchAvailableLanguages();
 
     this.sessionStore.getSignedInUserProfile().subscribe((userProfile) => {
-      const selectedHashtags = userProfile?.hashtags || [];
-      this.customHashtags = userProfile?.customHashtags || [];
+      const predefinedTags =
+        userProfile?.hashtags?.map((h: any) => h.tag) || [];
+      this.customHashtags = (userProfile?.hashtags || [])
+        .filter((h: any) => h.category === 'custom')
+        .map((h: any) => h.tag); // Extract custom tags
 
       this.profileForm = this.fb.group({
         name: [userProfile?.name || '', Validators.required],
@@ -52,7 +55,8 @@ export class ProfileEditComponent implements OnInit {
         bio: [userProfile?.bio || ''],
         languages: [userProfile?.languages || [], Validators.required],
         country: [userProfile?.country || ''],
-        hashtags: [selectedHashtags],
+        hashtags: [predefinedTags], // Populate predefined hashtags
+        meetups: [userProfile?.meetups || ''],
       });
     });
   }
@@ -98,11 +102,18 @@ export class ProfileEditComponent implements OnInit {
 
   onSubmit(): void {
     if (this.profileForm.valid) {
+      const selectedPredefinedTags = this.predefinedHashtags
+        .filter((h) => this.profileForm.value.hashtags.includes(h.tag))
+        .map((h) => ({ tag: h.tag, category: h.category }));
+
+      const allHashtags = [
+        ...selectedPredefinedTags,
+        ...this.customHashtags.map((tag) => ({ tag, category: 'custom' })),
+      ];
+
       const updatedData = {
         ...this.profileForm.value,
-        hashtags: this.predefinedHashtags
-          .filter((h) => this.profileForm.value.hashtags.includes(h.tag))
-          .map((h) => ({ tag: h.tag, category: h.category })),
+        hashtags: allHashtags,
       };
 
       this.sessionStore

@@ -71,6 +71,7 @@ export class sessionStoreRepository {
           name: name,
           dob: dobTimestamp,
           email: email,
+          meetups: 0,
           createdAt: new Date().toISOString(),
         });
       }
@@ -95,6 +96,7 @@ export class sessionStoreRepository {
             name: user.displayName || 'Google User',
             dob: dob,
             email: user.email,
+            meetups: 0, // Include meetups field here as well
             createdAt: new Date().toISOString(),
           });
         }
@@ -120,11 +122,32 @@ export class sessionStoreRepository {
     });
   }
 
-  // Fetch the profile data from Firestore for a specific UID
   getUserProfile(uid: string): Observable<any> {
     const userDocRef = doc(this.firestore, `users/${uid}`);
     return from(getDoc(userDocRef)).pipe(
-      map((docSnapshot) => (docSnapshot.exists() ? docSnapshot.data() : null))
+      switchMap(async (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          // Use a defined interface or assertion to access meetups safely
+          const data = docSnapshot.data() as { meetups?: number };
+
+          // Check if 'meetups' field exists and add it if missing
+          if (!('meetups' in data)) {
+            console.log('Meetups field is missing. Adding it...');
+            await setDoc(
+              userDocRef,
+              { meetups: 0 }, // Initialize meetups with a default value
+              { merge: true }
+            );
+            data['meetups'] = 0; // Use bracket notation to safely add the property
+          }
+
+          return data;
+        } else {
+          console.warn('User document does not exist!');
+          return null;
+        }
+      }),
+      map((data) => data || null)
     );
   }
 

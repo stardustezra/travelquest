@@ -13,6 +13,6 @@ export interface UserProfile {
   hashtags: Hashtag[];
   bio: string;
   travels: string;
-  meetups: string;
+  meetups: number;
   profilePicture: string;
 }
