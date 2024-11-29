@@ -213,7 +213,6 @@ export class sessionStoreRepository {
     const hashtagsRef = collection(this.firestore, 'hashtags');
     const snapshot = await getDocs(hashtagsRef);
 
-    // Map Firestore documents to an array of hashtags
     return snapshot.docs.map(
       (doc) => doc.data() as { tag: string; category: string; color: string }
     );

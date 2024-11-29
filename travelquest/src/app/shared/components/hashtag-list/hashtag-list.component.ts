@@ -20,4 +20,8 @@ export class HashtagListComponent {
     sightseeing: '#5797EB',
     custom: '#8E77D2',
   };
+
+  ngOnChanges(): void {
+    console.log('Hashtags received in HashtagListComponent:', this.hashtags);
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { sessionStoreRepository } from '../../../shared/stores/session-store.repository';
@@ -8,7 +8,6 @@ import { ENTER, COMMA } from '@angular/cdk/keycodes';
 interface Hashtag {
   tag: string;
   category: string;
-  // color: string;
 }
 
 @Component({
@@ -40,7 +39,7 @@ export class ProfileEditComponent implements OnInit {
         userProfile?.hashtags?.map((h: any) => h.tag) || [];
       this.customHashtags = (userProfile?.hashtags || [])
         .filter((h: any) => h.category === 'custom')
-        .map((h: any) => h.tag); // Extract custom tags
+        .map((h: any) => h.tag);
 
       this.profileForm = this.fb.group({
         name: [userProfile?.name || '', Validators.required],
@@ -55,8 +54,9 @@ export class ProfileEditComponent implements OnInit {
         bio: [userProfile?.bio || ''],
         languages: [userProfile?.languages || [], Validators.required],
         country: [userProfile?.country || ''],
-        hashtags: [predefinedTags], // Populate predefined hashtags
+        hashtags: [predefinedTags],
         meetups: [userProfile?.meetups || ''],
+        customHashtags: [this.customHashtags],
       });
     });
   }
@@ -81,12 +81,12 @@ export class ProfileEditComponent implements OnInit {
     const input = event.input;
     const value = event.value;
 
-    // Add custom hashtag if it exists
     if ((value || '').trim()) {
       this.customHashtags.push(value.trim());
+      // Sync with FormGroup
+      this.profileForm.get('customHashtags')?.setValue(this.customHashtags);
     }
 
-    // Clear input field
     if (input) {
       input.value = '';
     }
@@ -97,23 +97,21 @@ export class ProfileEditComponent implements OnInit {
 
     if (index >= 0) {
       this.customHashtags.splice(index, 1);
+      // Sync with FormGroup
+      this.profileForm.get('customHashtags')?.setValue(this.customHashtags);
     }
   }
 
   onSubmit(): void {
     if (this.profileForm.valid) {
-      const selectedPredefinedTags = this.predefinedHashtags
-        .filter((h) => this.profileForm.value.hashtags.includes(h.tag))
-        .map((h) => ({ tag: h.tag, category: h.category }));
-
-      const allHashtags = [
-        ...selectedPredefinedTags,
-        ...this.customHashtags.map((tag) => ({ tag, category: 'custom' })),
-      ];
-
       const updatedData = {
         ...this.profileForm.value,
-        hashtags: allHashtags,
+        hashtags: [
+          ...this.predefinedHashtags
+            .filter((h) => this.profileForm.value.hashtags.includes(h.tag))
+            .map((h) => ({ tag: h.tag, category: h.category })),
+          ...this.customHashtags.map((tag) => ({ tag, category: 'custom' })), // Ensure structure includes `tag` and `category`
+        ],
       };
 
       this.sessionStore
