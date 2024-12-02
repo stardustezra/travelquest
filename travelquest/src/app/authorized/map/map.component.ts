@@ -141,7 +141,34 @@ export class MapComponent implements AfterViewInit {
     this.addLocationMarker([location.lat, location.lon], import('leaflet')); // Add marker for selected location
   }
 
-  // Find nearby coffee places using Overpass API
+  /*   // Helper function to reverse geocode coordinates
+  reverseGeocode(lat: number, lon: number): Promise<string> {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+    return this.http
+      .get(url)
+      .toPromise()
+      .then((data: any) => {
+        if (data && data.address) {
+          // Combine address components into a readable format
+          const { road, house_number, suburb, city, postcode } = data.address;
+          return (
+            [house_number, road, suburb, city, postcode]
+              .filter(Boolean)
+              .join(', ') || 'Address not available'
+          );
+        }
+        return 'Address not available';
+      })
+      .catch((error) => {
+        console.error('Reverse geocoding failed:', error);
+        return 'Address not available';
+      });
+  } */
+
+  // Property to store selected cafe details
+  selectedCafe: any = null;
+
   async findNearbyCoffeePlaces(): Promise<void> {
     const L = await import('leaflet');
     if (!this.locationMarker) {
@@ -149,7 +176,6 @@ export class MapComponent implements AfterViewInit {
       return;
     }
 
-    // Get current location of the user
     const userLat = this.locationMarker.getLatLng().lat;
     const userLon = this.locationMarker.getLatLng().lng;
 
@@ -168,32 +194,49 @@ export class MapComponent implements AfterViewInit {
       query
     )}`;
 
-    // Fetch coffee places from Overpass API
     this.http.get(url).subscribe((data: any) => {
-      // Clear any existing markers
+      // Clear existing markers
       this.map.eachLayer((layer: any) => {
-        if (layer instanceof L.Marker) {
-          this.map.removeLayer(layer); // Remove markers from previous searches
-        }
+        /*         if (layer instanceof L.Marker) {
+          this.map.removeLayer(layer);
+        } */
       });
 
-      // Add new markers for each coffee place found
+      // Loop through each result
       data.elements.forEach((element: any) => {
         const coffeeLat = element.lat;
         const coffeeLon = element.lon;
         const name = element.tags.name || 'Unnamed Cafe';
 
+        // Construct address from Overpass API tags, fallback if missing
+        const address =
+          [
+            element.tags['addr:housenumber'],
+            element.tags['addr:street'],
+            element.tags['addr:suburb'],
+            element.tags['addr:city'],
+            element.tags['addr:state'],
+            element.tags['addr:postcode'],
+          ]
+            .filter(Boolean)
+            .join(', ') || 'Address not available';
+
+        // Add marker immediately
         const coffeeIcon = L.divIcon({
           className: 'coffee-marker',
-          html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>', // Coffee emoji
-          iconSize: [30, 30], // Size of the emoji
-          iconAnchor: [15, 15], // Anchor the marker at the center
+          html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>',
+          iconSize: [30, 30],
+          iconAnchor: [15, 15],
         });
 
-        L.marker([coffeeLat, coffeeLon], { icon: coffeeIcon })
+        const marker = L.marker([coffeeLat, coffeeLon], { icon: coffeeIcon })
           .addTo(this.map)
-          .bindPopup(`<b>${name}</b>`)
-          .openPopup();
+          .on('click', () => {
+            // Update selectedCafe with name and address
+            this.selectedCafe = { name, address };
+          });
+
+        marker.bindPopup(`<b>${name}</b><br>${address}`); // Optional popup with address
       });
     });
   }

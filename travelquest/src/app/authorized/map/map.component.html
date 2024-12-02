@@ -34,13 +34,11 @@
   </button>
 </div>
 
-<!-- Location Details Panel (Initially Hidden) -->
-<div class="location-details" *ngIf="isMenuOpen">
-  <button class="close-button" (click)="isMenuOpen = false">×</button>
-  <h2>{{ selectedLocation?.name }}</h2>
-  <p>{{ selectedLocation?.address }}</p>
-  <p><strong>Opening Hours:</strong> {{ selectedLocation?.openingHours }}</p>
-  <div class="tags">
-    <span *ngFor="let tag of selectedLocation?.tags">{{ tag }}</span>
+<!-- Bottom menu for cafe details -->
+<div class="bottom-menu" *ngIf="selectedCafe">
+  <div class="menu-content">
+    <h3>{{ selectedCafe.name || "Unnamed Cafe" }}</h3>
+    <p>{{ selectedCafe.address }}</p>
+    <!-- Displays fetched address -->
   </div>
 </div>

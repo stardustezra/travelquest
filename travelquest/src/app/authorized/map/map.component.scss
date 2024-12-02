@@ -310,3 +310,17 @@
 .location-details .tags span:nth-child(3) {
   background-color: #e91e63; /* Pink tag */
 }
+
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.menu-content {
+  text-align: center;
+}
