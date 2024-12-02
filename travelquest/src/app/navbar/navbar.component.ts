@@ -9,6 +9,10 @@ import { Router } from '@angular/router';
 export class NavbarComponent {
   constructor(private router: Router) {}
 
+  isActiveRoute(routes: string[]): boolean {
+    return routes.some((route) => this.router.url.startsWith(route));
+  }
+
   navigateTo(path: string): void {
     // TODO: Another way than delay to avoid double click?
     setTimeout(() => {
