@@ -232,7 +232,7 @@ export class MapComponent implements AfterViewInit {
         }
       });
     });
-  }
+  } //TODO: Add #
 
   dropPin(): void {
     if (this.locationMarker) {

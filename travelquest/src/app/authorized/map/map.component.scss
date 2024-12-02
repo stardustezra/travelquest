@@ -324,3 +324,71 @@
 .menu-content {
   text-align: center;
 }
+
+/* Bottom menu for café details */
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.bottom-menu .menu-content {
+  text-align: center;
+}
+
+.bottom-menu h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.bottom-menu p {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 4px 0;
+}
+
+.bottom-menu .explore-button {
+  background: #f79449;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.bottom-menu .explore-button:hover {
+  background: #d17a3e;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .bottom-menu {
+    padding: 10px 12px;
+  }
+
+  .bottom-menu h3 {
+    font-size: 1rem;
+  }
+
+  .bottom-menu p {
+    font-size: 0.8rem;
+  }
+
+  .bottom-menu .explore-button {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+}

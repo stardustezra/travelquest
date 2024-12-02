@@ -39,6 +39,7 @@
   <div class="menu-content">
     <h3>{{ selectedCafe.name || "Unnamed Cafe" }}</h3>
     <p>{{ selectedCafe.address }}</p>
-    <!-- Displays fetched address -->
+    <p>{{ selectedCafe.openingHours || "Opening hours not available" }}</p>
+    <button class="explore-button">#{{ selectedCafe.tag || "coffee" }}</button>
   </div>
 </div>
