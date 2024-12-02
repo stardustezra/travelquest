@@ -82,33 +82,40 @@
         </mat-select>
       </mat-form-field>
 
-      <!-- Custom Hashtags -->
-      <!-- Custom Hashtags -->
-      <mat-chip-grid #chipGrid>
-        <!-- Render custom hashtags -->
-        <mat-chip
-          *ngFor="let customTag of customHashtags"
-          [removable]="true"
-          (removed)="removeCustomHashtag(customTag)"
-        >
-          {{ customTag }}
-          <button matChipRemove></button>
-        </mat-chip>
+      <div class="custom-hashtags-container">
+        <p class="custom-hashtags-title">Custom Hashtags</p>
+        <mat-chip-grid #chipGrid>
+          <!-- Render custom hashtags -->
+          <mat-chip
+            *ngFor="let customTag of customHashtags"
+            [removable]="true"
+            (removed)="removeCustomHashtag(customTag)"
+            class="custom-hashtag-chip"
+          >
+            #{{ customTag }}
+            <button matChipRemove class="remove-chip-button"></button>
+          </mat-chip>
 
-        <!-- Show fallback message if no hashtags exist -->
-        <mat-chip *ngIf="customHashtags.length === 0" disabled>
-          No custom hashtags added yet.
-        </mat-chip>
+          <mat-chip
+            *ngIf="customHashtags.length === 0"
+            disabled
+            class="fallback-chip"
+          >
+            No custom hashtags added yet.
+          </mat-chip>
 
-        <!-- Input field for new hashtags -->
-        <input
-          matInput
-          placeholder="Add custom hashtag (e.g., #example)"
-          [matChipInputFor]="chipGrid"
-          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-          (matChipInputTokenEnd)="addCustomHashtag($event)"
-        />
-      </mat-chip-grid>
+          <mat-form-field class="custom-input">
+            <input
+              matInput
+              placeholder="Add custom hashtag"
+              [matChipInputFor]="chipGrid"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addCustomHashtag($event)"
+              class="custom-hashtag-input"
+            />
+          </mat-form-field>
+        </mat-chip-grid>
+      </div>
 
       <div class="profile-edit-buttons">
         <button

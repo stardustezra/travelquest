@@ -51,4 +51,35 @@ mat-form-field {
   margin-left: 20px;
 }
 
-// Add to global styling
+.custom-hashtags-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: $primary-text-color;
+}
+
+mat-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+
+  .custom-input {
+    margin-top: 10px;
+  }
+
+  .fallback-chip {
+    background-color: $neutraul-white;
+    color: $primary-text-color;
+    font-size: 14px;
+    border: none;
+  }
+
+  .custom-hashtag-input {
+    flex: 1;
+
+    &::placeholder {
+      color: $primary-text-color !important;
+    }
+  }
+}
