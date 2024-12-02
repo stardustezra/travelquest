@@ -19,7 +19,7 @@ mat-card {
 
 .mat-mdc-raised-button:not(:disabled) {
   background-color: $action-color;
-  color: white;
+  color: $neutraul-white;
   border: none;
 }
 
@@ -31,7 +31,6 @@ button {
 }
 
 :host ::ng-deep {
-  /* form appearance style */
   .mdc-text-field--filled {
     background-color: $neutraul-white !important;
     color: $primary-text-color !important;
@@ -79,7 +78,7 @@ mat-chip-grid {
     flex: 1;
 
     &::placeholder {
-      color: $primary-text-color !important;
+      color: $neutral-black !important;
     }
   }
 }
