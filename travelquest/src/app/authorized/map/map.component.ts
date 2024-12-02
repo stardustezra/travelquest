@@ -25,6 +25,7 @@ export class MapComponent implements AfterViewInit {
   searchResults: any[] = []; // Array to store search results
   selectedLocation: any; // The currently selected location
   isMenuOpen: boolean = false; // Toggle the location details panel
+  selectedCafe: any = null; // Property to store selected cafe details
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -45,27 +46,21 @@ export class MapComponent implements AfterViewInit {
   private async initMap(): Promise<void> {
     if (isPlatformBrowser(this.platformId)) {
       const L = await import('leaflet'); // Dynamically load Leaflet
-
-      // Check if the device is mobile based on screen width
       const isMobile = window.innerWidth <= 600;
 
-      // Initialize the map with zoom control for PC (no zoom controls for mobile)
       this.map = L.map('map', {
-        zoomControl: !isMobile, // Disable zoom controls on mobile (screen <= 600px)
-      }).setView([40.73061, -73.935242], 12); // Initial view of the map
+        zoomControl: !isMobile,
+      }).setView([40.73061, -73.935242], 12);
 
-      // Add custom zoom control at the bottom-left if it's not mobile
       if (!isMobile) {
         L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
       }
 
-      // Tile Layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors',
       }).addTo(this.map);
 
-      // Try to get the user's geolocation
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -73,8 +68,8 @@ export class MapComponent implements AfterViewInit {
               position.coords.latitude,
               position.coords.longitude,
             ];
-            this.map.setView(userCoords, 15); // Center map on user's location
-            this.addLocationMarker(userCoords, L); // Add location marker
+            this.map.setView(userCoords, 15);
+            this.addLocationMarker(userCoords, L);
           },
           (error) => {
             console.warn('Geolocation failed:', error);
@@ -84,7 +79,6 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
-  // Add the user's location marker to the map
   private addLocationMarker(coords: [number, number], L: any): void {
     const userIcon = L.divIcon({
       className: 'custom-location-marker',
@@ -93,23 +87,19 @@ export class MapComponent implements AfterViewInit {
       iconAnchor: [15, 15],
     });
 
-    // If a location marker already exists, update it
     if (this.locationMarker) {
-      this.locationMarker.setLatLng(coords); // Update marker position
+      this.locationMarker.setLatLng(coords);
     } else {
-      // If no marker exists, create a new one
       this.locationMarker = L.marker(coords, { icon: userIcon }).addTo(
         this.map
       );
     }
   }
 
-  // This is required to implement the AfterViewInit interface
   async ngAfterViewInit(): Promise<void> {
-    await this.initMap(); // Initialize map when the view has been initialized
+    await this.initMap();
   }
 
-  // Finds locations based on search query (using LocationService)
   searchLocation(query: string): void {
     if (!query || !this.locationMarker) {
       this.searchResults = [];
@@ -118,14 +108,13 @@ export class MapComponent implements AfterViewInit {
 
     const userLat = this.locationMarker.getLatLng().lat;
     const userLon = this.locationMarker.getLatLng().lng;
-    const radius = 1000; // Define the search radius (1km)
+    const radius = 1000;
 
-    // Call the LocationService with the user's location and radius
     this.locationService
       .searchLocations(query, userLat, userLon, radius)
       .subscribe(
         (results) => {
-          this.searchResults = results; // Update search results
+          this.searchResults = results;
         },
         (error) => {
           console.error('Error fetching locations:', error);
@@ -133,15 +122,13 @@ export class MapComponent implements AfterViewInit {
       );
   }
 
-  // Select a location from search results
   selectLocation(location: any): void {
     this.selectedLocation = location;
-    this.isMenuOpen = true; // Open location details panel
-    this.map.setView([location.lat, location.lon], 15); // Center map on the selected location
-    this.addLocationMarker([location.lat, location.lon], import('leaflet')); // Add marker for selected location
+    this.isMenuOpen = true;
+    this.map.setView([location.lat, location.lon], 15);
+    this.addLocationMarker([location.lat, location.lon], import('leaflet'));
   }
 
-  /*   // Helper function to reverse geocode coordinates
   reverseGeocode(lat: number, lon: number): Promise<string> {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
 
@@ -150,7 +137,6 @@ export class MapComponent implements AfterViewInit {
       .toPromise()
       .then((data: any) => {
         if (data && data.address) {
-          // Combine address components into a readable format
           const { road, house_number, suburb, city, postcode } = data.address;
           return (
             [house_number, road, suburb, city, postcode]
@@ -164,10 +150,7 @@ export class MapComponent implements AfterViewInit {
         console.error('Reverse geocoding failed:', error);
         return 'Address not available';
       });
-  } */
-
-  // Property to store selected cafe details
-  selectedCafe: any = null;
+  }
 
   async findNearbyCoffeePlaces(): Promise<void> {
     const L = await import('leaflet');
@@ -195,53 +178,62 @@ export class MapComponent implements AfterViewInit {
     )}`;
 
     this.http.get(url).subscribe((data: any) => {
-      // Clear existing markers
-      this.map.eachLayer((layer: any) => {
-        /*         if (layer instanceof L.Marker) {
-          this.map.removeLayer(layer);
-        } */
-      });
+      this.map.eachLayer((layer: any) => {});
 
-      // Loop through each result
       data.elements.forEach((element: any) => {
         const coffeeLat = element.lat;
         const coffeeLon = element.lon;
         const name = element.tags.name || 'Unnamed Cafe';
 
-        // Construct address from Overpass API tags, fallback if missing
-        const address =
-          [
-            element.tags['addr:housenumber'],
-            element.tags['addr:street'],
-            element.tags['addr:suburb'],
-            element.tags['addr:city'],
-            element.tags['addr:state'],
-            element.tags['addr:postcode'],
-          ]
-            .filter(Boolean)
-            .join(', ') || 'Address not available';
+        let address = [
+          element.tags['addr:housenumber'],
+          element.tags['addr:street'],
+          element.tags['addr:suburb'],
+          element.tags['addr:city'],
+          element.tags['addr:state'],
+          element.tags['addr:postcode'],
+        ]
+          .filter(Boolean)
+          .join(', ');
 
-        // Add marker immediately
-        const coffeeIcon = L.divIcon({
-          className: 'coffee-marker',
-          html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>',
-          iconSize: [30, 30],
-          iconAnchor: [15, 15],
-        });
+        if (!address) {
+          this.reverseGeocode(coffeeLat, coffeeLon).then((geoAddress) => {
+            address = geoAddress;
+            const coffeeIcon = L.divIcon({
+              className: 'coffee-marker',
+              html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>',
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+            });
 
-        const marker = L.marker([coffeeLat, coffeeLon], { icon: coffeeIcon })
-          .addTo(this.map)
-          .on('click', () => {
-            // Update selectedCafe with name and address
-            this.selectedCafe = { name, address };
+            const marker = L.marker([coffeeLat, coffeeLon], {
+              icon: coffeeIcon,
+            })
+              .addTo(this.map)
+              .on('click', () => {
+                this.selectedCafe = { name, address };
+              });
+            marker.bindPopup(`<b>${name}</b><br>${address}`);
+          });
+        } else {
+          const coffeeIcon = L.divIcon({
+            className: 'coffee-marker',
+            html: '<div style="font-size: 24px; line-height: 24px; text-align: center;">☕</div>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
           });
 
-        marker.bindPopup(`<b>${name}</b><br>${address}`); // Optional popup with address
+          const marker = L.marker([coffeeLat, coffeeLon], { icon: coffeeIcon })
+            .addTo(this.map)
+            .on('click', () => {
+              this.selectedCafe = { name, address };
+            });
+          marker.bindPopup(`<b>${name}</b><br>${address}`);
+        }
       });
     });
   }
 
-  // Drop a pin at the current location on the map
   dropPin(): void {
     if (this.locationMarker) {
       const coords = this.locationMarker.getLatLng();
