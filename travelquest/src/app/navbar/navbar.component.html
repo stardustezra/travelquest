@@ -2,12 +2,10 @@
   <button
     mat-icon-button
     class="navbar-item"
-    [class.active]="
-      isActiveRoute(['/profile', '/profile-edit', '/settings', '/travellog'])
-    "
-    (click)="navigateTo('/profile')"
+    [class.active]="isActiveRoute(['/home'])"
+    (click)="navigateTo('/home')"
   >
-    <mat-icon>person</mat-icon>
+    <mat-icon>home</mat-icon>
   </button>
 
   <button
@@ -26,12 +24,15 @@
   >
     <mat-icon>map</mat-icon>
   </button>
+
   <button
     mat-icon-button
     class="navbar-item"
-    (click)="navigateTo('/mail')"
-    routerLinkActive="active"
+    [class.active]="
+      isActiveRoute(['/profile', '/profile-edit', '/settings', '/travellog'])
+    "
+    (click)="navigateTo('/profile')"
   >
-    <mat-icon>mail</mat-icon>
+    <mat-icon>person</mat-icon>
   </button>
 </div>
