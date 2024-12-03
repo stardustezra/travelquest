@@ -1,0 +1,45 @@
+<!-- Map Container -->
+<div id="map"></div>
+
+<!-- Map Controls -->
+<div class="map-controls">
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    (keyup)="searchLocation(searchQuery)"
+    placeholder="Search location..."
+  />
+
+  <!-- Dropdown for search results -->
+  <div *ngIf="searchResults.length > 0" class="dropdown">
+    <ul>
+      <li *ngFor="let result of searchResults" (click)="selectLocation(result)">
+        {{ result.display_name }}
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="button-container">
+  <button class="round-button" (click)="findNearbyCoffeePlaces()">
+    <mat-icon>local_cafe</mat-icon>
+  </button>
+  <button class="safety-tips-button" (click)="openSafetyTips()">
+    <mat-icon>support</mat-icon>
+  </button>
+  <button class="drop-pin" (click)="dropPin()">
+    <mat-icon>pin_drop</mat-icon>
+    <p>Drop a pin</p>
+  </button>
+</div>
+
+<!-- Bottom menu for cafe details -->
+<div class="bottom-menu" *ngIf="selectedCafe">
+  <div class="menu-content">
+    <h3>{{ selectedCafe.name || "Unnamed Cafe" }}</h3>
+    <p>{{ selectedCafe.address }}</p>
+    <p>{{ selectedCafe.openingHours || "Opening hours not available" }}</p>
+    <button class="explore-button">#{{ selectedCafe.tag || "coffee" }}</button>
+  </div>
+</div>

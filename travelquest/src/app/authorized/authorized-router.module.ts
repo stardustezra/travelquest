@@ -7,6 +7,7 @@ import { ProfileCreationComponent } from './profile-creation/profile-creation.co
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
 import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
 import { TravellogComponent } from './profile/travellog/travellog.component';
+import { MapComponent } from './map/map.component';
 
 export const routes: Routes = [
   {
@@ -41,6 +42,10 @@ export const routes: Routes = [
       {
         path: 'travellog',
         component: TravellogComponent,
+      },
+      {
+        path: 'map',
+        component: MapComponent,
       },
     ],
   },

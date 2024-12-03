@@ -31,7 +31,8 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/cropperjs/dist/cropper.css"
+              "node_modules/cropperjs/dist/cropper.css",
+              "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": ["node_modules/cropperjs/dist/cropper.js"]
           },

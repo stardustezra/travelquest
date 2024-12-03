@@ -1,0 +1,394 @@
+/* Map container */
+#map {
+  position: relative; /*was fixed*/
+  top: 0;
+  left: 0;
+  width: 100vw; /* Full viewport width */
+  height: 100vh; /* Full viewport height */
+  z-index: 1; /* Ensure it stays below any controls/UI overlays */
+}
+
+/* Custom marker styling */
+.custom-location-marker .pin {
+  width: 16px;
+  height: 16px;
+  background-color: #f79449; /* Updated orange color for the pin */
+  border-radius: 50%;
+  border: 3px solid white; /* White border for contrast */
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.custom-location-marker .pulse {
+  width: 24px;
+  height: 24px;
+  background-color: rgba(
+    247,
+    148,
+    73,
+    0.4
+  ); /* Pulse effect using lighter orange */
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  animation: pulse-animation 2s infinite ease-in-out;
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Search box styling */
+.map-controls {
+  position: absolute;
+  top: 10px; /* Position at the top */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%);
+  width: 80%; /* Compact width for better responsiveness */
+  max-width: 300px; /* Reduce maximum width */
+  z-index: 1000; /* Ensure it shows on top of the map */
+  padding: 0 5px; /* Adding small padding for small screens */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow for visibility */
+}
+
+.map-controls input {
+  width: 100%; /* Full width inside container */
+  padding: 6px 10px; /* Compact padding */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px; /* Smaller font size */
+  outline: none;
+  background-color: white;
+}
+
+/* Button container for coffee button (top-right) */
+.round-button {
+  position: absolute;
+  top: 60px; /* Moved down to create space below the search bar */
+  right: 20px; /* Stay aligned to the right */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #f7f7f7;
+  color: #6f4e37; /* Coffee color */
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above the map */
+}
+
+/* Button container for safety tips button (bottom-right) */
+.safety-tips-button {
+  position: absolute;
+  bottom: 80px; /* Keep original spacing from Drop Pin button */
+  right: 20px; /* Stay aligned to the right */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+  color: #f79449;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above the map */
+}
+
+/* Button container for drop pin button (below safety tips) */
+.drop-pin {
+  position: absolute;
+  bottom: 20px; /* Stay aligned below the Safety Tips button */
+  right: 20px; /* Stay aligned to the right */
+  width: 100px; /* Slightly narrower for better responsiveness */
+  height: 40px; /* Smaller height */
+  border-radius: 20px;
+  background-color: white;
+  color: #f79449;
+  font-size: 14px; /* Smaller font size */
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it appears above the map */
+}
+
+.drop-pin p {
+  color: black;
+  font-size: 12px; /* Smaller text */
+}
+
+/* Location details menu */
+.location-details {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
+  transform: translateX(100%); /* Start off-screen */
+  transition: transform 0.3s ease-in-out;
+  z-index: 1100;
+}
+
+.location-details.open {
+  transform: translateX(0); /* Slide in when opened */
+}
+
+.location-details h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.location-details p {
+  margin-bottom: 15px;
+}
+
+.location-details .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.location-details .tags span {
+  background-color: #f0f0f0;
+  padding: 5px;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+/* Button to close the details panel */
+.location-details .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: #333;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .map-controls {
+    top: 5px; /* Slightly closer to the top on small screens */
+    width: 90%; /* Adjust to almost full screen width */
+    max-width: 250px; /* Reduce max width further for smaller devices */
+    padding: 0 5px; /* Smaller padding */
+  }
+
+  .map-controls input {
+    font-size: 12px; /* Smaller font size on mobile */
+    padding: 4px 8px; /* Compact padding for input field */
+  }
+
+  .round-button {
+    width: 40px;
+    height: 40px;
+    font-size: 20px; /* Adjust font size for smaller buttons */
+    top: 50px; /* Maintain positioning but moved lower */
+    right: 15px;
+  }
+
+  .safety-tips-button {
+    width: 40px;
+    height: 40px;
+    font-size: 14px; /* Smaller text */
+    bottom: 70px; /* Maintain spacing */
+    right: 15px; /* Slightly adjusted for smaller screens */
+  }
+
+  .drop-pin {
+    width: 90px; /* Narrower for mobile */
+    height: 35px; /* Smaller height */
+    font-size: 12px; /* Smaller font size */
+    bottom: 15px; /* Maintain spacing from the edge */
+    right: 15px; /* Adjust alignment */
+  }
+
+  .drop-pin p {
+    font-size: 10px; /* Smaller text size */
+  }
+}
+
+.location-details {
+  position: fixed;
+  bottom: 20px; /* Adjust this value to set the vertical offset */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Exactly center the panel */
+  width: 90%;
+  max-width: 400px;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+/* Close button */
+.location-details .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px; /* Slightly larger size for visibility */
+  cursor: pointer;
+  color: #333; /* Dark close button color */
+}
+
+/* Headings */
+.location-details h2 {
+  margin: 0 0 10px; /* Space below heading */
+  font-size: 16px;
+  font-weight: bold;
+  color: #333; /* Dark heading color */
+}
+
+/* Paragraphs */
+.location-details p {
+  margin: 5px 0; /* Space between paragraphs */
+  font-size: 14px; /* Slightly smaller font size */
+  color: #666; /* Subtle text color */
+}
+
+/* Tags container */
+.location-details .tags {
+  display: flex;
+  justify-content: space-between; /* Space tags evenly */
+  flex-wrap: wrap; /* Allow tags to wrap if necessary */
+  gap: 10px; /* Space between tags */
+  margin-top: 10px;
+}
+
+/* Individual tag styles */
+.location-details .tags span {
+  padding: 5px 10px;
+  border-radius: 20px; /* Rounded tags */
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  background-color: #f79449; /* Default orange tag color */
+}
+
+/* Add custom colors for specific tags if needed */
+.location-details .tags span:nth-child(1) {
+  background-color: #fbc02d; /* Yellow tag */
+}
+
+.location-details .tags span:nth-child(2) {
+  background-color: #8bc34a; /* Green tag */
+}
+
+.location-details .tags span:nth-child(3) {
+  background-color: #e91e63; /* Pink tag */
+}
+
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.menu-content {
+  text-align: center;
+}
+
+/* Bottom menu for café details */
+.bottom-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.bottom-menu .menu-content {
+  text-align: center;
+}
+
+.bottom-menu h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.bottom-menu p {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 4px 0;
+}
+
+.bottom-menu .explore-button {
+  background: #f79449;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+.bottom-menu .explore-button:hover {
+  background: #d17a3e;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .bottom-menu {
+    padding: 10px 12px;
+  }
+
+  .bottom-menu h3 {
+    font-size: 1rem;
+  }
+
+  .bottom-menu p {
+    font-size: 0.8rem;
+  }
+
+  .bottom-menu .explore-button {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+}

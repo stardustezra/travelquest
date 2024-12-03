@@ -42,6 +42,7 @@ package-lock.json
 # System files
 .DS_Store
 Thumbs.db
+packages-lock.json
 
 package-lock.json
 # Firebase
