@@ -1,43 +1,97 @@
-<mat-card class="welcome-card">
+<mat-card class="content-card unified-content-card">
   <mat-card-header>
     <mat-card-title>
-      <h1>Hello, {{ userName }}!</h1></mat-card-title
-    >
+      <h1>Hello, {{ userName }}!</h1>
+    </mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p>Here's what happening near you.</p>
+    <p>Here's what's happening near you.</p>
   </mat-card-content>
-</mat-card>
 
-<section class="main-content">
-  <mat-card class="content-card">
-    <mat-card-header>
-      <mat-card-title> Cafés near you </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="cafes-container">
-        <mat-card *ngFor="let cafe of nearbyCafes" class="cafe-card">
-          <img
-            [src]="cafeImages[cafe.tags?.name] || 'assets/default-cafe.jpg'"
-            [alt]="cafe.tags?.name || 'Café'"
-          />
-          <mat-card-header>
-            <mat-card-title>{{
-              cafe.tags?.name || "Unnamed Café"
-            }}</mat-card-title>
-            <mat-card-subtitle>
-              {{ cafe.tags?.addr_street || "No address available" }}
-            </mat-card-subtitle>
-          </mat-card-header>
-        </mat-card>
+  <!-- Unified Content -->
+  <div class="unified-carousel">
+    <!-- Nearby Cafés -->
+    <div class="carousel-section">
+      <h3 class="section-title">Cafés Near You</h3>
+      <div class="carousel-container">
+        <div class="carousel">
+          <div *ngFor="let cafe of nearbyCafes" class="carousel-item">
+            <mat-card>
+              <img
+                class="cafe-image"
+                [src]="cafeImages[cafe.tags?.name] || 'assets/default-cafe.jpg'"
+                [alt]="cafe.tags?.name || 'Café'"
+              />
+              <mat-card-header>
+                <mat-card-title>{{
+                  cafe.tags?.name || "Unnamed Café"
+                }}</mat-card-title>
+              </mat-card-header>
+            </mat-card>
+          </div>
+        </div>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </div>
 
-  <mat-card class="content-card">
-    <mat-card-header>
-      <mat-card-title> Top Attractions near you </mat-card-title>
-    </mat-card-header>
-    <mat-card-content> </mat-card-content>
-  </mat-card>
-</section>
+    <!-- Nearby Restaurants -->
+    <div class="carousel-section">
+      <h3 class="section-title">Restaurants Near You</h3>
+      <div class="carousel-container">
+        <div class="carousel">
+          <div
+            *ngFor="let restaurant of nearbyRestaurants"
+            class="carousel-item"
+          >
+            <mat-card>
+              <img
+                class="cafe-image"
+                [src]="
+                  restaurantImages[restaurant.tags?.name] ||
+                  'assets/default-restaurant.jpg'
+                "
+                [alt]="restaurant.tags?.name || 'Restaurant'"
+              />
+              <mat-card-header>
+                <mat-card-title>
+                  {{ restaurant.tags?.name || "Unnamed Restaurant" }}
+                </mat-card-title>
+                <mat-card-subtitle>
+                  {{ restaurant.tags?.addr_street || "No address available" }}
+                </mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nearby Cultural Places -->
+    <div class="carousel-section">
+      <h3 class="section-title">Cultural Places Near You</h3>
+      <div class="carousel-container">
+        <div class="carousel">
+          <div *ngFor="let place of nearbyCulturalPlaces" class="carousel-item">
+            <mat-card>
+              <img
+                class="cafe-image"
+                [src]="
+                  culturalPlaceImages[place.tags?.name] ||
+                  'assets/default-cultural-place.jpg'
+                "
+                [alt]="place.tags?.name || 'Cultural Place'"
+              />
+              <mat-card-header>
+                <mat-card-title>
+                  {{ place.tags?.name || "Unnamed Place" }}
+                </mat-card-title>
+                <mat-card-subtitle>
+                  {{ place.tags?.addr_street || "No address available" }}
+                </mat-card-subtitle>
+              </mat-card-header>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-card>

@@ -9,8 +9,9 @@
 @include mat.core();
 
 @import "./styles/colors";
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap");
 
-// Define the theme object.
+// Define the theme object
 $travelquest-theme: mat.define-theme(
   (
     color: (
@@ -84,11 +85,5 @@ mat-card {
     .mdc-text-field__input {
       color: rgb(255, 255, 255);
     }
-  }
-}
-
-@media (max-width: 768px) {
-  mat-card {
-    width: 90%;
   }
 }
