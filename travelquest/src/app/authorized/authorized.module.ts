@@ -12,6 +12,7 @@ import { ProfileListComponent } from './profile/profile-list/profile-list.compon
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
 import { ProfileSettingsComponent } from './profile/profile-settings/profile-settings.component';
 import { HomeComponent } from './home/home.component';
+import { TravellogComponent } from './profile/travellog/travellog.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { HomeComponent } from './home/home.component';
     ProfileEditComponent,
     ProfileSettingsComponent,
     HomeComponent,
+    TravellogComponent,
   ],
   imports: [
     CommonModule,

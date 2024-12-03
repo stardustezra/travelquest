@@ -1,0 +1,21 @@
+@import "../../../../styles/colors";
+
+.hashtag-title {
+  color: $primary-text-color;
+  font-weight: 600;
+  margin-top: 25px;
+}
+
+.hashtags-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: 5px;
+}
+
+.hashtag-item {
+  padding: 8px 12px;
+  color: $neutraul-white;
+  border-radius: 8px;
+  display: inline-block;
+}

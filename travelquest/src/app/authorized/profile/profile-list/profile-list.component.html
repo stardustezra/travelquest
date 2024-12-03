@@ -1,6 +1,10 @@
 <mat-card *ngIf="!loading && !error">
   <div class="profile-header">
-    <mat-icon class="profile-pic">account_circle</mat-icon>
+    <img
+      src="assets/images/default-pic-green.png"
+      alt="Default Profile Picture"
+      class="profile-pic"
+    />
 
     <div class="profile-details">
       <div class="profile-item">
@@ -19,6 +23,7 @@
     <p>{{ userProfile?.country }}</p>
     <p>{{ userProfile?.languages }}</p>
   </div>
+
   <div class="edit-button">
     <button
       mat-button
@@ -29,24 +34,15 @@
     </button>
   </div>
 
-  <p class="hashtag-title">Hashtags</p>
-  <div class="hashtags-box">
-    <div
-      *ngFor="let hashtag of userProfile.hashtags"
-      class="hashtag-item"
-      [style.backgroundColor]="
-        categoryColors[hashtag.category] || categoryColors['Default']
-      "
-    >
-      #{{ hashtag.tag }}
-    </div>
-  </div>
+  <travelquest-hashtag-list
+    [hashtags]="userProfile?.hashtags || []"
+  ></travelquest-hashtag-list>
 
-  <p class="bio-title">Bio:</p>
+  <p class="bio-title">About me</p>
   <div class="bio-box">{{ userProfile?.bio }}</div>
 
   <div class="action-buttons">
-    <button mat-button class="styled-button">
+    <button mat-button class="styled-button" (click)="navigateToTravellog()">
       <mat-icon>pin_drop</mat-icon>Travel log
     </button>
     <button mat-button class="styled-button" (click)="navigateToSettings()">

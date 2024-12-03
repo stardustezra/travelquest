@@ -1,5 +1,5 @@
 <div class="profile-edit-container">
-  <h1 class="header-title">Edit profile</h1>
+  <h1 class="header-title">Edit your profile</h1>
   <mat-card *ngIf="profileForm">
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
       <mat-form-field appearance="fill">
@@ -40,20 +40,84 @@
       <mat-form-field appearance="fill">
         <mat-label>Languages</mat-label>
         <mat-select formControlName="languages" multiple>
-          <mat-option *ngFor="let language of languages" [value]="language">
+          <mat-option
+            *ngFor="let language of availableLanguages"
+            [value]="language"
+          >
             {{ language }}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-        <mat-label>Bio</mat-label>
+        <mat-label>About me</mat-label>
         <textarea
           matInput
           formControlName="bio"
           placeholder="Update your bio"
         ></textarea>
       </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Meetups</mat-label>
+        <input
+          matInput
+          formControlName="meetups"
+          type="number"
+          min="0"
+          placeholder="Enter the number of meetups"
+        />
+      </mat-form-field>
+
+      <!-- Predefined Hashtags -->
+      <mat-form-field appearance="fill">
+        <mat-label>Hashtags</mat-label>
+        <mat-select formControlName="hashtags" multiple>
+          <mat-option
+            *ngFor="let hashtag of predefinedHashtags"
+            [value]="hashtag.tag"
+          >
+            {{ hashtag.tag }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="custom-hashtags-container">
+        <p class="custom-hashtags-title">Custom Hashtags</p>
+        <mat-chip-grid #chipGrid>
+          <!-- Render custom hashtags -->
+          <mat-chip
+            *ngFor="let customTag of customHashtags"
+            [removable]="true"
+            (removed)="removeCustomHashtag(customTag)"
+            class="custom-hashtag-chip"
+          >
+            #{{ customTag }}
+            <button matChipRemove class="remove-chip-button">
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-chip>
+
+          <mat-chip
+            *ngIf="customHashtags.length === 0"
+            disabled
+            class="fallback-chip"
+          >
+            No custom hashtags added yet.
+          </mat-chip>
+
+          <mat-form-field class="custom-input">
+            <input
+              matInput
+              placeholder="Add custom hashtag"
+              [matChipInputFor]="chipGrid"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addCustomHashtag($event)"
+              class="custom-hashtag-input"
+            />
+          </mat-form-field>
+        </mat-chip-grid>
+      </div>
 
       <div class="profile-edit-buttons">
         <button

@@ -14,11 +14,12 @@ mat-card {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+  margin-bottom: 70px;
 }
 
 .mat-mdc-raised-button:not(:disabled) {
   background-color: $action-color;
-  color: white;
+  color: $neutraul-white;
   border: none;
 }
 
@@ -30,10 +31,8 @@ button {
 }
 
 :host ::ng-deep {
-  /* form appearance style */
   .mdc-text-field--filled {
     background-color: $neutraul-white !important;
-    padding-left: 3px;
     color: $primary-text-color !important;
   }
 }
@@ -49,4 +48,37 @@ mat-form-field {
 
 .header-title {
   margin-left: 20px;
+}
+
+.custom-hashtags-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: $primary-text-color;
+}
+
+mat-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+
+  .custom-input {
+    margin-top: 10px;
+  }
+
+  .fallback-chip {
+    background-color: $neutraul-white;
+    color: $primary-text-color;
+    font-size: 14px;
+    border: none;
+  }
+
+  .custom-hashtag-input {
+    flex: 1;
+
+    &::placeholder {
+      color: $neutral-black !important;
+    }
+  }
 }

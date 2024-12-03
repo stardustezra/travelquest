@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { sessionStoreRepository } from '../../../shared/stores/session-store.repository';
 import { Router } from '@angular/router';
+import { UserProfile } from '../../../shared/models/user-profile.model';
 
 @Component({
   selector: 'travelquest-profile-list',
@@ -8,17 +9,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./profile-list.component.scss'],
 })
 export class ProfileListComponent implements OnInit {
-  userProfile: any | null = null;
+  userProfile: UserProfile | null = null;
   loading: boolean = true;
   error: string | null = null;
-
-  categoryColors: { [key: string]: string } = {
-    food: '#E7C933',
-    culture: '#C852A2',
-    activities: '#79D27F',
-    sightseeing: '#5797EB',
-    custom: '#8E77D2',
-  };
 
   constructor(
     private readonly sessionStore: sessionStoreRepository,
@@ -28,6 +21,7 @@ export class ProfileListComponent implements OnInit {
   ngOnInit(): void {
     this.sessionStore.getSignedInUserProfile().subscribe({
       next: (profile) => {
+        console.log('Fetched profile:', profile); // Debugging
         if (profile) {
           this.userProfile = profile;
         } else {
@@ -43,11 +37,22 @@ export class ProfileListComponent implements OnInit {
     });
   }
 
+  get profilePictureUrl(): string {
+    if (this.userProfile?.profilePicture) {
+      return 'assets/' + this.userProfile.profilePicture;
+    }
+    return 'assets/icons/default-profile-pic.png';
+  }
+
   navigateToEditProfile() {
     this.router.navigate(['/profile-edit']);
   }
 
   navigateToSettings(): void {
     this.router.navigate(['/settings']);
+  }
+
+  navigateToTravellog(): void {
+    this.router.navigate(['/travellog']);
   }
 }

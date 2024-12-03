@@ -13,6 +13,13 @@ export class ProfileSettingsComponent {
     private router: Router
   ) {}
 
+  settingsSections = [
+    { title: 'Travel Log' },
+    { title: 'Support' },
+    { title: 'FAQ' },
+    { title: 'Terms and Conditions' },
+  ];
+
   // Sign out the user using sessionStore
   signOut(): void {
     this.sessionStore

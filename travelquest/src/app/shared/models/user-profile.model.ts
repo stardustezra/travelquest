@@ -1,11 +1,18 @@
+// Directly in profile-list.component.ts (less recommended)
+
+export interface Hashtag {
+  tag: string;
+  category: string;
+}
+
 export interface UserProfile {
-  id: string; // GUID som string
-  profilePic: string;
   name: string;
   age: number;
   country: string;
-  language: string;
-  travels: number | null;
-  meetups: number | null;
-  description: string | null;
+  languages: string[];
+  hashtags: Hashtag[];
+  bio: string;
+  travels: string;
+  meetups: number;
+  profilePicture: string;
 }

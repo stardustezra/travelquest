@@ -1,11 +1,15 @@
-<div class="profile-settings-container">
-  <h1>Profile Settings</h1>
+<div class="settings-container">
+  <h1 class="settings-title">Settings</h1>
 
-  <!-- Sign Off Button -->
-  <button mat-raised-button color="warn" (click)="signOut()">Sign Off</button>
+  <div class="settings-section" *ngFor="let section of settingsSections">
+    <p class="section-title">{{ section.title }}</p>
+  </div>
 
-  <!-- Delete Account Button -->
-  <button mat-raised-button color="warn" (click)="deleteAccount()">
-    Delete Account
-  </button>
+  <!-- Buttons at the end -->
+  <div class="end-buttons">
+    <span class="sign-off-text">Sign Off</span>
+    <button color="warn" class="delete-button">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
 </div>
