@@ -51,4 +51,8 @@ export class ProfileListComponent implements OnInit {
   navigateToSettings(): void {
     this.router.navigate(['/settings']);
   }
+
+  navigateToTravellog(): void {
+    this.router.navigate(['/travellog']);
+  }
 }

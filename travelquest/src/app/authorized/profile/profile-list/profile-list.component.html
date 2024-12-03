@@ -42,7 +42,7 @@
   <div class="bio-box">{{ userProfile?.bio }}</div>
 
   <div class="action-buttons">
-    <button mat-button class="styled-button">
+    <button mat-button class="styled-button" (click)="navigateToTravellog()">
       <mat-icon>pin_drop</mat-icon>Travel log
     </button>
     <button mat-button class="styled-button" (click)="navigateToSettings()">

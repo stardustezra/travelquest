@@ -2,7 +2,9 @@
   <button
     mat-icon-button
     class="navbar-item"
-    [class.active]="isActiveRoute(['/profile', '/profile-edit', '/settings'])"
+    [class.active]="
+      isActiveRoute(['/profile', '/profile-edit', '/settings', '/travellog'])
+    "
     (click)="navigateTo('/profile')"
   >
     <mat-icon>person</mat-icon>

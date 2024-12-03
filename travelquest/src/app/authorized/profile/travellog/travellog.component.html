@@ -1,0 +1,68 @@
+<div class="travellog-container">
+  <div class="header">
+    <h1 class="header-title">Travel Log</h1>
+    <button
+      mat-icon-button
+      class="add-button"
+      (click)="openAddTravelLogModal()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>
+
+<!-- Modal -->
+<mat-dialog-content *ngIf="isModalOpen">
+  <h2>Add a Pin</h2>
+  <form [formGroup]="travelLogForm" (ngSubmit)="onSubmit()">
+    <!-- Country -->
+    <mat-form-field appearance="fill">
+      <mat-label>Country</mat-label>
+      <input matInput formControlName="country" placeholder="Enter country" />
+    </mat-form-field>
+
+    <!-- City -->
+    <mat-form-field appearance="fill">
+      <mat-label>City</mat-label>
+      <input matInput formControlName="city" placeholder="Enter city" />
+    </mat-form-field>
+
+    <!-- Arrival Date -->
+    <mat-form-field appearance="fill">
+      <mat-label>Arrival Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="arrivalPicker"
+        formControlName="arrivalDate"
+        placeholder="Select arrival date"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="arrivalPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #arrivalPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Departure Date -->
+    <mat-form-field appearance="fill">
+      <mat-label>Departure Date</mat-label>
+      <input
+        matInput
+        [matDatepicker]="departurePicker"
+        formControlName="departureDate"
+        placeholder="Select departure date"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="departurePicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #departurePicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Modal Buttons -->
+    <div class="modal-buttons">
+      <button mat-raised-button color="primary" type="submit">Save</button>
+      <button mat-button (click)="closeModal()">Cancel</button>
+    </div>
+  </form>
+</mat-dialog-content>
