@@ -12,7 +12,7 @@ export interface UserProfile {
   languages: string[];
   hashtags: Hashtag[];
   bio: string;
-  travels: string;
+  travels: number;
   meetups: number;
   profilePicture: string;
 }
