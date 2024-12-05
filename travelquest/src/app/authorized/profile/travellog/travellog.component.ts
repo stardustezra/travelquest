@@ -103,15 +103,18 @@ export class TravellogComponent implements OnInit {
       };
 
       if (this.editIndex !== null) {
-        this.travelLogs[this.editIndex] = travelLogData; // Update existing log
+        // Update existing log
+        this.travelLogs[this.editIndex] = travelLogData;
       } else {
-        this.travelLogs.push(travelLogData); // Add new log
+        // Add new log
+        this.travelLogs = [...this.travelLogs, travelLogData];
       }
 
       this.saveTravelLogs(); // Save updated logs to Firestore
       this.closeModal();
     }
   }
+
   deleteTravelLog(index: number): void {
     this.travelLogs.splice(index, 1);
 

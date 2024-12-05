@@ -1,5 +1,94 @@
 @import "../../../../styles/colors";
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  margin-top: 20px;
+}
+
+.header-title {
+  font-size: 26px;
+  margin: 0;
+}
+
+.location-icon {
+  color: $action-color;
+}
+
+.add-button {
+  margin-left: auto;
+}
+
+.travellog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  margin-top: 30px;
+}
+
+.travel-log-entry {
+  background-color: $neutraul-white;
+  padding: 16px;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Ensures the icon stays on the right */
+  margin-bottom: 8px;
+}
+
+.log-title {
+  font-weight: normal;
+  font-size: 20px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-icon {
+  color: $action-color;
+}
+
+.log-dates {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 0;
+  font-size: 14px;
+  color: #555;
+
+  .arrival-date,
+  .departure-date {
+    flex: 1;
+    text-align: center;
+  }
+
+  .date-divider {
+    width: 160px;
+    height: 2px;
+    background-color: $primary-text-color;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.edit-button mat-icon {
+  color: $primary-text-color;
+}
+
+.delete-button mat-icon {
+  color: red;
+}
+
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -11,21 +100,61 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .modal-container {
-  background: white;
+  background: $neutraul-white;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 500px;
   z-index: 1100;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  font-size: 30px;
+  font-weight: bold;
+  color: $neutral-black;
+  cursor: pointer;
 }
 
 .modal-buttons {
-  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
+}
+
+.modal-buttons button {
+  background-color: $action-color;
+  color: $neutraul-white;
+  box-shadow: none;
+  border-radius: 0;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+button {
+  font-size: 14px;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+mat-form-field input {
+  width: 100%;
+}
+
+.modal-buttons button {
+  margin-top: 10px;
 }

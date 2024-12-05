@@ -13,16 +13,35 @@
   <!-- Rejse-log liste -->
   <div class="travellog-list">
     <div class="travel-log-entry" *ngFor="let log of travelLogs; let i = index">
-      <h3>{{ log.country }}, {{ log.city }}</h3>
-      <p>Arrival: {{ log.arrivalDate | date }}</p>
-      <p>Departure: {{ log.departureDate | date }}</p>
-
+      <div class="log-header">
+        <h3 class="log-title">
+          {{ log.country }}, {{ log.city }}
+          <mat-icon class="location-icon">pin_drop</mat-icon>
+        </h3>
+      </div>
+      <div class="log-dates">
+        <span class="arrival-date">
+          {{ log.arrivalDate | date : "dd/MM/yyyy" }}
+        </span>
+        <div class="date-divider"></div>
+        <span class="departure-date">
+          {{ log.departureDate | date : "dd/MM/yyyy" }}
+        </span>
+      </div>
       <div class="actions">
-        <button mat-button color="primary" (click)="openEditTravelLogModal(i)">
-          Edit
+        <button
+          mat-icon-button
+          class="edit-button"
+          (click)="openEditTravelLogModal(i)"
+        >
+          <mat-icon>edit</mat-icon>
         </button>
-        <button mat-button color="warn" (click)="deleteTravelLog(i)">
-          Delete
+        <button
+          mat-icon-button
+          class="delete-button"
+          (click)="deleteTravelLog(i)"
+        >
+          <mat-icon>delete</mat-icon>
         </button>
       </div>
     </div>
@@ -31,7 +50,12 @@
   <!-- Modal -->
   <div class="modal-backdrop" *ngIf="isModalOpen">
     <div class="modal-container">
-      <h2>{{ editIndex !== null ? "Edit Pin" : "Add a Pin" }}</h2>
+      <div class="modal-header">
+        <h2>{{ editIndex !== null ? "Edit Pin" : "Drop a pin!" }}</h2>
+        <button class="close-button" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
       <form [formGroup]="travelLogForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="fill">
           <mat-label>Country</mat-label>
@@ -75,7 +99,6 @@
         </mat-form-field>
         <div class="modal-buttons">
           <button mat-raised-button color="primary" type="submit">Save</button>
-          <button mat-button (click)="closeModal()">Cancel</button>
         </div>
       </form>
     </div>
