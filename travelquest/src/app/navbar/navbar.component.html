@@ -11,8 +11,8 @@
   <button
     mat-icon-button
     class="navbar-item"
-    (click)="navigateTo('/tag')"
-    routerLinkActive="active"
+    [class.active]="isActiveRoute(['/explore'])"
+    (click)="navigateTo('/explore')"
   >
     <mat-icon>tag</mat-icon>
   </button>
@@ -20,7 +20,7 @@
     mat-icon-button
     class="navbar-item"
     (click)="navigateTo('/map')"
-    routerLinkActive="active"
+    [class.active]="isActiveRoute(['/map'])"
   >
     <mat-icon>map</mat-icon>
   </button>

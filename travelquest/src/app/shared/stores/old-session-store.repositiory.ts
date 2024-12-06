@@ -54,30 +54,27 @@ export class sessionStoreRepository {
     ).then(async (userCredential) => {
       const user = userCredential.user;
 
-      // Update user's profile with display name
+      // Update the user's profile with the display name
       await updateProfile(user, { displayName: name });
 
-      // Save private user data
-      const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      await setDoc(userDocRef, {
-        uid: user.uid,
-        email: email,
-        createdAt: new Date().toISOString(),
-      });
-
-      // Save public user data
+      // Convert the dob string to a Firestore Timestamp
       const dobTimestamp = Timestamp.fromDate(new Date(dob));
-      const publicDocRef = doc(this.firestore, `publicProfiles/${user.uid}`);
-      await setDoc(publicDocRef, {
-        uid: user.uid,
-        name: name,
-        dob: dobTimestamp,
-        bio: '',
-        country: '',
-        languages: [],
-        hashtags: [],
-        createdAt: new Date().toISOString(),
-      });
+
+      // Save user info to Firestore
+      const userDocRef = doc(this.firestore, `users/${user.uid}`);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        // Only create the document if it doesn't exist
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          name: name,
+          dob: dobTimestamp,
+          email: email,
+          meetups: 0,
+          createdAt: new Date().toISOString(),
+        });
+      }
     });
 
     return from(promise);
@@ -93,25 +90,13 @@ export class sessionStoreRepository {
 
         if (user) {
           const userDocRef = doc(this.firestore, `users/${user.uid}`);
-          const publicDocRef = doc(
-            this.firestore,
-            `publicProfiles/${user.uid}`
-          );
-
+          const dob = '1970-01-01'; // Default DOB for Google users
           await setDoc(userDocRef, {
             uid: user.uid,
-            email: user.email,
-            createdAt: new Date().toISOString(),
-          });
-
-          await setDoc(publicDocRef, {
-            uid: user.uid,
             name: user.displayName || 'Google User',
-            dob: Timestamp.fromDate(new Date('1970-01-01')),
-            bio: '',
-            country: '',
-            languages: [],
-            hashtags: [],
+            dob: dob,
+            email: user.email,
+            meetups: 0, // Include meetups field here as well
             createdAt: new Date().toISOString(),
           });
         }
@@ -137,52 +122,61 @@ export class sessionStoreRepository {
     });
   }
 
-  // Fetch user profile (public data)
   getUserProfile(uid: string): Observable<any> {
-    const publicDocRef = doc(this.firestore, `publicProfiles/${uid}`);
-    return from(getDoc(publicDocRef)).pipe(
-      map((docSnapshot) => (docSnapshot.exists() ? docSnapshot.data() : null))
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    return from(getDoc(userDocRef)).pipe(
+      switchMap(async (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          // Use a defined interface or assertion to access meetups safely
+          const data = docSnapshot.data() as { meetups?: number };
+
+          // Check if 'meetups' field exists and add it if missing
+          if (!('meetups' in data)) {
+            console.log('Meetups field is missing. Adding it...');
+            await setDoc(
+              userDocRef,
+              { meetups: 0 }, // Initialize meetups with a default value
+              { merge: true }
+            );
+            data['meetups'] = 0; // Use bracket notation to safely add the property
+          }
+
+          return data;
+        } else {
+          console.warn('User document does not exist!');
+          return null;
+        }
+      }),
+      map((data) => data || null)
     );
   }
 
-  // Save user profile (both private and public data)
-  saveUserProfile(data: any): Promise<void> {
-    const user = this.firebaseAuth.currentUser;
-    if (!user) throw new Error('User not authenticated');
-
-    const userDocRef = doc(this.firestore, `users/${user.uid}`);
-    const publicDocRef = doc(this.firestore, `publicProfiles/${user.uid}`);
-
-    // Handle private data (ensure email is defined)
-    const privateData = data.email ? { email: data.email } : undefined;
-
-    if (!privateData) {
-      console.warn('No email provided for private profile update.');
-    }
-
-    // Prepare public data
-    const publicData = { ...data };
-    delete publicData.email; // Remove sensitive data from public profile
-
-    // Update Firestore collections
-    const privateUpdate = privateData
-      ? setDoc(userDocRef, privateData, { merge: true })
-      : Promise.resolve(); // Skip update if privateData is undefined
-
-    const publicUpdate = setDoc(publicDocRef, publicData, { merge: true });
-
-    return Promise.all([privateUpdate, publicUpdate])
-      .then(() => console.log('Profile updated successfully!'))
-      .catch((error) => {
-        console.error('Error saving profile:', error);
-        throw error; // Ensure errors are propagated
-      });
-  }
-
-  // Fetch signed-in user's public profile
   getSignedInUserProfile(): Observable<any> {
     return this.getCurrentUserUID().pipe(
-      switchMap((uid) => (uid ? this.getUserProfile(uid) : of(null)))
+      switchMap((uid) =>
+        uid
+          ? this.getUserProfile(uid).pipe(
+              map((profile) => {
+                if (profile && profile.dob instanceof Timestamp) {
+                  // Calculate the age using the dob as a Firestore Timestamp
+                  const dob = profile.dob.toDate();
+                  const currentDate = new Date();
+                  const age = currentDate.getFullYear() - dob.getFullYear();
+                  const month = currentDate.getMonth() - dob.getMonth();
+                  if (
+                    month < 0 ||
+                    (month === 0 && currentDate.getDate() < dob.getDate())
+                  ) {
+                    // Subtract one year if the birthday hasn't occurred yet this year
+                    return { ...profile, age: age - 1 };
+                  }
+                  return { ...profile, age: age }; // Return profile with calculated age
+                }
+                return profile;
+              })
+            )
+          : of(null)
+      )
     );
   }
 
@@ -200,6 +194,18 @@ export class sessionStoreRepository {
     );
   }
 
+  // Save user profile
+  saveUserProfile(data: any): Promise<void> {
+    const user = this.firebaseAuth.currentUser;
+    if (!user) throw new Error('User not authenticated');
+
+    const userDocRef = doc(this.firestore, `users/${user.uid}`);
+
+    return setDoc(userDocRef, data, { merge: true })
+      .then(() => console.log('Profile updated successfully!'))
+      .catch((error) => console.error('Error updating profile:', error));
+  }
+
   // Fetch predefined hashtags from Firestore
   async fetchPredefinedHashtags(): Promise<
     { tag: string; category: string; color: string }[]
@@ -212,12 +218,12 @@ export class sessionStoreRepository {
     );
   }
 
-  // Sign out logic
   signOut(): Promise<void> {
     return this.firebaseAuth
       .signOut()
       .then(() => {
         console.log('Successfully signed out');
+        // Additional logic for clearing session data can be added here
       })
       .catch((error) => {
         console.error('Error signing out:', error);
@@ -225,58 +231,33 @@ export class sessionStoreRepository {
       });
   }
 
-  // Delete user account
   deleteAccount(): Promise<void> {
     const user = this.firebaseAuth.currentUser;
     if (user) {
       const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      const publicDocRef = doc(this.firestore, `publicProfiles/${user.uid}`);
-
+      //TODO: Maybe write about runTransaction in rapport
       return runTransaction(this.firestore, async (transaction) => {
         const userDoc = await transaction.get(userDocRef);
-        const publicDoc = await transaction.get(publicDocRef);
 
-        if (!userDoc.exists() || !publicDoc.exists()) {
+        if (!userDoc.exists()) {
           throw new Error('User data not found in Firestore');
         }
 
         transaction.delete(userDocRef);
-        transaction.delete(publicDocRef);
       })
         .then(() => {
           return user.delete();
         })
         .then(() => {
           console.log('User account and associated data deleted');
+          // Additional logic (e.g., clearing session data, redirecting, etc.)
         })
         .catch((error) => {
           console.error('Error deleting user data or account:', error);
-          throw error;
+          throw error; // Ensure errors are thrown if something goes wrong
         });
     } else {
       return Promise.reject('No user is currently signed in');
-    }
-  }
-
-  // Updates travels in Firestore
-  async updateTravelsCount(uid: string, newCount: number): Promise<void> {
-    const userDocRef = doc(this.firestore, `users/${uid}`);
-
-    try {
-      await runTransaction(this.firestore, async (transaction) => {
-        const userDoc = await transaction.get(userDocRef);
-
-        if (userDoc.exists()) {
-          transaction.update(userDocRef, {
-            travels: newCount,
-          });
-          console.log('Updated travels count to:', newCount);
-        } else {
-          throw new Error('User document does not exist!');
-        }
-      });
-    } catch (error) {
-      console.error('Error updating travels count:', error);
     }
   }
 
