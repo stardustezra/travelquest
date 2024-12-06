@@ -1,5 +1,8 @@
 // Directly in profile-list.component.ts (less recommended)
 
+import { Time } from '@angular/common';
+import { Timestamp } from 'firebase/firestore';
+
 export interface Hashtag {
   tag: string;
   category: string;
@@ -15,4 +18,16 @@ export interface UserProfile {
   travels: number;
   meetups: number;
   profilePicture: string;
+}
+
+export interface UserEditProfile {
+  dob?: Timestamp;
+  age?: number | null;
+  hashtags?: Hashtag[];
+  name: string;
+  bio: string;
+  email: string;
+  country: string;
+  languages: string[];
+  meetups: string;
 }

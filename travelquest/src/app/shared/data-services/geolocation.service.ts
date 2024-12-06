@@ -13,7 +13,7 @@ export class GeolocationService {
   constructor() {}
 
   /**
-   * Get the current user's location as an observable.
+   * Get the current user's location as an observable (one-time fetch).
    * @returns Observable<UserLocation>
    */
   getCurrentUserLocation(): Observable<UserLocation> {
@@ -30,27 +30,14 @@ export class GeolocationService {
           observer.complete();
         },
         (error) => {
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              observer.error('User denied the request for Geolocation.');
-              break;
-            case error.POSITION_UNAVAILABLE:
-              observer.error('Location information is unavailable.');
-              break;
-            case error.TIMEOUT:
-              observer.error('The request to get user location timed out.');
-              break;
-            default:
-              observer.error('An unknown error occurred.');
-              break;
-          }
+          this.handleGeolocationError(error, observer);
         }
       );
     });
   }
 
   /**
-   * Watch the user's location for changes.
+   * Watch the user's location for changes (live updates).
    * @returns Observable<UserLocation>
    */
   watchUserLocation(): Observable<UserLocation> {
@@ -66,7 +53,7 @@ export class GeolocationService {
           observer.next({ latitude, longitude });
         },
         (error) => {
-          observer.error('Error watching user location: ' + error.message);
+          this.handleGeolocationError(error, observer);
         }
       );
 
@@ -75,5 +62,30 @@ export class GeolocationService {
         navigator.geolocation.clearWatch(watchId);
       };
     });
+  }
+
+  /**
+   * Handle geolocation errors and notify the observer.
+   * @param error Geolocation error object
+   * @param observer Observer to notify
+   */
+  private handleGeolocationError(
+    error: GeolocationPositionError,
+    observer: any
+  ): void {
+    switch (error.code) {
+      case error.PERMISSION_DENIED:
+        observer.error('User denied the request for Geolocation.');
+        break;
+      case error.POSITION_UNAVAILABLE:
+        observer.error('Location information is unavailable.');
+        break;
+      case error.TIMEOUT:
+        observer.error('The request to get user location timed out.');
+        break;
+      default:
+        observer.error('An unknown error occurred.');
+        break;
+    }
   }
 }

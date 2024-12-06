@@ -34,7 +34,7 @@ export class ProfileEditComponent implements OnInit {
     this.fetchPredefinedHashtags();
     this.fetchAvailableLanguages();
 
-    this.sessionStore.getSignedInUserProfile().subscribe((userProfile) => {
+    this.sessionStore.getSignedInUserFullProfile().subscribe((userProfile) => {
       const predefinedTags =
         userProfile?.hashtags?.map((h: any) => h.tag) || [];
       this.customHashtags = (userProfile?.hashtags || [])

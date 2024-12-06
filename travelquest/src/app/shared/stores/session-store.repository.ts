@@ -25,6 +25,7 @@ import {
 } from '@angular/fire/storage';
 import { Observable, from, map, of, switchMap } from 'rxjs';
 import { runTransaction } from 'firebase/firestore';
+import { UserEditProfile } from '../models/user-profile.model';
 
 export interface SessionStoreProps {
   logoutTime: string | null;
@@ -182,7 +183,92 @@ export class sessionStoreRepository {
   // Fetch signed-in user's public profile
   getSignedInUserProfile(): Observable<any> {
     return this.getCurrentUserUID().pipe(
-      switchMap((uid) => (uid ? this.getUserProfile(uid) : of(null)))
+      switchMap((uid) =>
+        uid
+          ? this.getUserProfile(uid).pipe(
+              map((profile) => {
+                if (profile && profile.dob instanceof Timestamp) {
+                  // Calculate the age using the dob as a Firestore Timestamp
+                  const dob = profile.dob.toDate();
+                  const currentDate = new Date();
+                  const age = currentDate.getFullYear() - dob.getFullYear();
+                  const month = currentDate.getMonth() - dob.getMonth();
+                  if (
+                    month < 0 ||
+                    (month === 0 && currentDate.getDate() < dob.getDate())
+                  ) {
+                    // Subtract one year if the birthday hasn't occurred yet this year
+                    return { ...profile, age: age - 1 };
+                  }
+                  return { ...profile, age: age }; // Return profile with calculated age
+                }
+                return profile;
+              })
+            )
+          : of(null)
+      )
+    );
+  }
+
+  // Fetch signed-in user's full profile (public + private)
+  getSignedInUserFullProfile(): Observable<UserEditProfile> {
+    return this.getCurrentUserUID().pipe(
+      switchMap((uid) => {
+        if (!uid) {
+          // Default profile for guest users
+          return of({
+            name: 'Guest',
+            bio: '',
+            email: '',
+            country: '',
+            hashtags: [],
+            languages: [],
+            meetups: '',
+            age: null, // Default age for guest
+          } as UserEditProfile);
+        }
+
+        const privateUserRef = doc(this.firestore, `users/${uid}`);
+        const publicUserRef = doc(this.firestore, `publicProfiles/${uid}`);
+
+        return from(
+          Promise.all([getDoc(privateUserRef), getDoc(publicUserRef)])
+        ).pipe(
+          map(([privateDoc, publicDoc]) => {
+            const privateData = privateDoc.exists() ? privateDoc.data() : {};
+            const publicData = publicDoc.exists() ? publicDoc.data() : {};
+
+            // Combine profiles with defaults
+            const profile: UserEditProfile = {
+              name: publicData['name'] || '',
+              bio: publicData['bio'] || '',
+              email: privateData['email'] || '',
+              country: publicData['country'] || '',
+              hashtags: publicData['hashtags'] || [],
+              languages: publicData['languages'] || [],
+              meetups: publicData['meetups'] || '',
+              dob: publicData['dob'] || null, // Ensure dob exists
+            };
+
+            // Calculate age if dob is valid
+            if (profile.dob instanceof Timestamp) {
+              const dob = profile.dob.toDate();
+              const currentDate = new Date();
+              const age = currentDate.getFullYear() - dob.getFullYear();
+              const month = currentDate.getMonth() - dob.getMonth();
+              profile.age =
+                month < 0 ||
+                (month === 0 && currentDate.getDate() < dob.getDate())
+                  ? age - 1
+                  : age;
+            } else {
+              profile.age = null; // Default age when dob is invalid or missing
+            }
+
+            return profile;
+          })
+        );
+      })
     );
   }
 
@@ -260,7 +346,7 @@ export class sessionStoreRepository {
 
   // Updates travels in Firestore
   async updateTravelsCount(uid: string, newCount: number): Promise<void> {
-    const userDocRef = doc(this.firestore, `users/${uid}`);
+    const userDocRef = doc(this.firestore, `publicProfiles/${uid}`);
 
     try {
       await runTransaction(this.firestore, async (transaction) => {

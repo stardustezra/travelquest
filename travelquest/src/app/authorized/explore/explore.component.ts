@@ -7,6 +7,7 @@ import {
   where,
   doc,
   getDoc,
+  GeoPoint,
 } from '@angular/fire/firestore';
 import { GeolocationService } from '../../shared/data-services/geolocation.service';
 import { Observable, from } from 'rxjs';
@@ -18,7 +19,7 @@ interface User {
   age: number;
   country: string;
   hashtags: string[];
-  location: { latitude: number; longitude: number };
+  location: GeoPoint; // Updated to use Firestore's GeoPoint
 }
 
 @Component({
@@ -29,6 +30,7 @@ interface User {
 export class ExploreComponent implements OnInit {
   currentUserHashtags: string[] = [];
   nearbyUsers$: Observable<User[]> | null = null;
+  maxDistance = 50; // Maximum distance in kilometers
 
   constructor(
     private firestore: Firestore,
@@ -37,8 +39,10 @@ export class ExploreComponent implements OnInit {
 
   ngOnInit(): void {
     // Fetch current user's hashtags and location
-    this.geolocationService.getCurrentUserLocation().subscribe((location) => {
-      this.fetchNearbyUsers(location.latitude, location.longitude);
+    this.geolocationService.watchUserLocation().subscribe((location) => {
+      if (location) {
+        this.fetchNearbyUsers(location.latitude, location.longitude);
+      }
     });
   }
 
@@ -48,25 +52,32 @@ export class ExploreComponent implements OnInit {
       switchMap((hashtags) => {
         this.currentUserHashtags = hashtags;
 
-        // Firestore query for users with matching hashtags within the location range
+        // Fetch users with matching hashtags
         return collectionData(
           query(
             publicProfilesRef,
-            where('hashtags', 'array-contains-any', hashtags),
-            where('location.latitude', '>=', lat - 0.045),
-            where('location.latitude', '<=', lat + 0.045),
-            where('location.longitude', '>=', lng - 0.045),
-            where('location.longitude', '<=', lng + 0.045)
+            where('hashtags', 'array-contains-any', hashtags)
           ),
           { idField: 'id' }
         );
       }),
-      map((users: any[]) => users as User[]) // Map the result to `User` interface
+      map((users: any[]) => {
+        // Filter users by distance using GeoPoint
+        return users.filter((user: User) => {
+          const userLocation = user.location as GeoPoint;
+          const distance = this.calculateDistance(
+            lat,
+            lng,
+            userLocation.latitude,
+            userLocation.longitude
+          );
+          return distance <= this.maxDistance;
+        });
+      })
     );
   }
 
   getCurrentUserHashtags(): Observable<string[]> {
-    // Replace this Firestore query to fetch the current user's hashtags
     const currentUserId = 'current-user-id'; // Replace with actual logic to get user ID
     const currentUserRef = doc(
       this.firestore,
@@ -75,8 +86,32 @@ export class ExploreComponent implements OnInit {
     return from(getDoc(currentUserRef)).pipe(
       map((docSnapshot) => {
         const data = docSnapshot.data();
-        return data ? (data['hashtags'] as string[]) : []; // Access 'hashtags' with bracket notation
+        return data ? (data['hashtags'] as string[]) : [];
       })
     );
+  }
+
+  // Calculate distance between two GeoPoints using the Haversine formula
+  calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = this.degreesToRadians(lat2 - lat1);
+    const dLon = this.degreesToRadians(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.degreesToRadians(lat1)) *
+        Math.cos(this.degreesToRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in kilometers
+  }
+
+  degreesToRadians(degrees: number): number {
+    return degrees * (Math.PI / 180);
   }
 }
