@@ -1,26 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  collectionData,
-  query,
-  where,
-  doc,
-  getDoc,
-  GeoPoint,
-} from '@angular/fire/firestore';
-import { GeolocationService } from '../../shared/data-services/geolocation.service';
-import { Observable, from } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
-
-interface User {
-  name: string;
-  profilePhoto: string;
-  age: number;
-  country: string;
-  hashtags: string[];
-  location: GeoPoint; // Updated to use Firestore's GeoPoint
-}
+import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
+import { GeoService } from '../../shared/data-services/geolocation.service';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'travelquest-explore',
@@ -28,90 +9,64 @@ interface User {
   styleUrls: ['./explore.component.scss'],
 })
 export class ExploreComponent implements OnInit {
-  currentUserHashtags: string[] = [];
-  nearbyUsers$: Observable<User[]> | null = null;
-  maxDistance = 50; // Maximum distance in kilometers
+  nearbyUsers$: Observable<any[]> = of([]); // Observable to hold nearby users
+  userLocation = { latitude: 37.7749, longitude: -122.4194 }; // Default user location (replace with dynamic data)
+  radiusInKm = 10; // Radius in kilometers
+  userHashtags: string[] = []; // Dynamically fetched user's hashtags
 
   constructor(
-    private firestore: Firestore,
-    private geolocationService: GeolocationService
+    private sessionStore: sessionStoreRepository,
+    private geoService: GeoService
   ) {}
 
   ngOnInit(): void {
-    // Fetch current user's hashtags and location
-    this.geolocationService.watchUserLocation().subscribe((location) => {
-      if (location) {
-        this.fetchNearbyUsers(location.latitude, location.longitude);
+    console.log('Component initialized');
+    this.fetchUserHashtagsAndLoadUsers();
+  }
+
+  fetchUserHashtagsAndLoadUsers(): void {
+    console.log('Fetching user hashtags...');
+    this.sessionStore.getCurrentUserUID().subscribe((uid) => {
+      if (!uid) {
+        console.warn('No user logged in. Cannot fetch hashtags.');
+        return;
       }
+
+      this.sessionStore.getUserProfile(uid).subscribe((profile) => {
+        if (profile && profile.hashtags) {
+          this.userHashtags = profile.hashtags; // Dynamically assign hashtags
+          console.log('User hashtags:', this.userHashtags);
+          this.loadNearbyUsers(); // Load nearby users after fetching hashtags
+        } else {
+          console.warn('No hashtags found for the user.');
+        }
+      });
     });
   }
 
-  fetchNearbyUsers(lat: number, lng: number): void {
-    const publicProfilesRef = collection(this.firestore, 'publicProfiles');
-    this.nearbyUsers$ = this.getCurrentUserHashtags().pipe(
-      switchMap((hashtags) => {
-        this.currentUserHashtags = hashtags;
+  loadNearbyUsers(): void {
+    console.log('Loading nearby users...');
+    console.log('User Location:', this.userLocation);
+    console.log('Radius in Km:', this.radiusInKm);
 
-        // Fetch users with matching hashtags
-        return collectionData(
-          query(
-            publicProfilesRef,
-            where('hashtags', 'array-contains-any', hashtags)
-          ),
-          { idField: 'id' }
-        );
-      }),
-      map((users: any[]) => {
-        // Filter users by distance using GeoPoint
-        return users.filter((user: User) => {
-          const userLocation = user.location as GeoPoint;
-          const distance = this.calculateDistance(
-            lat,
-            lng,
-            userLocation.latitude,
-            userLocation.longitude
-          );
-          return distance <= this.maxDistance;
+    this.nearbyUsers$ = new Observable((observer) => {
+      this.geoService
+        .findNearbyUsers(
+          this.userLocation.latitude,
+          this.userLocation.longitude,
+          this.radiusInKm,
+          this.userHashtags
+        )
+        .then((users) => {
+          console.log('Users found:', users); // Log the users returned
+          observer.next(users);
+          observer.complete();
+        })
+        .catch((error) => {
+          console.error('Error loading nearby users:', error);
+          observer.next([]);
+          observer.complete();
         });
-      })
-    );
-  }
-
-  getCurrentUserHashtags(): Observable<string[]> {
-    const currentUserId = 'current-user-id'; // Replace with actual logic to get user ID
-    const currentUserRef = doc(
-      this.firestore,
-      `publicProfiles/${currentUserId}`
-    );
-    return from(getDoc(currentUserRef)).pipe(
-      map((docSnapshot) => {
-        const data = docSnapshot.data();
-        return data ? (data['hashtags'] as string[]) : [];
-      })
-    );
-  }
-
-  // Calculate distance between two GeoPoints using the Haversine formula
-  calculateDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 6371; // Radius of the Earth in kilometers
-    const dLat = this.degreesToRadians(lat2 - lat1);
-    const dLon = this.degreesToRadians(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.degreesToRadians(lat1)) *
-        Math.cos(this.degreesToRadians(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in kilometers
-  }
-
-  degreesToRadians(degrees: number): number {
-    return degrees * (Math.PI / 180);
+    });
   }
 }

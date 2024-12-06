@@ -1,91 +1,142 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-
-export interface UserLocation {
-  latitude: number;
-  longitude: number;
-}
+import {
+  Firestore,
+  doc,
+  setDoc,
+  getDocs,
+  collection,
+  query,
+  where,
+} from '@angular/fire/firestore';
+import {
+  geohashForLocation,
+  geohashQueryBounds,
+  distanceBetween,
+} from 'geofire-common';
+import { Hashtag } from '../models/user-profile.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GeolocationService {
-  constructor() {}
+export class GeoService {
+  private publicProfilesCollection = 'publicProfiles';
+
+  constructor(private firestore: Firestore) {}
 
   /**
-   * Get the current user's location as an observable (one-time fetch).
-   * @returns Observable<UserLocation>
+   * Save or update geolocation data for a user
+   * Updates the `geohash` and `location` fields in the user's public profile in the `publicProfiles` collection.
    */
-  getCurrentUserLocation(): Observable<UserLocation> {
-    return new Observable((observer) => {
-      if (!navigator.geolocation) {
-        observer.error('Geolocation is not supported by this browser.');
-        return;
-      }
+  async saveUserLocation(
+    userId: string,
+    latitude: number,
+    longitude: number
+  ): Promise<void> {
+    try {
+      console.log('saveUserLocation called with:', {
+        userId,
+        latitude,
+        longitude,
+      });
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          observer.next({ latitude, longitude });
-          observer.complete();
-        },
-        (error) => {
-          this.handleGeolocationError(error, observer);
-        }
+      // Step 1: Generate geohash for the location
+      const geohash = geohashForLocation([latitude, longitude]);
+      console.log(`Generated geohash for user ${userId}:`, geohash);
+
+      // Step 2: Reference to the user's document in the `publicProfiles` collection
+      const publicProfileRef = doc(
+        this.firestore,
+        `${this.publicProfilesCollection}/${userId}`
       );
-    });
-  }
+      console.log(`Firestore reference created for user: ${userId}`);
 
-  /**
-   * Watch the user's location for changes (live updates).
-   * @returns Observable<UserLocation>
-   */
-  watchUserLocation(): Observable<UserLocation> {
-    return new Observable((observer) => {
-      if (!navigator.geolocation) {
-        observer.error('Geolocation is not supported by this browser.');
-        return;
-      }
-
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          observer.next({ latitude, longitude });
-        },
-        (error) => {
-          this.handleGeolocationError(error, observer);
-        }
-      );
-
-      // Cleanup when subscription is unsubscribed
-      return () => {
-        navigator.geolocation.clearWatch(watchId);
+      // Step 3: Create the geolocation data object
+      const geoData = {
+        geohash,
+        location: { lat: latitude, lng: longitude },
       };
-    });
+      console.log('Prepared geolocation data:', geoData);
+
+      // Step 4: Save geolocation data to Firestore
+      await setDoc(publicProfileRef, geoData, { merge: true }); // Merge to preserve existing data
+      console.log(
+        `Geolocation successfully saved to Firestore for user: ${userId}`
+      );
+
+      // Optional: Fetch and log back the saved data for verification
+      const savedDoc = await getDocs(
+        collection(this.firestore, this.publicProfilesCollection)
+      );
+      console.log(
+        `Current state of publicProfiles collection:`,
+        savedDoc.docs.map((d) => d.data())
+      );
+    } catch (error) {
+      console.error('Error saving user location:', error);
+      throw error; // Re-throw the error to handle it upstream if needed
+    }
   }
 
   /**
-   * Handle geolocation errors and notify the observer.
-   * @param error Geolocation error object
-   * @param observer Observer to notify
+   * Query nearby users within a radius
    */
-  private handleGeolocationError(
-    error: GeolocationPositionError,
-    observer: any
-  ): void {
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        observer.error('User denied the request for Geolocation.');
-        break;
-      case error.POSITION_UNAVAILABLE:
-        observer.error('Location information is unavailable.');
-        break;
-      case error.TIMEOUT:
-        observer.error('The request to get user location timed out.');
-        break;
-      default:
-        observer.error('An unknown error occurred.');
-        break;
+  async findNearbyUsers(
+    latitude: number,
+    longitude: number,
+    radiusInKm: number,
+    userHashtags: string[]
+  ): Promise<any[]> {
+    const bounds = geohashQueryBounds([latitude, longitude], radiusInKm * 1000); // Get geohash bounds
+    const publicProfilesRef = collection(
+      this.firestore,
+      this.publicProfilesCollection
+    );
+    const matchingUsers: any[] = [];
+
+    console.log('findNearbyUsers called with:', {
+      latitude,
+      longitude,
+      radiusInKm,
+      userHashtags,
+    });
+
+    for (const b of bounds) {
+      console.log('Query bounds:', b);
+      const q = query(
+        publicProfilesRef,
+        where('geohash', '>=', b[0]),
+        where('geohash', '<=', b[1])
+      );
+
+      const snapshot = await getDocs(q);
+      console.log('Query results:', snapshot.docs.length);
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const { location } = data;
+
+        const distance =
+          distanceBetween([latitude, longitude], [location.lat, location.lng]) *
+          1000; // Distance in meters
+
+        console.log(`User ${doc.id} distance:`, distance);
+
+        if (distance <= radiusInKm * 1000) {
+          // Access hashtags using index signature to avoid errors
+          const hashtags = data['hashtags'] as Hashtag[]; // Explicitly cast hashtags as Hashtag[]
+          const hasMatchingHashtags = hashtags.some((hashtag) =>
+            userHashtags.includes(hashtag.tag)
+          );
+
+          if (hasMatchingHashtags) {
+            console.log(`User ${doc.id} matches hashtags.`);
+            matchingUsers.push({ id: doc.id, ...data });
+          }
+        }
+      });
     }
+
+    console.log(`Total matching users found: ${matchingUsers.length}`);
+    return matchingUsers;
   }
 }

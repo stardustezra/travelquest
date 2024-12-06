@@ -1,6 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
     // Users Collection
     match /users/{userId} {
       allow write: if request.auth != null;
@@ -10,6 +11,15 @@ service cloud.firestore {
     // Hashtags Collection
     match /hashtags/{hashtagId} {
       allow read: if request.auth != null;
+    }
+
+    // Public Profiles Collection
+    match /publicProfiles/{userId} {
+      // Allow authenticated users to read public profiles
+      allow read: if request.auth != null;
+      
+      // Allow authenticated users to write to their own public profile
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

@@ -26,6 +26,7 @@ import {
 import { Observable, from, map, of, switchMap } from 'rxjs';
 import { runTransaction } from 'firebase/firestore';
 import { UserEditProfile } from '../models/user-profile.model';
+import { geohashForLocation } from 'geofire-common';
 
 export interface SessionStoreProps {
   logoutTime: string | null;
