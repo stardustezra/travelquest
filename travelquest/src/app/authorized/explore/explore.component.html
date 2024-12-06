@@ -1,0 +1,28 @@
+<section class="explore-container">
+  <h1>Explore</h1>
+
+  <div *ngIf="nearbyUsers$ | async as users; else noUsers">
+    <mat-card *ngFor="let user of users" class="user-card">
+      <img
+        [src]="user.profilePhoto"
+        alt="{{ user.name }}"
+        class="profile-photo"
+      />
+      <mat-card-content>
+        <h2>{{ user.name }}</h2>
+        <p>Age: {{ user.age }}</p>
+        <p>Country: {{ user.country }}</p>
+        <p>Shared Hashtags:</p>
+        <div class="hashtags">
+          <span *ngFor="let tag of user.hashtags" class="hashtag">
+            {{ tag }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <ng-template #noUsers>
+    <p>No users nearby with matching hashtags.</p>
+  </ng-template>
+</section>
