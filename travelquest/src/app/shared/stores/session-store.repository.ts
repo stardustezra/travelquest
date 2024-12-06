@@ -261,6 +261,28 @@ export class sessionStoreRepository {
     }
   }
 
+  // Updates travels in Firestore
+  async updateTravelsCount(uid: string, newCount: number): Promise<void> {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+
+    try {
+      await runTransaction(this.firestore, async (transaction) => {
+        const userDoc = await transaction.get(userDocRef);
+
+        if (userDoc.exists()) {
+          transaction.update(userDocRef, {
+            travels: newCount,
+          });
+          console.log('Updated travels count to:', newCount);
+        } else {
+          throw new Error('User document does not exist!');
+        }
+      });
+    } catch (error) {
+      console.error('Error updating travels count:', error);
+    }
+  }
+
   private createStore(): typeof store {
     const store = createStore(
       { name: 'sessionStore' },
