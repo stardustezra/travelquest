@@ -110,7 +110,7 @@ export class ProfileEditComponent implements OnInit {
           ...this.predefinedHashtags
             .filter((h) => this.profileForm.value.hashtags.includes(h.tag))
             .map((h) => ({ tag: h.tag, category: h.category })),
-          ...this.customHashtags.map((tag) => ({ tag, category: 'custom' })), // Ensure structure includes `tag` and `category`
+          ...this.customHashtags.map((tag) => ({ tag, category: 'custom' })),
         ],
       };
 
