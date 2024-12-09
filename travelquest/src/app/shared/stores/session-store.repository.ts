@@ -139,11 +139,34 @@ export class sessionStoreRepository {
     });
   }
 
-  // Fetch user profile (public data)
   getUserProfile(uid: string): Observable<any> {
     const publicDocRef = doc(this.firestore, `publicProfiles/${uid}`);
     return from(getDoc(publicDocRef)).pipe(
-      map((docSnapshot) => (docSnapshot.exists() ? docSnapshot.data() : null))
+      map((docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const profileData = docSnapshot.data();
+
+          // Calculate age if dob exists and is a valid Timestamp
+          if (profileData?.['dob'] instanceof Timestamp) {
+            const dob = profileData['dob'].toDate();
+            const currentDate = new Date();
+            let age = currentDate.getFullYear() - dob.getFullYear();
+            const month = currentDate.getMonth() - dob.getMonth();
+            if (
+              month < 0 ||
+              (month === 0 && currentDate.getDate() < dob.getDate())
+            ) {
+              age--;
+            }
+            profileData['age'] = age;
+          } else {
+            profileData['age'] = null;
+          }
+
+          return profileData;
+        }
+        return null;
+      })
     );
   }
 
