@@ -1,0 +1,26 @@
+@import "../../../styles/colors";
+
+.not-found-container {
+  text-align: center;
+  margin-top: 10%;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.not-found-container p {
+  font-size: 1.5rem;
+  margin: 20px 0;
+}
+
+.not-found-container button {
+  padding: 10px 20px;
+  color: #fff;
+  background-color: $action-color;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.not-found-container button:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+}
