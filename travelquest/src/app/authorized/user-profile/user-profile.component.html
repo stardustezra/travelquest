@@ -30,6 +30,12 @@
 
   <p class="bio-title">Bio</p>
   <div class="bio-box">{{ userProfile?.bio }}</div>
+
+  <div class="action-buttons">
+    <button mat-raised-button color="primary" (click)="navigateToChat()">
+      Send a Message
+    </button>
+  </div>
 </mat-card>
 
 <!-- Loading State -->

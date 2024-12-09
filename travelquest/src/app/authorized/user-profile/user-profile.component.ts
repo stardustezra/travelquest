@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router'; // Import ActivatedRoute
+import { ActivatedRoute, Router } from '@angular/router'; // Import ActivatedRoute
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 import { Observable } from 'rxjs';
 
@@ -16,7 +16,8 @@ export class UserProfileComponent implements OnInit {
 
   constructor(
     private sessionStore: sessionStoreRepository,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -48,5 +49,8 @@ export class UserProfileComponent implements OnInit {
         this.error = 'An error occurred while fetching the profile';
       },
     });
+  }
+  navigateToChat(): void {
+    this.router.navigate(['/chat']);
   }
 }

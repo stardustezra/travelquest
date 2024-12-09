@@ -10,6 +10,7 @@ import { TravellogComponent } from './profile/travellog/travellog.component';
 import { MapComponent } from './map/map.component';
 import { ExploreComponent } from './explore/explore.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ChatComponent } from './chat/chat.component';
 
 export const routes: Routes = [
   {
@@ -56,6 +57,10 @@ export const routes: Routes = [
       {
         path: 'user/:id',
         component: UserProfileComponent,
+      },
+      {
+        path: 'chat',
+        component: ChatComponent,
       },
     ],
   },

@@ -15,6 +15,7 @@ import { HomeComponent } from './home/home.component';
 import { TravellogComponent } from './profile/travellog/travellog.component';
 import { ExploreComponent } from './explore/explore.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     TravellogComponent,
     ExploreComponent,
     UserProfileComponent,
+    ChatComponent,
   ],
   imports: [
     CommonModule,
