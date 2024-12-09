@@ -9,10 +9,10 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./explore.component.scss'],
 })
 export class ExploreComponent implements OnInit {
-  nearbyUsers$: Observable<any[]> = of([]); // Observable to hold nearby users
+  nearbyUsers$: Observable<any[]> = of([]);
   userLocation = { latitude: 37.7749, longitude: -122.4194 }; // Default user location (replace with dynamic data)
-  radiusInKm = 10; // Radius in kilometers
-  userHashtags: string[] = []; // Dynamically fetched user's hashtags
+  radiusInKm = 10;
+  userHashtags: string[] = [];
 
   constructor(
     private sessionStore: sessionStoreRepository,
@@ -61,9 +61,9 @@ export class ExploreComponent implements OnInit {
     console.log('Fetching user hashtags...');
     this.sessionStore.getUserProfile(userId).subscribe((profile) => {
       if (profile && profile.hashtags) {
-        this.userHashtags = profile.hashtags; // Dynamically assign hashtags
+        this.userHashtags = profile.hashtags;
         console.log('User hashtags:', this.userHashtags);
-        this.loadNearbyUsers(); // Load nearby users after fetching hashtags
+        this.loadNearbyUsers();
       } else {
         console.warn('No hashtags found for the user.');
       }
@@ -78,31 +78,39 @@ export class ExploreComponent implements OnInit {
     console.log('User Location:', this.userLocation);
     console.log('Radius in Km:', this.radiusInKm);
 
-    this.nearbyUsers$ = new Observable((observer) => {
-      this.geoService
-        .findNearbyUsers(
-          this.userLocation.latitude,
-          this.userLocation.longitude,
-          this.radiusInKm,
-          this.userHashtags
-        )
-        .then((users) => {
-          // Process users to include age and transform hashtags
-          const processedUsers = users.map((user) => ({
-            ...user,
-            age: this.calculateAge(user.dob), // Calculate age
-            hashtags: this.extractHashtagTags(user.hashtags), // Extract hashtag tags
-          }));
+    this.sessionStore.getCurrentUserUID().subscribe((currentUserId) => {
+      if (!currentUserId) {
+        console.warn('No user is logged in.');
+        return;
+      }
 
-          console.log('Processed users:', processedUsers); // Log processed users
-          observer.next(processedUsers);
-          observer.complete();
-        })
-        .catch((error) => {
-          console.error('Error loading nearby users:', error);
-          observer.next([]);
-          observer.complete();
-        });
+      this.nearbyUsers$ = new Observable((observer) => {
+        this.geoService
+          .findNearbyUsers(
+            this.userLocation.latitude,
+            this.userLocation.longitude,
+            this.radiusInKm,
+            this.userHashtags
+          )
+          .then((users) => {
+            const processedUsers = users
+              .filter((user) => user.uid !== currentUserId) // Exclude current user
+              .map((user) => ({
+                ...user,
+                age: this.calculateAge(user.dob),
+                hashtags: this.extractHashtagTags(user.hashtags),
+              }));
+
+            console.log('Processed users:', processedUsers);
+            observer.next(processedUsers);
+            observer.complete();
+          })
+          .catch((error) => {
+            console.error('Error loading nearby users:', error);
+            observer.next([]);
+            observer.complete();
+          });
+      });
     });
   }
 
@@ -112,11 +120,11 @@ export class ExploreComponent implements OnInit {
   private calculateAge(
     dob: { seconds: number; nanoseconds: number } | null
   ): number {
-    if (!dob) return 0; // Default to 0 if dob is missing
-    const birthDate = new Date(dob.seconds * 1000); // Convert Firestore timestamp
+    if (!dob) return 0;
+    const birthDate = new Date(dob.seconds * 1000);
     const ageDifMs = Date.now() - birthDate.getTime();
-    const ageDate = new Date(ageDifMs); // Convert to Date object
-    return Math.abs(ageDate.getUTCFullYear() - 1970); // Calculate age
+    const ageDate = new Date(ageDifMs);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
   }
 
   /**
@@ -125,7 +133,7 @@ export class ExploreComponent implements OnInit {
   private extractHashtagTags(hashtags: any[]): string[] {
     if (!Array.isArray(hashtags)) return [];
     return hashtags
-      .map((h) => (h && h.tag ? h.tag : null)) // Extract 'tag' if it exists
-      .filter((tag) => tag !== null); // Remove null values
+      .map((h) => (h && h.tag ? h.tag : null))
+      .filter((tag) => tag !== null);
   }
 }
