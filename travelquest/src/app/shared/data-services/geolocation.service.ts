@@ -84,9 +84,9 @@ export class GeoService {
     latitude: number,
     longitude: number,
     radiusInKm: number,
-    userHashtags: string[]
+    userHashtags: any[] // Updated type for flexibility
   ): Promise<any[]> {
-    const bounds = geohashQueryBounds([latitude, longitude], radiusInKm * 1000); // Get geohash bounds
+    const bounds = geohashQueryBounds([latitude, longitude], radiusInKm * 1000);
     const publicProfilesRef = collection(
       this.firestore,
       this.publicProfilesCollection
@@ -99,6 +99,14 @@ export class GeoService {
       radiusInKm,
       userHashtags,
     });
+
+    // Normalize user hashtags
+    const normalizedUserHashtags = userHashtags
+      .map((h) =>
+        h && typeof h === 'object' && h.tag ? h.tag.trim().toLowerCase() : null
+      )
+      .filter((tag) => tag !== null);
+    console.log('Normalized user hashtags:', normalizedUserHashtags);
 
     for (const b of bounds) {
       console.log('Query bounds:', b);
@@ -113,25 +121,31 @@ export class GeoService {
 
       snapshot.forEach((doc) => {
         const data = doc.data();
-        const { location } = data;
+        console.log('Fetched document:', doc.id, data);
 
-        const distance =
-          distanceBetween([latitude, longitude], [location.lat, location.lng]) *
-          1000; // Distance in meters
+        const hashtags = Array.isArray(data['hashtags'])
+          ? data['hashtags']
+          : [];
+        const normalizedHashtags = hashtags
+          .map((h) =>
+            h && typeof h === 'object' && h.tag
+              ? h.tag.trim().toLowerCase()
+              : null
+          )
+          .filter((tag) => tag !== null);
+        console.log('Normalized document hashtags:', normalizedHashtags);
 
-        console.log(`User ${doc.id} distance:`, distance);
+        const hasMatchingHashtags = normalizedHashtags.some((hashtag) =>
+          normalizedUserHashtags.includes(hashtag)
+        );
 
-        if (distance <= radiusInKm * 1000) {
-          // Access hashtags using index signature to avoid errors
-          const hashtags = data['hashtags'] as Hashtag[]; // Explicitly cast hashtags as Hashtag[]
-          const hasMatchingHashtags = hashtags.some((hashtag) =>
-            userHashtags.includes(hashtag.tag)
-          );
+        console.log(
+          `User ${doc.id} has matching hashtags:`,
+          hasMatchingHashtags
+        );
 
-          if (hasMatchingHashtags) {
-            console.log(`User ${doc.id} matches hashtags.`);
-            matchingUsers.push({ id: doc.id, ...data });
-          }
+        if (hasMatchingHashtags) {
+          matchingUsers.push({ id: doc.id, ...data });
         }
       });
     }

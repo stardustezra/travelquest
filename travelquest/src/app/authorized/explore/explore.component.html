@@ -4,13 +4,15 @@
   <div *ngIf="nearbyUsers$ | async as users; else noUsers">
     <mat-card *ngFor="let user of users" class="user-card">
       <img
+        *ngIf="user.profilePhoto"
         [src]="user.profilePhoto"
         alt="{{ user.name }}"
         class="profile-photo"
       />
       <mat-card-content>
         <h2>{{ user.name }}</h2>
-        <p>Age: {{ user.age }}</p>
+        <p>Age: {{ user.age || "N/A" }}</p>
+        <!-- Fallback for missing age -->
         <p>Country: {{ user.country }}</p>
         <p>Shared Hashtags:</p>
         <div class="hashtags">

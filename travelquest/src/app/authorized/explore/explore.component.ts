@@ -21,30 +21,59 @@ export class ExploreComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('Component initialized');
-    this.fetchUserHashtagsAndLoadUsers();
+    this.initializeUserLocationAndFetchData();
   }
 
-  fetchUserHashtagsAndLoadUsers(): void {
-    console.log('Fetching user hashtags...');
+  /**
+   * Initialize user location and fetch related data.
+   */
+  private initializeUserLocationAndFetchData(): void {
     this.sessionStore.getCurrentUserUID().subscribe((uid) => {
-      if (!uid) {
-        console.warn('No user logged in. Cannot fetch hashtags.');
-        return;
+      if (uid) {
+        this.saveUserLocationAndFetchData(uid);
+      } else {
+        console.warn('No user logged in.');
       }
-
-      this.sessionStore.getUserProfile(uid).subscribe((profile) => {
-        if (profile && profile.hashtags) {
-          this.userHashtags = profile.hashtags; // Dynamically assign hashtags
-          console.log('User hashtags:', this.userHashtags);
-          this.loadNearbyUsers(); // Load nearby users after fetching hashtags
-        } else {
-          console.warn('No hashtags found for the user.');
-        }
-      });
     });
   }
 
-  loadNearbyUsers(): void {
+  /**
+   * Save user location and fetch hashtags and nearby users.
+   */
+  private saveUserLocationAndFetchData(userId: string): void {
+    const { latitude, longitude } = this.userLocation;
+
+    this.geoService
+      .saveUserLocation(userId, latitude, longitude)
+      .then(() => {
+        console.log('User location saved successfully.');
+        this.fetchUserHashtagsAndLoadUsers(userId);
+      })
+      .catch((error) => {
+        console.error('Failed to save user location:', error);
+      });
+  }
+
+  /**
+   * Fetch user hashtags and load nearby users based on the hashtags.
+   */
+  private fetchUserHashtagsAndLoadUsers(userId: string): void {
+    console.log('Fetching user hashtags...');
+    this.sessionStore.getUserProfile(userId).subscribe((profile) => {
+      if (profile && profile.hashtags) {
+        this.userHashtags = profile.hashtags; // Dynamically assign hashtags
+        console.log('User hashtags:', this.userHashtags);
+        this.loadNearbyUsers(); // Load nearby users after fetching hashtags
+      } else {
+        console.warn('No hashtags found for the user.');
+      }
+    });
+  }
+
+  /**
+   * Load nearby users based on user location and hashtags.
+   */
+  private loadNearbyUsers(): void {
     console.log('Loading nearby users...');
     console.log('User Location:', this.userLocation);
     console.log('Radius in Km:', this.radiusInKm);
@@ -58,8 +87,15 @@ export class ExploreComponent implements OnInit {
           this.userHashtags
         )
         .then((users) => {
-          console.log('Users found:', users); // Log the users returned
-          observer.next(users);
+          // Process users to include age and transform hashtags
+          const processedUsers = users.map((user) => ({
+            ...user,
+            age: this.calculateAge(user.dob), // Calculate age
+            hashtags: this.extractHashtagTags(user.hashtags), // Extract hashtag tags
+          }));
+
+          console.log('Processed users:', processedUsers); // Log processed users
+          observer.next(processedUsers);
           observer.complete();
         })
         .catch((error) => {
@@ -68,5 +104,28 @@ export class ExploreComponent implements OnInit {
           observer.complete();
         });
     });
+  }
+
+  /**
+   * Calculate age from Firestore timestamp.
+   */
+  private calculateAge(
+    dob: { seconds: number; nanoseconds: number } | null
+  ): number {
+    if (!dob) return 0; // Default to 0 if dob is missing
+    const birthDate = new Date(dob.seconds * 1000); // Convert Firestore timestamp
+    const ageDifMs = Date.now() - birthDate.getTime();
+    const ageDate = new Date(ageDifMs); // Convert to Date object
+    return Math.abs(ageDate.getUTCFullYear() - 1970); // Calculate age
+  }
+
+  /**
+   * Extract tags from hashtags array.
+   */
+  private extractHashtagTags(hashtags: any[]): string[] {
+    if (!Array.isArray(hashtags)) return [];
+    return hashtags
+      .map((h) => (h && h.tag ? h.tag : null)) // Extract 'tag' if it exists
+      .filter((tag) => tag !== null); // Remove null values
   }
 }
