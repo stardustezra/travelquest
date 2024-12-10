@@ -57,16 +57,16 @@ export const routes: Routes = [
       },
 
       {
-        path: '**',
-        component: NotFoundComponent,
-      },
-      {
         path: 'user/:id',
         component: UserProfileComponent,
       },
       {
         path: 'chat',
         component: ChatComponent,
+      },
+      {
+        path: '**',
+        component: NotFoundComponent,
       },
     ],
   },
