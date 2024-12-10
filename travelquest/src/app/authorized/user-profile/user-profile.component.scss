@@ -1,0 +1,117 @@
+@import "../../../styles/colors";
+
+// Profile card customizations
+.mat-mdc-card {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 16px !important;
+  margin-left: 15px;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: $neutraul-white;
+  margin-right: 10px;
+}
+
+.img__profile-picture {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: $neutraul-white;
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.profile-details {
+  display: flex;
+  gap: 16px;
+  color: $primary-text-color;
+}
+
+.profile-item {
+  text-align: center;
+}
+
+.profile-item p {
+  margin: 0;
+  margin-left: 15px;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.profile-item span {
+  display: block;
+  font-size: 14px;
+}
+
+.profile-info {
+  color: $primary-text-color;
+  p {
+    margin: 0;
+
+    &:first-child {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    &:nth-child(2),
+    &:nth-child(3) {
+      font-size: 15px;
+      line-height: 2;
+    }
+  }
+}
+
+.bio-title {
+  color: $primary-text-color;
+  font-weight: 600;
+  margin-top: 25px;
+}
+
+.bio-box {
+  background-color: $neutraul-white;
+  border: 1px solid #ddd;
+  padding: 16px;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.action-buttons button {
+  background-color: $neutraul-white;
+  border: 1px solid $neutraul-white;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.styled-button {
+  color: $primary-text-color !important;
+}
+
+.action-buttons button mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}

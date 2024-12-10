@@ -11,7 +11,7 @@
   <button
     mat-icon-button
     class="navbar-item"
-    [class.active]="isActiveRoute(['/explore'])"
+    [class.active]="isActiveRoute(['/explore', '/user:id'])"
     (click)="navigateTo('/explore')"
   >
     <mat-icon>tag</mat-icon>

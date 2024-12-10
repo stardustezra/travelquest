@@ -15,6 +15,8 @@ import { HomeComponent } from './home/home.component';
 import { TravellogComponent } from './profile/travellog/travellog.component';
 import { ExploreComponent } from './explore/explore.component';
 import { NotFoundComponent } from './404page/notfound.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { NotFoundComponent } from './404page/notfound.component';
     TravellogComponent,
     ExploreComponent,
     NotFoundComponent,
+    UserProfileComponent,
+    ChatComponent,
   ],
   imports: [
     CommonModule,

@@ -21,6 +21,15 @@
           </span>
         </div>
       </mat-card-content>
+
+      <!-- Explore Profile Button -->
+      <button
+        mat-raised-button
+        color="primary"
+        [routerLink]="['/user', user.id]"
+      >
+        Explore Profile
+      </button>
     </mat-card>
   </div>
 
