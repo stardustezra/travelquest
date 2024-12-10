@@ -14,6 +14,7 @@ import { ProfileSettingsComponent } from './profile/profile-settings/profile-set
 import { HomeComponent } from './home/home.component';
 import { TravellogComponent } from './profile/travellog/travellog.component';
 import { ExploreComponent } from './explore/explore.component';
+import { NotFoundComponent } from './404page/notfound.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ExploreComponent } from './explore/explore.component';
     HomeComponent,
     TravellogComponent,
     ExploreComponent,
+    NotFoundComponent,
   ],
   imports: [
     CommonModule,

@@ -9,6 +9,7 @@ import { ProfileSettingsComponent } from './profile/profile-settings/profile-set
 import { TravellogComponent } from './profile/travellog/travellog.component';
 import { MapComponent } from './map/map.component';
 import { ExploreComponent } from './explore/explore.component';
+import { NotFoundComponent } from './404page/notfound.component';
 
 export const routes: Routes = [
   {
@@ -51,6 +52,11 @@ export const routes: Routes = [
       {
         path: 'explore',
         component: ExploreComponent,
+      },
+
+      {
+        path: '**',
+        component: NotFoundComponent,
       },
     ],
   },
