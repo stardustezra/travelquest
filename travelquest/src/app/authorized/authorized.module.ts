@@ -7,6 +7,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 // import { RouterModule, Routes } from '@angular/router';
 import { ProfileCreationComponent } from './profile-creation/profile-creation.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { MaterialModule } from '../material/material.config';
 import { ProfileListComponent } from './profile/profile-list/profile-list.component';
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
@@ -38,6 +39,7 @@ import { ChatComponent } from './chat/chat.component';
     SharedModule,
     AuthorizedRoutingModule,
     ReactiveFormsModule,
+    FormsModule,
     MaterialModule,
   ],
 })
