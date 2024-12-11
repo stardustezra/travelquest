@@ -29,6 +29,9 @@ export class UserProfileComponent implements OnInit {
       } else {
         this.error = 'User ID not found in the route';
         this.loading = false;
+
+        // Redirect to homepage if ID is missing
+        this.router.navigate(['/']);
       }
     });
   }
@@ -50,7 +53,12 @@ export class UserProfileComponent implements OnInit {
       },
     });
   }
+
   navigateToChat(): void {
-    this.router.navigate(['/chat']);
+    if (this.userId) {
+      this.router.navigate([`/chat/${this.userId}`]); // Navigate to chat with userId
+    } else {
+      this.error = 'User ID is missing!';
+    }
   }
 }
