@@ -1,18 +1,26 @@
-<div class="chat-container">
-  <div class="messages">
-    <div *ngFor="let message of messages$ | async">
-      <div class="message">
-        <div class="message-user">{{ message.user }}</div>
-        <div class="message-text">{{ message.text }}</div>
-        <div class="message-time">
-          {{ message.timestamp.toDate() | date : "shortTime" }}
-        </div>
-      </div>
-    </div>
+<div *ngIf="currentUser">
+  <!-- Conversation List -->
+  <div *ngFor="let conversation of conversations$ | async">
+    <button (click)="selectConversation(conversation.id)">
+      Conversation with {{ conversation.participants.join(", ") }}
+    </button>
   </div>
 
-  <div class="message-input">
-    <input type="text" [(ngModel)]="newMessage" placeholder="Type a message" />
+  <!-- Create a new conversation button -->
+  <button (click)="createConversation()">Create New Conversation</button>
+
+  <!-- Chat Messages -->
+  <div *ngIf="currentConversationId">
+    <h3>Messages</h3>
+    <div *ngFor="let message of messages$ | async">
+      <p>{{ message.user }}: {{ message.text }}</p>
+    </div>
+
+    <!-- Message Input -->
+    <textarea
+      [(ngModel)]="newMessage"
+      placeholder="Type a message..."
+    ></textarea>
     <button (click)="sendMessage()">Send</button>
   </div>
 </div>
