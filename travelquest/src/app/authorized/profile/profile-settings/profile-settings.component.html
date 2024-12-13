@@ -7,8 +7,8 @@
 
   <!-- Buttons at the end -->
   <div class="end-buttons">
-    <span class="sign-off-text">Sign Off</span>
-    <button color="warn" class="delete-button">
+    <span class="sign-off-text" (click)="signOut()">Sign Off</span>
+    <button color="warn" class="delete-button" (click)="deleteAccount()">
       <mat-icon>delete</mat-icon>
     </button>
   </div>

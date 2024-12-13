@@ -64,18 +64,14 @@ export class ProfileEditComponent implements OnInit {
   }
 
   fetchAvailableLanguages(): void {
-    this.availableLanguages = ISO6391.getAllNames().sort(
-      (a, b) => a.localeCompare(b) // Sort alphabetically
-    );
-    console.log(
-      'Available Languages (Alphabetically Sorted):',
-      this.availableLanguages
+    this.availableLanguages = ISO6391.getAllNames().sort((a, b) =>
+      a.localeCompare(b)
     );
   }
 
   fetchPredefinedHashtags(): void {
     this.sessionStore.fetchPredefinedHashtags().then((hashtags) => {
-      this.predefinedHashtags = hashtags; // Populate predefined hashtags
+      this.predefinedHashtags = hashtags;
     });
   }
 
@@ -85,7 +81,6 @@ export class ProfileEditComponent implements OnInit {
 
     if ((value || '').trim()) {
       this.customHashtags.push(value.trim());
-      // Sync with FormGroup
       this.profileForm.get('customHashtags')?.setValue(this.customHashtags);
     }
 
