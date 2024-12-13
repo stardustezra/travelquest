@@ -1,0 +1,28 @@
+<div class="inbox-container">
+  <!-- Header Section -->
+  <mat-card class="inbox-header">
+    <h2 class="inbox-title">Messages</h2>
+    <mat-card-subtitle>Welcome, {{ userName }}!</mat-card-subtitle>
+  </mat-card>
+
+  <!-- Messages List -->
+  <div class="messages-list">
+    <mat-card
+      class="message-item"
+      *ngFor="let message of messages$ | async"
+      (click)="openConversation(message.conversationId)"
+    >
+      <mat-card-header>
+        <div
+          mat-card-avatar
+          class="profile-photo"
+          [ngStyle]="{
+            'background-image': 'url(' + getProfilePhoto(message.userId) + ')'
+          }"
+        ></div>
+        <mat-card-title>{{ message.user }}</mat-card-title>
+        <mat-card-subtitle>{{ message.text }}</mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </div>
+</div>

@@ -18,6 +18,7 @@ import { ExploreComponent } from './explore/explore.component';
 import { NotFoundComponent } from './404page/notfound.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ChatComponent } from './chat/chat.component';
+import { InboxComponent } from './inbox/inbox.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ChatComponent } from './chat/chat.component';
     NotFoundComponent,
     UserProfileComponent,
     ChatComponent,
+    InboxComponent,
   ],
   imports: [
     CommonModule,

@@ -20,7 +20,6 @@ export class ExploreComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('Component initialized');
     this.initializeUserLocationAndFetchData();
   }
 
@@ -32,7 +31,6 @@ export class ExploreComponent implements OnInit {
       if (uid) {
         this.saveUserLocationAndFetchData(uid);
       } else {
-        console.warn('No user logged in.');
       }
     });
   }
@@ -46,26 +44,21 @@ export class ExploreComponent implements OnInit {
     this.geoService
       .saveUserLocation(userId, latitude, longitude)
       .then(() => {
-        console.log('User location saved successfully.');
         this.fetchUserHashtagsAndLoadUsers(userId);
       })
-      .catch((error) => {
-        console.error('Failed to save user location:', error);
-      });
+      .catch((error) => {});
   }
 
   /**
    * Fetch user hashtags and load nearby users based on the hashtags.
    */
   private fetchUserHashtagsAndLoadUsers(userId: string): void {
-    console.log('Fetching user hashtags...');
     this.sessionStore.getUserProfile(userId).subscribe((profile) => {
       if (profile && profile.hashtags) {
         this.userHashtags = profile.hashtags;
-        console.log('User hashtags:', this.userHashtags);
+
         this.loadNearbyUsers();
       } else {
-        console.warn('No hashtags found for the user.');
       }
     });
   }
@@ -74,13 +67,8 @@ export class ExploreComponent implements OnInit {
    * Load nearby users based on user location and hashtags.
    */
   private loadNearbyUsers(): void {
-    console.log('Loading nearby users...');
-    console.log('User Location:', this.userLocation);
-    console.log('Radius in Km:', this.radiusInKm);
-
     this.sessionStore.getCurrentUserUID().subscribe((currentUserId) => {
       if (!currentUserId) {
-        console.warn('No user is logged in.');
         return;
       }
 
@@ -94,7 +82,7 @@ export class ExploreComponent implements OnInit {
           )
           .then((users) => {
             const processedUsers = users
-              .filter((user) => user.uid !== currentUserId) // Exclude current user
+              .filter((user) => user.uid !== currentUserId)
               .map((user) => ({
                 ...user,
                 age: this.calculateAge(user.dob),
@@ -106,7 +94,6 @@ export class ExploreComponent implements OnInit {
             observer.complete();
           })
           .catch((error) => {
-            console.error('Error loading nearby users:', error);
             observer.next([]);
             observer.complete();
           });

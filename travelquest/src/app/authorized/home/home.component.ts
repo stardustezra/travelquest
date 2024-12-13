@@ -3,6 +3,7 @@ import { sessionStoreRepository } from '../../shared/stores/session-store.reposi
 import { OverpassService } from '../../shared/data-services/overpass.service';
 import { UnsplashService } from '../../shared/data-services/unsplash.service';
 import { PlacesRepository } from '../../shared/stores/places.store';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'travelquest-home',
@@ -23,7 +24,8 @@ export class HomeComponent implements OnInit {
     private sessionStore: sessionStoreRepository,
     private overpassService: OverpassService,
     private unsplashService: UnsplashService,
-    private placesRepository: PlacesRepository
+    private placesRepository: PlacesRepository,
+    private router: Router // Inject Router for navigation
   ) {}
 
   ngOnInit(): void {
@@ -58,6 +60,10 @@ export class HomeComponent implements OnInit {
         }
       );
     }
+  }
+
+  goToInbox(): void {
+    this.router.navigate(['/inbox']); // Navigate to the 'Inbox' page
   }
 
   loadCafes(): void {

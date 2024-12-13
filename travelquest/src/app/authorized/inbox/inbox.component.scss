@@ -1,0 +1,50 @@
+@import "../../../styles/colors"; /* Your custom colors */
+@import "../../../styles.scss"; /* Any global styles */
+
+.inbox-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 10px;
+}
+
+.inbox-header {
+  text-align: left;
+  border-radius: 0px;
+  margin-bottom: 15px;
+}
+
+.inbox-title {
+  font-size: 1.2rem;
+  margin: 0;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message-item {
+  display: flex;
+  background: #fff;
+  border-radius: 0px;
+  color: black;
+}
+
+mat-card-header {
+  align-items: center;
+}
+
+.mat-card-title {
+  color: black;
+}
+
+.profile-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+}

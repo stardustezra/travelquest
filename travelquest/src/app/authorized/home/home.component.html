@@ -1,8 +1,16 @@
 <mat-card class="content-card unified-content-card">
-  <mat-card-header>
+  <mat-card-header class="card-header-with-icon">
     <mat-card-title>
       <h1>Hello, {{ userName }}!</h1>
     </mat-card-title>
+    <button
+      mat-icon-button
+      aria-label="Messages"
+      class="message-icon-button"
+      (click)="goToInbox()"
+    >
+      <mat-icon>send</mat-icon>
+    </button>
   </mat-card-header>
   <mat-card-content>
     <p>Here's what's happening near you.</p>

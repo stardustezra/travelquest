@@ -1,6 +1,18 @@
 @import "../../../styles/colors"; /* Your custom colors */
 @import "../../../styles.scss"; /* Any global styles */
 
+.card-header-with-icon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.message-icon-button {
+  margin-left: auto;
+  transform: rotate(-25deg);
+  color: $action-color;
+}
+
 .unified-content-card {
   padding: 1.5rem;
   display: flex;

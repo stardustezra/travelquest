@@ -12,6 +12,7 @@ import { ExploreComponent } from './explore/explore.component';
 import { NotFoundComponent } from './404page/notfound.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ChatComponent } from './chat/chat.component';
+import { InboxComponent } from './inbox/inbox.component';
 
 export const routes: Routes = [
   {
@@ -55,13 +56,20 @@ export const routes: Routes = [
         path: 'explore',
         component: ExploreComponent,
       },
-
+      {
+        path: 'inbox',
+        component: InboxComponent,
+      },
       {
         path: 'user/:id',
         component: UserProfileComponent,
       },
       {
         path: 'chat/:id',
+        component: ChatComponent,
+      },
+      {
+        path: 'conversation/:id',
         component: ChatComponent,
       },
       {

@@ -7,7 +7,12 @@
   </div>
 
   <!-- Create a new conversation button -->
-  <button (click)="createConversation()">Create New Conversation</button>
+  <button
+    *ngIf="selectedOtherUserId"
+    (click)="createConversation(selectedOtherUserId)"
+  >
+    Create New Conversation
+  </button>
 
   <!-- Chat Messages -->
   <div *ngIf="currentConversationId">
