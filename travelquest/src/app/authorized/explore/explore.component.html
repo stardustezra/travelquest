@@ -1,35 +1,45 @@
 <section class="explore-container">
-  <h1>Explore</h1>
+  <mat-card class="top-section">
+    <mat-card-header>
+      <mat-card-title>
+        <h1>Explore</h1>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        Connect with other solo travellers who share your interests, spend a day
+        together and enjoy new experiences together.
+      </p>
+      <h3>Connect with other travellers in your area</h3>
+    </mat-card-content>
+  </mat-card>
 
   <div *ngIf="nearbyUsers$ | async as users; else noUsers">
     <mat-card *ngFor="let user of users" class="user-card">
-      <img
-        *ngIf="user.profilePhoto"
-        [src]="user.profilePhoto"
-        alt="{{ user.name }}"
-        class="profile-photo"
-      />
-      <mat-card-content>
-        <h2>{{ user.name }}</h2>
-        <p>Age: {{ user.age || "N/A" }}</p>
-        <!-- Fallback for missing age -->
-        <p>Country: {{ user.country }}</p>
-        <p>Shared Hashtags:</p>
-        <div class="hashtags">
-          <span *ngFor="let tag of user.hashtags" class="hashtag">
-            {{ tag }}
-          </span>
-        </div>
-      </mat-card-content>
+      <!-- Left Section: Profile Photo -->
+      <div class="left-section">
+        <img
+          [src]="user.profilePhoto || 'assets/images/default-pic-green.png'"
+          alt="{{ user.name || 'Default User' }}"
+          class="profile-photo"
+        />
+      </div>
 
-      <!-- Explore Profile Button -->
-      <button
-        mat-raised-button
-        color="primary"
-        [routerLink]="['/user', user.id]"
-      >
-        Explore Profile
-      </button>
+      <!-- Center Section -->
+      <div class="center-section">
+        <p class="name-age">{{ user.name }}, {{ user.age || "N/A" }}</p>
+        <p class="country">{{ user.country }}</p>
+        <button [routerLink]="['/user', user.id]" class="explore-button">
+          Explore profile
+        </button>
+      </div>
+
+      <!-- Right Section -->
+      <div class="right-section hashtags">
+        <span *ngFor="let tag of user.hashtags" class="hashtag">
+          #{{ tag }}
+        </span>
+      </div>
     </mat-card>
   </div>
 
