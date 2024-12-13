@@ -88,12 +88,12 @@ mat-card {
   }
 }
 
-::ng-deep .mat-snack-bar-container.success-snack-style {
-  background-color: green !important;
-  color: white !important;
+.mat-mdc-snack-bar-container.success-snack-style {
+  --mdc-snackbar-container-color: green !important;
+  --mdc-snackbar-supporting-text-color: white !important;
 }
 
-::ng-deep .mat-snack-bar-container.error-snack-style {
-  background-color: red !important;
-  color: white !important;
+.mat-mdc-snack-bar-container.error-snack-style {
+  --mdc-snackbar-container-color: red !important;
+  --mdc-snackbar-supporting-text-color: white !important;
 }

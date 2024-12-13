@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 import { SnackbarService } from '../../shared/snackbar/snackbar.service';
@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
   selector: 'travelquest-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class UserProfileComponent implements OnInit {
   userProfile: any;
@@ -44,7 +45,6 @@ export class UserProfileComponent implements OnInit {
           this.snackbarService.error('Profile not found');
         } else {
           this.userProfile = profile;
-          this.snackbarService.success('Profile loaded successfully!');
         }
       },
       error: (err) => {
@@ -59,13 +59,5 @@ export class UserProfileComponent implements OnInit {
 
   navigateToChat(): void {
     this.router.navigate(['/chat']);
-  }
-
-  testColor(color: 'green' | 'red'): void {
-    if (color === 'green') {
-      this.snackbarService.success('This is a green success snackbar!');
-    } else if (color === 'red') {
-      this.snackbarService.error('This is a red error snackbar!');
-    }
   }
 }

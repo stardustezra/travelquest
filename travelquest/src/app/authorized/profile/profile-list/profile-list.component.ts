@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { sessionStoreRepository } from '../../../shared/stores/session-store.repository';
 import { Router } from '@angular/router';
 import { UserProfile } from '../../../shared/models/user-profile.model';
+import { SnackbarService } from '../../../shared/snackbar/snackbar.service';
 
 @Component({
   selector: 'travelquest-profile-list',
@@ -15,7 +16,8 @@ export class ProfileListComponent implements OnInit {
 
   constructor(
     private readonly sessionStore: sessionStoreRepository,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -26,12 +28,14 @@ export class ProfileListComponent implements OnInit {
           this.userProfile = profile;
         } else {
           this.error = 'No profile data found for the signed-in user.';
+          this.snackbarService.error(this.error);
         }
         this.loading = false;
       },
       error: (err) => {
         this.error = 'An error occurred while fetching the profile data.';
         console.error(err);
+        this.snackbarService.error(this.error);
         this.loading = false;
       },
     });
