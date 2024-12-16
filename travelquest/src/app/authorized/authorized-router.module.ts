@@ -65,7 +65,7 @@ export const routes: Routes = [
         component: UserProfileComponent,
       },
       {
-        path: 'chat/:id',
+        path: 'chat/:userId',
         component: ChatComponent,
       },
       {

@@ -1,31 +1,53 @@
 <div *ngIf="currentUser">
-  <!-- Conversation List -->
-  <div *ngFor="let conversation of conversations$ | async">
-    <button (click)="selectConversation(conversation.id)">
-      Conversation with {{ conversation.participants.join(", ") }}
-    </button>
-  </div>
-
-  <!-- Create a new conversation button -->
-  <button
-    *ngIf="selectedOtherUserId"
-    (click)="createConversation(selectedOtherUserId)"
-  >
-    Create New Conversation
-  </button>
-
   <!-- Chat Messages -->
-  <div *ngIf="currentConversationId">
+  <div *ngIf="currentConversationId; else noConversation">
     <h3>Messages</h3>
-    <div *ngFor="let message of messages$ | async">
-      <p>{{ message.user }}: {{ message.text }}</p>
+
+    <div *ngIf="loadingMessages">
+      <p>Loading messages...</p>
+    </div>
+
+    <div #messageContainer class="message-container">
+      <div *ngFor="let message of messages$ | async" class="message">
+        <strong>{{ message.user }}:</strong> {{ message.text }}
+        <span class="timestamp">{{
+          message.timestamp.toDate() | date : "short"
+        }}</span>
+      </div>
     </div>
 
     <!-- Message Input -->
-    <textarea
-      [(ngModel)]="newMessage"
-      placeholder="Type a message..."
-    ></textarea>
-    <button (click)="sendMessage()">Send</button>
+    <div class="message-input">
+      <textarea
+        [(ngModel)]="newMessage"
+        placeholder="Type a message..."
+      ></textarea>
+      <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
+        Send
+      </button>
+    </div>
   </div>
+
+  <!-- No Conversation State -->
+  <ng-template #noConversation>
+    <p>
+      No conversation exists yet. You can start chatting by sending a message!
+    </p>
+
+    <!-- Message Input -->
+    <div class="message-input">
+      <textarea
+        [(ngModel)]="newMessage"
+        placeholder="Type a message..."
+      ></textarea>
+      <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
+        Send
+      </button>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Error State -->
+<div *ngIf="!currentUser" class="error">
+  <p>You must log in to view or send messages.</p>
 </div>

@@ -21,16 +21,19 @@ export class UserProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Get the user ID from the route parameter
     this.route.paramMap.subscribe((params) => {
       this.userId = params.get('id');
       if (this.userId) {
+        console.log('User ID from route:', this.userId); // Debugging log
         this.fetchUserProfile(this.userId);
       } else {
         this.error = 'User ID not found in the route';
         this.loading = false;
 
         // Redirect to homepage if ID is missing
+        console.error(
+          'User ID is missing from route. Redirecting to homepage.'
+        );
         this.router.navigate(['/']);
       }
     });
@@ -53,12 +56,13 @@ export class UserProfileComponent implements OnInit {
       },
     });
   }
-
   navigateToChat(): void {
     if (this.userId) {
-      this.router.navigate([`/chat/${this.userId}`]); // Navigate to chat with userId
+      console.log('Navigating to chat with user ID:', this.userId); // Debugging log
+      this.router.navigate([`/chat/${this.userId}`]); // Navigate to chat
     } else {
       this.error = 'User ID is missing!';
+      console.error('Cannot navigate to chat. User ID is missing.');
     }
   }
 }
