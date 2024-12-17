@@ -7,25 +7,25 @@ import {
   where,
   orderBy,
   collectionData,
+  doc,
+  getDoc,
 } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { Auth, user } from '@angular/fire/auth';
-import { User } from 'firebase/auth';
+import { Observable, from } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 
 interface Message {
   text: string;
   timestamp: Timestamp;
-  user: string;
+  user: string; // Will store the user name
   userId: string;
 }
 
 interface Conversation {
   id: string;
   participants: string[];
-  messages?: Message[];
 }
 
 @Component({
@@ -36,42 +36,56 @@ interface Conversation {
 export class ChatComponent implements OnInit {
   messages$!: Observable<Message[]>; // Observable for conversation messages
   newMessage: string = ''; // Input for new messages
-  currentUser: User | null = null; // Authenticated user
+  currentUserUID: string | null | undefined;
   currentConversationId: string | null = null; // Active conversation ID
-  otherUserId: string = ''; // User ID of the other participant
+  otherUserId: string | null = null; // User ID of the other participant
   loadingMessages: boolean = true; // Loading state for messages
 
   constructor(
     private firestore: Firestore,
-    private auth: Auth,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private sessionStore: sessionStoreRepository
   ) {}
 
   ngOnInit(): void {
-    // Retrieve the other user's ID from the route
+    this.loadAuthenticatedUser().then(() => {
+      this.initializeComponent();
+    });
+  }
+
+  private async loadAuthenticatedUser(): Promise<void> {
+    this.currentUserUID = await this.sessionStore
+      .getCurrentUserUID()
+      .toPromise();
+    if (!this.currentUserUID) {
+      console.error('User is not authenticated.');
+    } else {
+      console.log('Authenticated user UID:', this.currentUserUID);
+    }
+  }
+
+  private initializeComponent(): void {
     this.route.paramMap.subscribe((params) => {
-      this.otherUserId = params.get('userId') || '';
-      console.log('Other user ID:', this.otherUserId);
+      const conversationId = params.get('id'); // For `conversation/:id`
+      const otherUserId = params.get('userId'); // For `chat/:userId`
 
-      if (!this.otherUserId) {
-        console.error('Other user ID is missing from the route.');
-        return;
+      if (conversationId) {
+        console.log('Loaded via conversation ID:', conversationId);
+        this.currentConversationId = conversationId;
+        this.fetchMessagesWithUserNames(conversationId);
+      } else if (otherUserId) {
+        console.log('Loaded via user ID:', otherUserId);
+        this.otherUserId = otherUserId;
+        this.checkExistingConversation(this.otherUserId);
+      } else {
+        console.error('Invalid route parameters. No conversation or user ID.');
       }
-
-      // Get the authenticated user
-      user(this.auth).subscribe((currentUser: User | null) => {
-        this.currentUser = currentUser;
-        if (this.currentUser) {
-          console.log('Current user:', this.currentUser.uid);
-          this.checkExistingConversation(this.otherUserId);
-        }
-      });
     });
   }
 
   // Check if a conversation exists with the other user
-  checkExistingConversation(otherParticipantUid: string): void {
-    if (!this.currentUser) {
+  private checkExistingConversation(otherParticipantUid: string): void {
+    if (!this.currentUserUID) {
       console.error('Current user not found.');
       return;
     }
@@ -79,7 +93,7 @@ export class ChatComponent implements OnInit {
     const conversationsCollection = collection(this.firestore, 'conversations');
     const conversationsQuery = query(
       conversationsCollection,
-      where('participants', 'array-contains', this.currentUser.uid)
+      where('participants', 'array-contains', this.currentUserUID)
     );
 
     collectionData(conversationsQuery, { idField: 'id' })
@@ -89,7 +103,7 @@ export class ChatComponent implements OnInit {
             (conversation) =>
               conversation.participants.length === 2 &&
               conversation.participants.includes(otherParticipantUid) &&
-              conversation.participants.includes(this.currentUser!.uid)
+              conversation.participants.includes(this.currentUserUID!)
           )
         )
       )
@@ -101,24 +115,21 @@ export class ChatComponent implements OnInit {
               existingConversation.id
             );
             this.currentConversationId = existingConversation.id;
-            this.fetchMessages(existingConversation.id);
+            this.fetchMessagesWithUserNames(existingConversation.id);
           } else {
-            console.log(
-              'No existing conversation found. Preparing to create a new one.'
-            );
+            console.log('No existing conversation found. Creating a new one.');
             this.currentConversationId = null;
-            this.loadingMessages = false; // No messages to load
+            this.loadingMessages = false;
           }
         },
         (error: unknown) => {
           console.error('Error checking for existing conversation:', error);
-          this.loadingMessages = false;
         }
       );
   }
 
-  // Fetch messages for a conversation
-  fetchMessages(conversationId: string): void {
+  // Fetch messages and map userId to user name
+  private fetchMessagesWithUserNames(conversationId: string): void {
     this.loadingMessages = true;
 
     const messagesCollection = collection(
@@ -130,16 +141,35 @@ export class ChatComponent implements OnInit {
       orderBy('timestamp', 'asc')
     );
 
-    this.messages$ = collectionData(messagesQuery, {
-      idField: 'id',
-    }) as Observable<Message[]>;
+    this.messages$ = collectionData(messagesQuery, { idField: 'id' }).pipe(
+      switchMap((messages: Message[]) =>
+        from(
+          Promise.all(
+            messages.map(async (message) => {
+              const userDocRef = doc(
+                this.firestore,
+                `publicProfiles/${message.userId}`
+              );
+              const userSnapshot = await getDoc(userDocRef);
+
+              if (userSnapshot.exists()) {
+                const userName =
+                  userSnapshot.data()?.['name'] || 'Unknown User';
+                return { ...message, user: userName };
+              }
+              return { ...message, user: 'Unknown User' };
+            })
+          )
+        )
+      )
+    );
 
     this.messages$.subscribe(
       (messages: Message[]) => {
-        console.log('Fetched messages:', messages);
-        this.loadingMessages = false; // Stop loading once messages are fetched
+        console.log('Fetched messages with user names:', messages);
+        this.loadingMessages = false;
       },
-      (error: unknown) => {
+      (error) => {
         console.error('Error fetching messages:', error);
         this.loadingMessages = false;
       }
@@ -153,35 +183,34 @@ export class ChatComponent implements OnInit {
       return;
     }
 
-    if (!this.currentUser) {
+    if (!this.currentUserUID) {
       console.error('User is not authenticated.');
       return;
     }
 
     if (!this.currentConversationId) {
-      // Create a new conversation
-      const conversationsCollection = collection(
-        this.firestore,
-        'conversations'
-      );
-      const newConversation = {
-        participants: [this.currentUser.uid, this.otherUserId],
-        timestamp: Timestamp.fromDate(new Date()),
-      };
-
-      addDoc(conversationsCollection, newConversation)
-        .then((docRef) => {
-          console.log('New conversation created with ID:', docRef.id);
-          this.currentConversationId = docRef.id;
-          this.sendMessageToFirestore(docRef.id); // Send the first message
-        })
-        .catch((error) => {
-          console.error('Error creating new conversation:', error);
-        });
+      this.createNewConversation();
     } else {
-      // Add message to existing conversation
       this.sendMessageToFirestore(this.currentConversationId);
     }
+  }
+
+  private createNewConversation(): void {
+    const conversationsCollection = collection(this.firestore, 'conversations');
+    const newConversation = {
+      participants: [this.currentUserUID, this.otherUserId || ''],
+      timestamp: Timestamp.fromDate(new Date()),
+    };
+
+    addDoc(conversationsCollection, newConversation)
+      .then((docRef) => {
+        console.log('New conversation created with ID:', docRef.id);
+        this.currentConversationId = docRef.id;
+        this.sendMessageToFirestore(docRef.id);
+      })
+      .catch((error) => {
+        console.error('Error creating new conversation:', error);
+      });
   }
 
   private sendMessageToFirestore(conversationId: string): void {
@@ -193,14 +222,14 @@ export class ChatComponent implements OnInit {
     const message: Message = {
       text: this.newMessage.trim(),
       timestamp: Timestamp.fromDate(new Date()),
-      user: this.currentUser!.displayName || 'Anonymous',
-      userId: this.currentUser!.uid,
+      user: this.currentUserUID || 'Anonymous',
+      userId: this.currentUserUID!,
     };
 
     addDoc(messagesCollection, message)
       .then(() => {
         console.log('Message sent successfully:', message);
-        this.newMessage = ''; // Clear the input field
+        this.newMessage = '';
       })
       .catch((error) => {
         console.error('Error sending message:', error);

@@ -1,18 +1,27 @@
-<div *ngIf="currentUser">
+<div *ngIf="currentUserUID">
   <!-- Chat Messages -->
   <div *ngIf="currentConversationId; else noConversation">
     <h3>Messages</h3>
 
+    <!-- Loading State -->
     <div *ngIf="loadingMessages">
       <p>Loading messages...</p>
     </div>
 
-    <div #messageContainer class="message-container">
+    <!-- Message List -->
+    <div *ngIf="!loadingMessages" #messageContainer class="message-container">
       <div *ngFor="let message of messages$ | async" class="message">
-        <strong>{{ message.user }}:</strong> {{ message.text }}
-        <span class="timestamp">{{
-          message.timestamp.toDate() | date : "short"
-        }}</span>
+        <div class="message-header">
+          <strong>{{ message.user }}:</strong>
+        </div>
+        <div class="message-content">
+          {{ message.text }}
+        </div>
+        <div class="message-footer">
+          <span class="timestamp">{{
+            message.timestamp.toDate() | date : "short"
+          }}</span>
+        </div>
       </div>
     </div>
 
@@ -48,6 +57,6 @@
 </div>
 
 <!-- Error State -->
-<div *ngIf="!currentUser" class="error">
+<div *ngIf="!currentUserUID" class="error">
   <p>You must log in to view or send messages.</p>
 </div>

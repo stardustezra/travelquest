@@ -6,18 +6,16 @@ import {
   query,
   where,
   orderBy,
-  limit,
 } from '@angular/fire/firestore';
 import { Auth, user } from '@angular/fire/auth';
-import { combineLatestWith, Observable, of, catchError } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { Router } from '@angular/router'; // Import Router
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { User } from 'firebase/auth';
-import { Timestamp } from '@angular/fire/firestore';
 
 interface Message {
   text: string;
-  timestamp: Timestamp;
+  timestamp: any; // Firebase Timestamp or Date
   user: string;
   userId: string;
   conversationId: string;
@@ -34,123 +32,109 @@ interface Conversation {
   styleUrls: ['./inbox.component.scss'],
 })
 export class InboxComponent implements OnInit {
+  currentUser: User | null = null; // Authenticated user
+  conversations$!: Observable<Message[]>; // Observable for all aggregated messages
   userName: string = ''; // Store the current user's name
-  messages$!: Observable<Message[]>; // Observable for all aggregated messages
-  currentUser: User | null = null; // Hold the current user
+  loading: boolean = true; // Loading state
+  error: string | null = null; // Error state
 
   constructor(
     private firestore: Firestore,
     private auth: Auth,
-    private router: Router // Inject Router for navigation
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Get the current authenticated user
+    // Get the authenticated user
     user(this.auth).subscribe((currentUser: User | null) => {
       this.currentUser = currentUser;
-      this.userName = currentUser?.displayName || 'User';
+
       if (this.currentUser) {
-        this.fetchInboxMessages();
+        this.userName = this.currentUser.displayName || 'User';
+        this.fetchUserConversations();
+      } else {
+        this.error = 'You must log in to view your inbox.';
+        this.loading = false;
       }
     });
   }
 
-  // Fetch all messages for the current user's inbox
-  fetchInboxMessages(): void {
+  // Fetch conversations for the authenticated user
+  fetchUserConversations(): void {
+    if (!this.currentUser) {
+      console.error('Cannot fetch conversations: User is not authenticated.');
+      this.error = 'You must log in to view your inbox.';
+      this.loading = false;
+      return;
+    }
+
     const conversationsCollection = collection(this.firestore, 'conversations');
     const conversationsQuery = query(
       conversationsCollection,
-      where('participants', 'array-contains', this.currentUser?.uid)
+      where('participants', 'array-contains', this.currentUser.uid),
+      orderBy('timestamp', 'desc') // Fetch conversations sorted by recent activity
     );
 
-    const conversations$ = collectionData(conversationsQuery, {
+    this.conversations$ = collectionData(conversationsQuery, {
       idField: 'id',
-    }) as Observable<Conversation[]>;
+    }).pipe(
+      map((conversations: Conversation[]) => {
+        console.log('Conversations fetched:', conversations);
 
-    this.messages$ = conversations$.pipe(
-      switchMap((conversations) => {
-        console.log('Conversations fetched:', conversations); // Debugging log for conversations
-
-        if (conversations.length === 0) {
-          console.log('No conversations found for the current user.');
-          return of([]); // Return an empty array if no conversations exist
-        }
-
-        // Create an observable for fetching the latest message for each conversation
-        const latestMessageObservables = conversations.map((conversation) => {
-          const messagesCollection = collection(
-            this.firestore,
-            `conversations/${conversation.id}/messages`
-          );
-          const latestMessageQuery = query(
-            messagesCollection,
-            orderBy('timestamp', 'desc'),
-            limit(1) // Fetch only the latest message
+        return conversations.map((conversation) => {
+          // Determine the other user's ID
+          const otherUserId = conversation.participants.find(
+            (participant) => participant !== this.currentUser!.uid
           );
 
-          return collectionData(latestMessageQuery, {
-            idField: 'conversationId',
-          }).pipe(
-            map((messages: Message[]) => {
-              if (messages.length === 0) {
-                console.warn(
-                  `No messages found for conversation ${conversation.id}`
-                );
-                return null; // Return null if no messages are found
-              }
-              return {
-                ...messages[0], // Only the latest message
-                conversationId: conversation.id, // Add the conversation ID for navigation
-              };
-            }),
-            catchError((error) => {
-              console.error(
-                `Error fetching messages for conversation ${conversation.id}:`,
-                error
-              );
-              return of(null); // Gracefully handle errors
-            })
-          );
+          return {
+            conversationId: conversation.id,
+            userId: otherUserId || '',
+            user: this.getUserName(otherUserId), // Fetch the user's name
+            text: this.getLastMessage(conversation.id), // Fetch last message
+            timestamp: new Date(), // Placeholder, replace with actual timestamp
+          };
         });
-
-        // Use `combineLatestWith` to combine all observables
-        const combinedMessages$ = of(...latestMessageObservables).pipe(
-          combineLatestWith(...latestMessageObservables),
-          map((latestMessages) => {
-            const filteredMessages = latestMessages.filter(
-              (msg) => msg !== null
-            );
-            console.log('Latest messages:', filteredMessages); // Debugging log for latest messages
-            return filteredMessages;
-          })
-        );
-
-        return combinedMessages$;
+      }),
+      catchError((error) => {
+        console.error('Error fetching conversations:', error);
+        this.error = 'Failed to load inbox. Please try again later.';
+        this.loading = false;
+        return of([]);
       })
     );
+
+    this.loading = false; // Stop the loading spinner after setting up the observable
   }
 
   // Redirect to a specific conversation
   openConversation(conversationId: string): void {
     if (!conversationId) {
-      console.error('Conversation ID is undefined or empty'); // Add error log
+      console.error('Conversation ID is missing.');
       return;
     }
-    console.log('Redirecting to conversation:', conversationId); // Debugging log
-    this.router
-      .navigate(['/conversation', conversationId])
-      .then((navigated) => {
-        if (navigated) {
-          console.log('Navigation to conversation was successful.');
-        } else {
-          console.error('Navigation to conversation failed.');
-        }
-      });
+
+    console.log('Navigating to conversation:', conversationId);
+    this.router.navigate([`/conversation/${conversationId}`]).catch((err) => {
+      console.error('Failed to navigate to the conversation:', err);
+    });
   }
 
   // Fetch profile photo for a user or return a default
   getProfilePhoto(userId: string): string {
-    // Replace this with Firestore logic if profile photos are stored in a separate collection
+    // Replace this with Firestore logic if profile photos are stored in a collection
     return `assets/images/default-pic-green.png`;
+  }
+
+  // Placeholder for fetching the user's name
+  getUserName(userId: string | undefined): string {
+    // Implement logic to fetch user names from Firestore or return a placeholder
+    return userId ? `User ${userId}` : 'Unknown User';
+  }
+
+  // Placeholder for fetching the last message of a conversation
+  getLastMessage(conversationId: string): string {
+    // Implement logic to fetch the last message from Firestore
+    return 'Last message placeholder';
   }
 }

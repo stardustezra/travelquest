@@ -1,28 +1,54 @@
 <div class="inbox-container">
   <!-- Header Section -->
-  <mat-card class="inbox-header">
+  <div class="inbox-header">
     <h2 class="inbox-title">Messages</h2>
-    <mat-card-subtitle>Welcome, {{ userName }}!</mat-card-subtitle>
-  </mat-card>
+    <p *ngIf="!currentUser" class="error">
+      You must log in to view your messages.
+    </p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <p>Loading conversations...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+  </div>
 
   <!-- Messages List -->
-  <div class="messages-list">
-    <mat-card
+  <div *ngIf="!loading && !error" class="messages-list">
+    <!-- No Messages State -->
+    <p *ngIf="!(conversations$ | async)?.length" class="no-messages">
+      You have no conversations yet.
+    </p>
+
+    <!-- Conversations -->
+    <div
       class="message-item"
-      *ngFor="let message of messages$ | async"
-      (click)="openConversation(message.conversationId)"
+      *ngFor="let conversation of conversations$ | async"
+      (click)="openConversation(conversation.conversationId)"
     >
-      <mat-card-header>
-        <div
-          mat-card-avatar
-          class="profile-photo"
-          [ngStyle]="{
-            'background-image': 'url(' + getProfilePhoto(message.userId) + ')'
-          }"
-        ></div>
-        <mat-card-title>{{ message.user }}</mat-card-title>
-        <mat-card-subtitle>{{ message.text }}</mat-card-subtitle>
-      </mat-card-header>
-    </mat-card>
+      <!-- Profile Photo -->
+      <div
+        class="profile-photo"
+        [ngStyle]="{
+          'background-image':
+            'url(' + getProfilePhoto(conversation.userId) + ')'
+        }"
+      ></div>
+
+      <!-- Message Content -->
+      <div class="message-content">
+        <p class="message-user">{{ conversation.user }}</p>
+        <p class="message-text">
+          {{ conversation.text || "No messages yet" }}
+        </p>
+        <p class="message-timestamp">
+          {{ conversation.timestamp | date : "short" }}
+        </p>
+      </div>
+    </div>
   </div>
 </div>
