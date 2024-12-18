@@ -16,7 +16,7 @@ export const routes: Routes = [
     path: '',
     loadChildren: () =>
       import('./authorized/authorized.module').then((m) => m.AuthorizedModule),
-    //canActivate: [isAuthed],
+    canActivate: [isAuthed],
   },
 ];
 
