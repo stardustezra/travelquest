@@ -1,5 +1,4 @@
 <mat-card>
-  <h1>Profile Creation</h1>
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
     <!-- Profile Photo Upload -->
     <div class="upload-container">
@@ -11,7 +10,11 @@
           class="profile-photo"
         />
         <ng-template #placeholder>
-          <div class="placeholder">Upload Profile Photo</div>
+          <img
+            src="assets/images/default-pic-green.png"
+            alt="Default Profile Photo"
+            class="profile-photo placeholder-photo"
+          />
         </ng-template>
       </label>
       <input
@@ -77,17 +80,21 @@
         {{ customTag }}
         <button matChipRemove></button>
       </mat-chip>
-      <input
-        matInput
-        placeholder="Add custom hashtag (e.g., #example)"
-        [matChipInputFor]="chipGrid"
-        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-        (matChipInputTokenEnd)="addCustomHashtag($event)"
-      />
+      <mat-form-field class="custom-input">
+        <input
+          matInput
+          placeholder="Add custom hashtag"
+          [matChipInputFor]="chipGrid"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="addCustomHashtag($event)"
+          class="custom-hashtag-input"
+        />
+      </mat-form-field>
     </mat-chip-grid>
 
     <!-- Submit Button -->
     <button
+      class="submit-button"
       mat-raised-button
       color="primary"
       type="submit"

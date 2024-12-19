@@ -13,7 +13,6 @@ import {
   geohashQueryBounds,
   distanceBetween,
 } from 'geofire-common';
-import { Hashtag } from '../models/user-profile.model';
 
 @Injectable({
   providedIn: 'root',

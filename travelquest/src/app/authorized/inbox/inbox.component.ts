@@ -6,16 +6,18 @@ import {
   query,
   where,
   orderBy,
+  doc,
+  getDoc,
 } from '@angular/fire/firestore';
 import { Auth, user } from '@angular/fire/auth';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from 'firebase/auth';
 
 interface Message {
   text: string;
-  timestamp: any; // Firebase Timestamp or Date
+  timestamp: any;
   user: string;
   userId: string;
   conversationId: string;
@@ -32,11 +34,11 @@ interface Conversation {
   styleUrls: ['./inbox.component.scss'],
 })
 export class InboxComponent implements OnInit {
-  currentUser: User | null = null; // Authenticated user
-  conversations$!: Observable<Message[]>; // Observable for all aggregated messages
-  userName: string = ''; // Store the current user's name
-  loading: boolean = true; // Loading state
-  error: string | null = null; // Error state
+  currentUser: User | null = null;
+  conversations$!: Observable<Message[]>;
+  userName: string = '';
+  loading: boolean = true;
+  error: string | null = null;
 
   constructor(
     private firestore: Firestore,
@@ -78,24 +80,29 @@ export class InboxComponent implements OnInit {
     this.conversations$ = collectionData(conversationsQuery, {
       idField: 'id',
     }).pipe(
-      map((conversations: Conversation[]) => {
-        console.log('Conversations fetched:', conversations);
+      switchMap((conversations: Conversation[]) =>
+        from(
+          Promise.all(
+            conversations.map(async (conversation) => {
+              // Fetch the other user's ID
+              const otherUserId = conversation.participants.find(
+                (participant) => participant !== this.currentUser!.uid
+              );
 
-        return conversations.map((conversation) => {
-          // Determine the other user's ID
-          const otherUserId = conversation.participants.find(
-            (participant) => participant !== this.currentUser!.uid
-          );
+              // Fetch the user's name from Firestore
+              const userName = otherUserId
+                ? await this.getUserName(otherUserId)
+                : 'Unknown User';
 
-          return {
-            conversationId: conversation.id,
-            userId: otherUserId || '',
-            user: this.getUserName(otherUserId), // Fetch the user's name
-            text: this.getLastMessage(conversation.id), // Fetch last message
-            timestamp: new Date(), // Placeholder, replace with actual timestamp
-          };
-        });
-      }),
+              return {
+                conversationId: conversation.id,
+                userId: otherUserId || '',
+                user: userName,
+              };
+            })
+          )
+        )
+      ),
       catchError((error) => {
         console.error('Error fetching conversations:', error);
         this.error = 'Failed to load inbox. Please try again later.';
@@ -105,6 +112,21 @@ export class InboxComponent implements OnInit {
     );
 
     this.loading = false; // Stop the loading spinner after setting up the observable
+  }
+
+  // Fetch the user's name from Firestore
+  private async getUserName(userId: string): Promise<string> {
+    const userDocRef = doc(this.firestore, `publicProfiles/${userId}`);
+    try {
+      const userSnapshot = await getDoc(userDocRef);
+      if (userSnapshot.exists()) {
+        const data = userSnapshot.data();
+        return data['name'] || 'Unknown User';
+      }
+    } catch (error) {
+      console.error('Error fetching user name:', error);
+    }
+    return 'Unknown User';
   }
 
   // Redirect to a specific conversation
@@ -122,19 +144,6 @@ export class InboxComponent implements OnInit {
 
   // Fetch profile photo for a user or return a default
   getProfilePhoto(userId: string): string {
-    // Replace this with Firestore logic if profile photos are stored in a collection
     return `assets/images/default-pic-green.png`;
-  }
-
-  // Placeholder for fetching the user's name
-  getUserName(userId: string | undefined): string {
-    // Implement logic to fetch user names from Firestore or return a placeholder
-    return userId ? `User ${userId}` : 'Unknown User';
-  }
-
-  // Placeholder for fetching the last message of a conversation
-  getLastMessage(conversationId: string): string {
-    // Implement logic to fetch the last message from Firestore
-    return 'Last message placeholder';
   }
 }

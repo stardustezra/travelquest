@@ -1,53 +1,52 @@
-<div class="inbox-container">
+<div class="inbox-container mat-elevation-z2">
   <!-- Header Section -->
-  <div class="inbox-header">
-    <h2 class="inbox-title">Messages</h2>
-    <p *ngIf="!currentUser" class="error">
-      You must log in to view your messages.
-    </p>
-  </div>
+  <mat-card class="inbox-header">
+    <div class="header-content">
+      <h2 class="inbox-title">Messages</h2>
+    </div>
+  </mat-card>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
     <p>Loading conversations...</p>
   </div>
 
   <!-- Error State -->
   <div *ngIf="error" class="error-state">
-    <p>{{ error }}</p>
+    <mat-card class="error-card">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <p>{{ error }}</p>
+    </mat-card>
   </div>
 
   <!-- Messages List -->
   <div *ngIf="!loading && !error" class="messages-list">
     <!-- No Messages State -->
-    <p *ngIf="!(conversations$ | async)?.length" class="no-messages">
-      You have no conversations yet.
-    </p>
+    <mat-card *ngIf="!(conversations$ | async)?.length" class="no-messages">
+      <mat-icon color="primary">info</mat-icon>
+      <p>You have no conversations yet.</p>
+    </mat-card>
 
     <!-- Conversations -->
-    <div
-      class="message-item"
-      *ngFor="let conversation of conversations$ | async"
-      (click)="openConversation(conversation.conversationId)"
-    >
-      <!-- Profile Photo -->
+    <div class="conversation-list">
       <div
-        class="profile-photo"
-        [ngStyle]="{
-          'background-image':
-            'url(' + getProfilePhoto(conversation.userId) + ')'
-        }"
-      ></div>
+        class="message-item"
+        *ngFor="let conversation of conversations$ | async"
+        (click)="openConversation(conversation.conversationId)"
+      >
+        <!-- Profile Photo -->
+        <img
+          [src]="getProfilePhoto(conversation.userId)"
+          alt="Profile Photo"
+          class="profile-photo"
+          *ngIf="conversation.userId"
+        />
 
-      <!-- Message Content -->
-      <div class="message-content">
-        <p class="message-user">{{ conversation.user }}</p>
-        <p class="message-text">
-          {{ conversation.text || "No messages yet" }}
-        </p>
-        <p class="message-timestamp">
-          {{ conversation.timestamp | date : "short" }}
-        </p>
+        <!-- Message Content -->
+        <div class="message-details">
+          <div class="message-user">{{ conversation.user }}</div>
+        </div>
       </div>
     </div>
   </div>

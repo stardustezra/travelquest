@@ -2,18 +2,23 @@
 @import "../../../styles.scss";
 
 mat-card {
-  width: 80%;
-  max-width: 500px;
-  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
   padding: 2rem;
   background: none;
   box-shadow: none;
+  height: 100vh;
+  position: relative;
 }
 
 form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
 
   mat-form-field {
     width: 100%;
@@ -44,6 +49,16 @@ form {
   }
 }
 
+.logo-container {
+  text-align: center;
+  margin-bottom: 5rem;
+
+  .logo {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
 .register-redirect {
   margin-top: 3rem;
   text-align: center;
@@ -65,8 +80,8 @@ form {
   }
 }
 
+/* Custom styles for Angular Material form fields */
 :host ::ng-deep {
-  /* form appearance style */
   .mdc-text-field--filled {
     background-color: #ffffff00 !important;
     padding-left: 3px;

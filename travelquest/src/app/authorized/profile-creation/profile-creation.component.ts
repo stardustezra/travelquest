@@ -138,13 +138,21 @@ export class ProfileCreationComponent implements OnInit {
 
   addCustomHashtag(event: any): void {
     const input = event.chipInput?.inputElement;
-    const value = (event.value || '').trim();
+    let value = (event.value || '').trim();
+
+    // Prepend '#' if not already present
+    if (value && !value.startsWith('#')) {
+      value = `#${value}`;
+    }
 
     const isValidHashtag = /^#[a-zA-Z0-9-_]+$/.test(value);
 
     if (isValidHashtag && this.totalTagsSelected() < 10) {
       this.customHashtags.push(value);
       console.log('Custom Hashtag Added:', value);
+
+      // Sync with FormGroup
+      this.profileForm.get('customHashtags')?.setValue(this.customHashtags);
     } else if (!isValidHashtag && value) {
       console.error('Invalid hashtag format:', value);
     }
@@ -152,6 +160,7 @@ export class ProfileCreationComponent implements OnInit {
     if (input) {
       input.value = '';
     }
+
     console.log('Custom Hashtags:', this.customHashtags);
   }
 

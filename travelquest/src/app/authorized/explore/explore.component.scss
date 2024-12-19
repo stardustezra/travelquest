@@ -1,19 +1,22 @@
+@import "../../../styles/colors";
+@import "../../../styles.scss";
+
 .explore-container {
   padding: 2rem;
 
   h1 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
-    text-align: center;
+    text-align: left;
   }
 
   .user-card {
     display: flex;
-    align-items: center;
+    align-items: left;
     margin-bottom: 1rem;
     padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    background-color: white;
+    border-radius: 0px;
 
     .profile-photo {
       width: 100px;
@@ -26,14 +29,16 @@
     mat-card-content {
       flex: 1;
 
-      h2 {
-        font-size: 1.5rem;
+      h3 {
+        font-size: 1rem;
         margin: 0 0 0.5rem;
+        font-weight: 300;
       }
 
       p {
         margin: 0.2rem 0;
         font-size: 0.9rem;
+        font-weight: 300;
       }
 
       .hashtags {
@@ -49,5 +54,17 @@
         }
       }
     }
+  }
+
+  .user-card button {
+    font-size: 16px;
+    font-weight: 600;
+    color: black;
+    background: none;
+    border: none;
+    box-shadow: none;
+    text-align: left;
+    display: inline-block;
+    padding-top: 1rem;
   }
 }

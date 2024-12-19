@@ -1,5 +1,9 @@
 <section class="explore-container">
   <h1>Explore</h1>
+  <p>
+    Connect with other solo travellers who share your interests, spend a day
+    together and enjoy new experiences together.
+  </p>
 
   <div *ngIf="nearbyUsers$ | async as users; else noUsers">
     <mat-card *ngFor="let user of users" class="user-card">
@@ -10,16 +14,13 @@
         class="profile-photo"
       />
       <mat-card-content>
-        <h2>{{ user.name }}</h2>
-        <p>Age: {{ user.age || "N/A" }}</p>
-        <!-- Fallback for missing age -->
-        <p>Country: {{ user.country }}</p>
-        <p>Shared Hashtags:</p>
-        <div class="hashtags">
-          <span *ngFor="let tag of user.hashtags" class="hashtag">
-            {{ tag }}
-          </span>
-        </div>
+        <h3>{{ user.name }}, {{ user.age || "N/A" }}</h3>
+        <p>{{ user.country }}</p>
+
+        <!-- Use HashtagListComponent -->
+        <travelquest-hashtag-list
+          [hashtags]="user.hashtags"
+        ></travelquest-hashtag-list>
       </mat-card-content>
 
       <!-- Explore Profile Button -->

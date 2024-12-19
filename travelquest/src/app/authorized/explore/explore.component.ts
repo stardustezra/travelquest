@@ -10,7 +10,7 @@ import { Observable, of } from 'rxjs';
 })
 export class ExploreComponent implements OnInit {
   nearbyUsers$: Observable<any[]> = of([]);
-  userLocation = { latitude: 37.7749, longitude: -122.4194 }; // Default user location (replace with dynamic data)
+  userLocation = { latitude: 37.7749, longitude: -122.4194 };
   radiusInKm = 10;
   userHashtags: string[] = [];
 
@@ -23,21 +23,14 @@ export class ExploreComponent implements OnInit {
     this.initializeUserLocationAndFetchData();
   }
 
-  /**
-   * Initialize user location and fetch related data.
-   */
   private initializeUserLocationAndFetchData(): void {
     this.sessionStore.getCurrentUserUID().subscribe((uid) => {
       if (uid) {
         this.saveUserLocationAndFetchData(uid);
-      } else {
       }
     });
   }
 
-  /**
-   * Save user location and fetch hashtags and nearby users.
-   */
   private saveUserLocationAndFetchData(userId: string): void {
     const { latitude, longitude } = this.userLocation;
 
@@ -46,26 +39,18 @@ export class ExploreComponent implements OnInit {
       .then(() => {
         this.fetchUserHashtagsAndLoadUsers(userId);
       })
-      .catch((error) => {});
+      .catch((error) => console.error(error));
   }
 
-  /**
-   * Fetch user hashtags and load nearby users based on the hashtags.
-   */
   private fetchUserHashtagsAndLoadUsers(userId: string): void {
     this.sessionStore.getUserProfile(userId).subscribe((profile) => {
       if (profile && profile.hashtags) {
         this.userHashtags = profile.hashtags;
-
         this.loadNearbyUsers();
-      } else {
       }
     });
   }
 
-  /**
-   * Load nearby users based on user location and hashtags.
-   */
   private loadNearbyUsers(): void {
     this.sessionStore.getCurrentUserUID().subscribe((currentUserId) => {
       if (!currentUserId) {
@@ -86,7 +71,7 @@ export class ExploreComponent implements OnInit {
               .map((user) => ({
                 ...user,
                 age: this.calculateAge(user.dob),
-                hashtags: this.extractHashtagTags(user.hashtags),
+                hashtags: this.processHashtags(user.hashtags),
               }));
 
             console.log('Processed users:', processedUsers);
@@ -101,9 +86,6 @@ export class ExploreComponent implements OnInit {
     });
   }
 
-  /**
-   * Calculate age from Firestore timestamp.
-   */
   private calculateAge(
     dob: { seconds: number; nanoseconds: number } | null
   ): number {
@@ -115,12 +97,16 @@ export class ExploreComponent implements OnInit {
   }
 
   /**
-   * Extract tags from hashtags array.
+   * Process hashtags to ensure correct structure.
+   * Adds default category if missing.
    */
-  private extractHashtagTags(hashtags: any[]): string[] {
+  private processHashtags(
+    hashtags: any[]
+  ): { tag: string; category: string }[] {
     if (!Array.isArray(hashtags)) return [];
-    return hashtags
-      .map((h) => (h && h.tag ? h.tag : null))
-      .filter((tag) => tag !== null);
+    return hashtags.map((h) => ({
+      tag: h.tag || '',
+      category: h.category || 'custom', // Default to 'custom' if category is missing
+    }));
   }
 }

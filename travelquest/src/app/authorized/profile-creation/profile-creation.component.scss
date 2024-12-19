@@ -3,8 +3,7 @@
 
 // Mat-card styling for consistent appearance
 mat-card {
-  width: 70%;
-  max-width: 500px;
+  width: 80%;
   margin: 5rem auto;
   padding: 2rem;
   background: none;
@@ -21,16 +20,12 @@ form {
     color: white;
   }
 
-  button {
+  .submit-button {
     align-self: flex-start;
     padding: 0.8rem 1.5rem;
     border-radius: 4px;
     background-color: $action-color;
     color: white;
-
-    &:hover {
-      background-color: darkorange;
-    }
   }
 
   .error {
@@ -48,24 +43,23 @@ form {
   gap: 1rem;
 
   label {
-    cursor: pointer;
     .profile-photo {
       width: 120px;
       height: 120px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid $action-color;
+      background-color: white;
     }
 
     .placeholder {
       width: 120px;
       height: 120px;
-      border: 2px dashed $action-color;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
+      background-color: white;
       font-size: 0.9rem;
     }
   }
@@ -77,6 +71,13 @@ form {
 
 input[matInput] {
   display: inline-block;
+  background-color: white;
+  color: black;
+
+  &::placeholder {
+    color: rgba(0, 0, 0, 0.6); /* Set a visible placeholder color */
+    opacity: 1; /* Ensure placeholder is not hidden */
+  }
 }
 
 // ::ng-deep overrides for Material components
