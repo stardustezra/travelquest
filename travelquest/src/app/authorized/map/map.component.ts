@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SafetyTipsDialogComponent } from '../../shared/components/safety-tips-dialog/safety-tips-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet'; // Import Leaflet
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 @Component({
   selector: 'app-map',
@@ -31,7 +32,8 @@ export class MapComponent implements AfterViewInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private locationService: LocationService, // Inject LocationService
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private snackbarService: SnackbarService
   ) {}
 
   // Open the safety tips dialog
@@ -48,32 +50,47 @@ export class MapComponent implements AfterViewInit {
       const L = await import('leaflet'); // Dynamically load Leaflet
       const isMobile = window.innerWidth <= 600;
 
-      this.map = L.map('map', {
-        zoomControl: !isMobile,
-      }).setView([40.73061, -73.935242], 12);
+      try {
+        this.map = L.map('map', {
+          zoomControl: !isMobile,
+        }).setView([40.73061, -73.935242], 12);
 
-      if (!isMobile) {
-        L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
-      }
+        if (!isMobile) {
+          L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
+        }
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(this.map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap contributors',
+        }).addTo(this.map);
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const userCoords: [number, number] = [
-              position.coords.latitude,
-              position.coords.longitude,
-            ];
-            this.map.setView(userCoords, 15);
-            this.addLocationMarker(userCoords, L);
-          },
-          (error) => {
-            console.warn('Geolocation failed:', error);
-          }
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const userCoords: [number, number] = [
+                position.coords.latitude,
+                position.coords.longitude,
+              ];
+              this.map.setView(userCoords, 15);
+              this.addLocationMarker(userCoords, L);
+            },
+            (error) => {
+              console.warn('Geolocation failed:', error);
+              this.snackbarService.error(
+                'Geolocation failed. Please enable location services.'
+              );
+            }
+          );
+        } else {
+          console.error('Geolocation not supported by this browser.');
+          this.snackbarService.error(
+            'Geolocation is not supported by this browser.'
+          );
+        }
+      } catch (err) {
+        console.error('Error initializing map:', err);
+        this.snackbarService.error(
+          'An error occurred while initializing the map. Please try again later.'
         );
       }
     }

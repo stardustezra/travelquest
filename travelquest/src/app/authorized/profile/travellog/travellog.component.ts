@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { sessionStoreRepository } from '../../../shared/stores/session-store.repository';
 import { Timestamp } from '@angular/fire/firestore';
+import { SnackbarService } from '../../../shared/snackbar/snackbar.service'; // Import SnackbarService
 
 @Component({
   selector: 'travelquest-travellog',
@@ -22,7 +23,8 @@ export class TravellogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private sessionStore: sessionStoreRepository
+    private sessionStore: sessionStoreRepository,
+    private snackbarService: SnackbarService // Inject SnackbarService
   ) {
     this.travelLogForm = this.fb.group({
       country: ['', Validators.required],
@@ -61,7 +63,12 @@ export class TravellogComponent implements OnInit {
             const newCount = this.travelLogs.length;
             this.sessionStore.updateTravelsCount(uid, newCount);
           })
-          .catch((error) => {});
+          .catch((error) => {
+            console.error('Error saving travel log:', error);
+            this.snackbarService.error(
+              'There was an error uploading your travellog. Please try again.'
+            );
+          });
       }
     });
   }

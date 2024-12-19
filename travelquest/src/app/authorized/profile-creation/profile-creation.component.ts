@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 import ISO6391 from 'iso-639-1';
 import ISO3166 from 'iso-3166-1';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 interface Hashtag {
   tag: string;
@@ -41,7 +42,8 @@ export class ProfileCreationComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private sessionStore: sessionStoreRepository
+    private sessionStore: sessionStoreRepository,
+    private snackbarService: SnackbarService
   ) {
     // Initialize form
     this.profileForm = this.fb.group({
@@ -70,14 +72,24 @@ export class ProfileCreationComponent implements OnInit {
               this.currentUser = profile;
               console.log('Current User Profile:', profile);
             },
-            error: (err) => console.error('Error fetching user profile:', err),
+            error: (err) => {
+              console.error('Error fetching user profile:', err);
+              this.snackbarService.error(
+                'Error fetching user profile. Please try again.'
+              );
+            },
           });
         } else {
           this.isAuthenticated = false;
           console.warn('No authenticated user found.');
         }
       },
-      error: (err) => console.error('Error retrieving UID:', err),
+      error: (err) => {
+        console.error('Error retrieving UID:', err);
+        this.snackbarService.error(
+          'Error retrieving user UID. Please try again.'
+        );
+      },
     });
   }
 
@@ -98,6 +110,7 @@ export class ProfileCreationComponent implements OnInit {
 
     if (!countries || countries.length === 0) {
       console.error('ISO3166.all() returned no data or an empty array');
+      this.snackbarService.error('Error fetching countries. Please try again.');
       return;
     }
 
@@ -115,6 +128,9 @@ export class ProfileCreationComponent implements OnInit {
       console.log('Fetched Hashtags:', this.predefinedHashtags);
     } catch (error) {
       console.error('Error fetching predefined hashtags:', error);
+      this.snackbarService.error(
+        'Error fetching predefined hashtags. Please try again.'
+      );
     }
   }
 

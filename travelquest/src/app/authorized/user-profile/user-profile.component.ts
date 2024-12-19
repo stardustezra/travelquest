@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router'; // Import ActivatedRoute
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'travelquest-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class UserProfileComponent implements OnInit {
   userProfile: any;
@@ -17,7 +19,8 @@ export class UserProfileComponent implements OnInit {
   constructor(
     private sessionStore: sessionStoreRepository,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -29,23 +32,18 @@ export class UserProfileComponent implements OnInit {
       } else {
         this.error = 'User ID not found in the route';
         this.loading = false;
-
-        // Redirect to homepage if ID is missing
-        console.error(
-          'User ID is missing from route. Redirecting to homepage.'
-        );
-        this.router.navigate(['/']);
+        this.snackbarService.error('User ID not found in the route');
       }
     });
   }
 
   fetchUserProfile(uid: string): void {
-    // Use the userId from the route to fetch the profile
     this.sessionStore.getUserProfile(uid).subscribe({
       next: (profile) => {
         this.loading = false;
         if (!profile) {
           this.error = 'Profile not found';
+          this.snackbarService.error('Profile not found');
         } else {
           this.userProfile = profile;
         }
@@ -53,9 +51,13 @@ export class UserProfileComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         this.error = 'An error occurred while fetching the profile';
+        this.snackbarService.error(
+          'An error occurred while fetching the profile'
+        );
       },
     });
   }
+
   navigateToChat(): void {
     if (this.userId) {
       console.log('Navigating to chat with user ID:', this.userId); // Debugging log

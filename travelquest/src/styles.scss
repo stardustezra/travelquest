@@ -87,3 +87,13 @@ mat-card {
     }
   }
 }
+
+.mat-mdc-snack-bar-container.success-snack-style {
+  --mdc-snackbar-container-color: green !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}
+
+.mat-mdc-snack-bar-container.error-snack-style {
+  --mdc-snackbar-container-color: red !important;
+  --mdc-snackbar-supporting-text-color: white !important;
+}

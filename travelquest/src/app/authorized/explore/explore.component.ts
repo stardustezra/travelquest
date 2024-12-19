@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 import { GeoService } from '../../shared/data-services/geolocation.service';
 import { Observable, of } from 'rxjs';
+import { SnackbarService } from '../../shared/snackbar/snackbar.service';
 
 @Component({
   selector: 'travelquest-explore',
@@ -16,7 +17,8 @@ export class ExploreComponent implements OnInit {
 
   constructor(
     private sessionStore: sessionStoreRepository,
-    private geoService: GeoService
+    private geoService: GeoService,
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
@@ -24,10 +26,19 @@ export class ExploreComponent implements OnInit {
   }
 
   private initializeUserLocationAndFetchData(): void {
-    this.sessionStore.getCurrentUserUID().subscribe((uid) => {
-      if (uid) {
-        this.saveUserLocationAndFetchData(uid);
-      }
+    this.sessionStore.getCurrentUserUID().subscribe({
+      next: (uid) => {
+        if (uid) {
+          this.saveUserLocationAndFetchData(uid);
+        } else {
+          console.warn('No user logged in.');
+          this.snackbarService.error('User is not logged in.');
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching current user UID:', err);
+        this.snackbarService.error('Error fetching user UID.');
+      },
     });
   }
 
@@ -39,50 +50,78 @@ export class ExploreComponent implements OnInit {
       .then(() => {
         this.fetchUserHashtagsAndLoadUsers(userId);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error('Failed to save user location:', error);
+        this.snackbarService.error('Failed to save your location.');
+      });
   }
 
   private fetchUserHashtagsAndLoadUsers(userId: string): void {
-    this.sessionStore.getUserProfile(userId).subscribe((profile) => {
-      if (profile && profile.hashtags) {
-        this.userHashtags = profile.hashtags;
-        this.loadNearbyUsers();
-      }
+    console.log('Fetching user hashtags...');
+    this.sessionStore.getUserProfile(userId).subscribe({
+      next: (profile) => {
+        if (profile && profile.hashtags) {
+          this.userHashtags = profile.hashtags;
+          console.log('User hashtags:', this.userHashtags);
+          this.loadNearbyUsers();
+        } else {
+          console.warn('No hashtags found for the user.');
+          this.snackbarService.error('No hashtags found for the user.');
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching user profile:', err);
+        this.snackbarService.error('Error fetching user profile.');
+      },
     });
   }
 
   private loadNearbyUsers(): void {
-    this.sessionStore.getCurrentUserUID().subscribe((currentUserId) => {
-      if (!currentUserId) {
-        return;
-      }
+    console.log('Loading nearby users...');
+    console.log('User Location:', this.userLocation);
+    console.log('Radius in Km:', this.radiusInKm);
 
-      this.nearbyUsers$ = new Observable((observer) => {
-        this.geoService
-          .findNearbyUsers(
-            this.userLocation.latitude,
-            this.userLocation.longitude,
-            this.radiusInKm,
-            this.userHashtags
-          )
-          .then((users) => {
-            const processedUsers = users
-              .filter((user) => user.uid !== currentUserId)
-              .map((user) => ({
-                ...user,
-                age: this.calculateAge(user.dob),
-                hashtags: this.processHashtags(user.hashtags),
-              }));
+    this.sessionStore.getCurrentUserUID().subscribe({
+      next: (currentUserId) => {
+        if (!currentUserId) {
+          console.warn('No user is logged in.');
+          this.snackbarService.error('No user is logged in.');
+          return;
+        }
 
-            console.log('Processed users:', processedUsers);
-            observer.next(processedUsers);
-            observer.complete();
-          })
-          .catch((error) => {
-            observer.next([]);
-            observer.complete();
-          });
-      });
+        this.nearbyUsers$ = new Observable((observer) => {
+          this.geoService
+            .findNearbyUsers(
+              this.userLocation.latitude,
+              this.userLocation.longitude,
+              this.radiusInKm,
+              this.userHashtags
+            )
+            .then((users) => {
+              const processedUsers = users
+                .filter((user) => user.uid !== currentUserId) // Exclude current user
+                .map((user) => ({
+                  ...user,
+                  age: this.calculateAge(user.dob),
+                  hashtags: this.extractHashtagTags(user.hashtags),
+                }));
+
+              console.log('Processed users:', processedUsers);
+              observer.next(processedUsers);
+              observer.complete();
+            })
+            .catch((error) => {
+              console.error('Error loading nearby users:', error);
+              this.snackbarService.error('Error loading nearby users.');
+              observer.next([]);
+              observer.complete();
+            });
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching current user UID for nearby users:', err);
+        this.snackbarService.error('Error fetching current user UID.');
+      },
     });
   }
 
