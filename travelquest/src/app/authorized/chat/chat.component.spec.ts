@@ -1,31 +1,35 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChatComponent } from './chat.component';
-import { Firestore } from '@angular/fire/firestore';
-import { ActivatedRoute } from '@angular/router';
-import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 import { of } from 'rxjs';
-import { FormsModule } from '@angular/forms';
-
-// Mock Firestore
-const mockFirestore = {
-  collection: jasmine.createSpy('collection').and.callFake(() => ({
-    addDoc: jasmine.createSpy('addDoc').and.returnValue(Promise.resolve()),
-  })),
-};
+import { ActivatedRoute } from '@angular/router';
+import {
+  Firestore,
+  collection,
+  addDoc,
+  Timestamp,
+} from '@angular/fire/firestore';
+import { sessionStoreRepository } from '../../shared/stores/session-store.repository';
 
 // Mock ActivatedRoute
-const mockActivatedRoute = {
+const mockRoute = {
   paramMap: of({
-    get: (key: string) => (key === 'id' ? 'conversation123' : null),
+    get: (key: string) => (key === 'id' ? 'testConversationId' : null),
   }),
 };
 
+// Mock Firestore
+const mockFirestore = jasmine.createSpyObj('Firestore', [
+  'collection',
+  'addDoc',
+]);
+mockFirestore.collection.and.returnValue({}); // Mock collection behavior
+mockFirestore.addDoc.and.callFake(() => Promise.resolve()); // Mock addDoc success
+
 // Mock sessionStoreRepository
-const mockSessionStore = {
-  getCurrentUserUID: jasmine
-    .createSpy('getCurrentUserUID')
-    .and.returnValue(of('mockUserUID')),
-};
+const mockSessionStore = jasmine.createSpyObj('sessionStoreRepository', [
+  'getCurrentUserUID',
+]);
+mockSessionStore.getCurrentUserUID.and.returnValue(of('testUserUID')); // Return a valid user UID
 
 describe('ChatComponent', () => {
   let component: ChatComponent;
@@ -34,47 +38,69 @@ describe('ChatComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ChatComponent],
-      imports: [FormsModule],
       providers: [
+        { provide: ActivatedRoute, useValue: mockRoute },
         { provide: Firestore, useValue: mockFirestore },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: sessionStoreRepository, useValue: mockSessionStore },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChatComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges(); // Trigger initial lifecycle hooks
+  });
 
-    fixture.detectChanges();
+  beforeEach(() => {
+    mockFirestore.collection.calls.reset();
+    mockFirestore.addDoc.calls.reset();
   });
 
   it('should send a message successfully', async () => {
-    // Mock conversation ID and user authentication
-    component.currentConversationId = 'conversation123';
-    component.currentUserUID = 'mockUserUID';
-
-    // Set the new message input
+    // Arrange
+    component.currentUserUID = 'testUserUID';
+    component.currentConversationId = 'testConversationId';
     component.newMessage = 'Hello, World!';
 
-    // Spy on the Firestore addDoc method
-    const messagesCollectionSpy = mockFirestore.collection;
-    const addDocSpy = messagesCollectionSpy().addDoc;
+    // Act
+    await component.sendMessage();
 
-    // Call sendMessage method
+    // Assert
+    expect(mockFirestore.collection).toHaveBeenCalledWith(
+      jasmine.anything(),
+      `conversations/testConversationId/messages`
+    );
+    expect(mockFirestore.addDoc).toHaveBeenCalledWith(jasmine.anything(), {
+      text: 'Hello, World!',
+      timestamp: jasmine.any(Timestamp),
+      user: 'testUserUID',
+      userId: 'testUserUID',
+    });
+    expect(component.newMessage).toBe('');
+  });
+
+  it('should log an error if message is empty', () => {
+    // Arrange
+    component.newMessage = '   ';
+    spyOn(console, 'error');
+
+    // Act
     component.sendMessage();
 
-    // Verify that addDoc was called with correct arguments
-    expect(messagesCollectionSpy).toHaveBeenCalledWith(
-      'conversations/conversation123/messages'
-    );
-    expect(addDocSpy).toHaveBeenCalledWith({
-      text: 'Hello, World!',
-      timestamp: jasmine.any(Object), // Timestamp will be mocked
-      user: 'mockUserUID',
-      userId: 'mockUserUID',
-    });
+    // Assert
+    expect(console.error).toHaveBeenCalledWith('Message is empty.');
+  });
 
-    // Ensure the newMessage is reset
-    expect(component.newMessage).toBe('');
+  it('should not send a message if user is not authenticated', async () => {
+    // Arrange
+    component.currentUserUID = null;
+    component.newMessage = 'Test message';
+    spyOn(console, 'error');
+
+    // Act
+    await component.sendMessage();
+
+    // Assert
+    expect(console.error).toHaveBeenCalledWith('User is not authenticated.');
+    expect(mockFirestore.addDoc).not.toHaveBeenCalled();
   });
 });
