@@ -25,18 +25,16 @@ export class LoginComponent {
   }
 
   async onSubmit(): Promise<void> {
-    if (this.form.invalid) return;
+    if (this.form.invalid) return; // This ensures no further logic runs when the form is invalid
 
     const { email, password } = this.form.value;
     this.isSubmitting = true;
 
     try {
-      await this.authService.signIn(email, password); // Use AuthService
-      console.log('Login successful');
+      await this.authService.signIn(email, password); // Use AuthService for signIn
       this.router.navigate(['/home']);
     } catch (error) {
       this.errorMessage = 'Invalid email or password';
-      console.error('Login error:', error);
     } finally {
       this.isSubmitting = false;
     }

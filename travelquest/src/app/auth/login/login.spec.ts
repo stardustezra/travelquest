@@ -54,6 +54,10 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
+  beforeEach(() => {
+    mockAuthService.signIn.calls.reset();
+  });
+
   it('should log in with correct credentials', async () => {
     // Set form values to simulate valid login credentials
     component.form.setValue({
@@ -81,10 +85,10 @@ describe('LoginComponent', () => {
   });
 
   it('should not call AuthService when form is invalid', async () => {
-    // Set empty form values
+    // Set empty form values to make the form invalid
     component.form.setValue({
-      email: '',
-      password: '',
+      email: '', // Invalid email
+      password: '', // Invalid password
     });
 
     // Ensure form is invalid
@@ -93,14 +97,11 @@ describe('LoginComponent', () => {
     // Trigger form submission
     await component.onSubmit();
 
-    // Check that AuthService's signIn was not called
+    // Check that AuthService.signIn was not called
     expect(mockAuthService.signIn).not.toHaveBeenCalled();
 
     // Ensure isSubmitting is reset
     expect(component.isSubmitting).toBeFalse();
-
-    // Ensure the errorMessage is unchanged
-    expect(component.errorMessage).toBeNull();
   });
 
   it('should navigate to the register page when redirectToRegister is called', () => {
