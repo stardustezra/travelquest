@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service'; // Custom service
 
 @Component({
   selector: 'travelquest-login',
@@ -15,7 +15,7 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private auth: Auth,
+    private authService: AuthService, // Use the custom AuthService
     private router: Router
   ) {
     this.form = this.fb.group({
@@ -31,7 +31,7 @@ export class LoginComponent {
     this.isSubmitting = true;
 
     try {
-      await signInWithEmailAndPassword(this.auth, email, password);
+      await this.authService.signIn(email, password); // Use AuthService
       console.log('Login successful');
       this.router.navigate(['/home']);
     } catch (error) {
@@ -45,7 +45,8 @@ export class LoginComponent {
   clearError(): void {
     this.errorMessage = null;
   }
+
   redirectToRegister(): void {
-    this.router.navigate(['auth/register']); // Adjust the path if necessary
+    this.router.navigate(['auth/register']);
   }
 }

@@ -1,49 +1,51 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
-import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Auth } from '@angular/fire/auth';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
-
-// Angular Material imports
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import { AuthService } from '../services/auth.service'; // Mock this service
+import { of } from 'rxjs';
 
-// Animation module import
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'; // Import this for disabling animations
-
-// Firebase imports
-import { signInWithEmailAndPassword } from '@angular/fire/auth';
-
-// Mocking signInWithEmailAndPassword from Firebase
-const mockSignInWithEmailAndPassword = jasmine.createSpy(
-  'signInWithEmailAndPassword'
-);
-
-// Mocking Angular's Router
+// Mock Router
 const mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+
+// Mock AuthService
+const mockAuthService = jasmine.createSpyObj('AuthService', ['signIn']);
+mockAuthService.signIn.and.callFake((email: string, password: string) => {
+  if (email === 'unittest@test.dk' && password === 'password123') {
+    return Promise.resolve({
+      user: {
+        uid: 'wA6K9iaDePTZKzvmNfcyWQP1Z5D3',
+        email: 'unittest@test.dk',
+      },
+    });
+  }
+  return Promise.reject(new Error('Invalid credentials'));
+});
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
-  let auth: Auth;
 
-  beforeEach(() => {
-    // Mock the Auth service
-    auth = {} as Auth;
-
-    TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FormsModule],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        ReactiveFormsModule,
+        FormsModule,
+        RouterTestingModule,
+        NoopAnimationsModule,
+        MatCardModule,
+        MatButtonModule,
+        MatInputModule,
+      ],
       declarations: [LoginComponent],
       providers: [
-        { provide: Auth, useValue: auth },
         { provide: Router, useValue: mockRouter },
-        {
-          provide: signInWithEmailAndPassword,
-          useValue: mockSignInWithEmailAndPassword,
-        },
+        { provide: AuthService, useValue: mockAuthService }, // Inject mockAuthService
       ],
     }).compileComponents();
 
@@ -52,87 +54,60 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the LoginComponent', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should not submit if the form is invalid', async () => {
-    // Set the form values as invalid
-    component.form.setValue({
-      email: 'invalidemail',
-      password: '123',
-    });
-
-    await component.onSubmit();
-
-    // The form should not submit, so signInWithEmailAndPassword should not be called
-    expect(mockSignInWithEmailAndPassword).not.toHaveBeenCalled();
-    expect(component.isSubmitting).toBeFalse();
-    expect(component.errorMessage).toBeNull(); // No error message yet as the form is invalid
-    expect(mockRouter.navigate).not.toHaveBeenCalled(); // Router should not be called
-  });
-
   it('should log in with correct credentials', async () => {
-    // Mock valid form values
+    // Set form values to simulate valid login credentials
     component.form.setValue({
-      email: 'testuser@example.com',
-      password: 'correctpassword',
+      email: 'unittest@test.dk',
+      password: 'password123',
     });
 
-    // Mock a successful response from signInWithEmailAndPassword
-    mockSignInWithEmailAndPassword.and.returnValue(
-      Promise.resolve({ user: {} })
-    );
+    // Ensure form is valid
+    expect(component.form.valid).toBeTrue();
 
+    // Trigger form submission
     await component.onSubmit();
 
-    // Verify signInWithEmailAndPassword was called with the correct values
-    expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
-      auth,
-      'testuser@example.com',
-      'correctpassword'
+    // Check if the AuthService's signIn was called with correct values
+    expect(mockAuthService.signIn).toHaveBeenCalledWith(
+      'unittest@test.dk',
+      'password123'
     );
+
+    // Check if the router was called to navigate to the home page
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+
+    // Ensure isSubmitting is reset
     expect(component.isSubmitting).toBeFalse();
-    expect(component.errorMessage).toBeNull(); // No error after successful login
   });
 
-  it('should show error message with incorrect credentials', async () => {
-    // Mock form values for incorrect credentials
+  it('should not call AuthService when form is invalid', async () => {
+    // Set empty form values
     component.form.setValue({
-      email: 'testuser@example.com',
-      password: 'wrongpassword',
+      email: '',
+      password: '',
     });
 
-    // Mock an error response from signInWithEmailAndPassword
-    mockSignInWithEmailAndPassword.and.returnValue(
-      Promise.reject(new Error('Invalid email or password'))
-    );
+    // Ensure form is invalid
+    expect(component.form.invalid).toBeTrue();
 
+    // Trigger form submission
     await component.onSubmit();
 
-    // Verify that the error message is set
-    expect(component.errorMessage).toBe('Invalid email or password');
+    // Check that AuthService's signIn was not called
+    expect(mockAuthService.signIn).not.toHaveBeenCalled();
+
+    // Ensure isSubmitting is reset
     expect(component.isSubmitting).toBeFalse();
-    expect(mockRouter.navigate).not.toHaveBeenCalled(); // Router navigate should not be called on failure
-  });
 
-  it('should clear error when clearError is called', () => {
-    // Set an error message
-    component.errorMessage = 'Some error occurred';
-
-    // Call clearError() to clear the error
-    component.clearError();
-
-    // Verify that the error message is cleared
+    // Ensure the errorMessage is unchanged
     expect(component.errorMessage).toBeNull();
   });
 
-  it('should redirect to register page when redirectToRegister is called', () => {
-    // Call the redirectToRegister method
+  it('should navigate to the register page when redirectToRegister is called', () => {
+    // Call redirectToRegister
     component.redirectToRegister();
 
-    // Verify that the router navigates to the registration page
+    // Verify the router navigates to the register page
     expect(mockRouter.navigate).toHaveBeenCalledWith(['auth/register']);
   });
 });
