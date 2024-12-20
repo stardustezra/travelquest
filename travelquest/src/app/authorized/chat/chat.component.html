@@ -1,16 +1,19 @@
 <div *ngIf="currentUserUID">
-  <!-- Chat Messages -->
   <div *ngIf="currentConversationId; else noConversation">
-    <h3>Messages</h3>
-
-    <!-- Loading State -->
-    <div *ngIf="loadingMessages">
+    <div *ngIf="loadingMessages" class="loading-state">
       <p>Loading messages...</p>
     </div>
 
     <!-- Message List -->
     <div *ngIf="!loadingMessages" #messageContainer class="message-container">
-      <div *ngFor="let message of messages$ | async" class="message">
+      <div
+        *ngFor="let message of messages$ | async"
+        class="message"
+        [ngClass]="{
+          'sent-message': message.user === currentUserUID,
+          'received-message': message.user !== currentUserUID
+        }"
+      >
         <div class="message-header">
           <strong>{{ message.user }}:</strong>
         </div>
@@ -30,6 +33,7 @@
       <textarea
         [(ngModel)]="newMessage"
         placeholder="Type a message..."
+        rows="3"
       ></textarea>
       <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
         Send
@@ -39,7 +43,7 @@
 
   <!-- No Conversation State -->
   <ng-template #noConversation>
-    <p>
+    <p class="no-conversation-message">
       No conversation exists yet. You can start chatting by sending a message!
     </p>
 
@@ -48,6 +52,7 @@
       <textarea
         [(ngModel)]="newMessage"
         placeholder="Type a message..."
+        rows="3"
       ></textarea>
       <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
         Send

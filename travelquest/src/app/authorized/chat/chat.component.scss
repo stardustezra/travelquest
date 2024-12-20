@@ -1,19 +1,143 @@
-/* Style the conversation list */
-button {
-  display: block;
-  margin: 5px 0;
+@import "../../../styles/colors";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Full Page Layout */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+}
+
+.chat-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+}
+
+.loading-state {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+/* Message Container */
+.message-container {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 80px;
+  scroll-behavior: smooth;
+}
+
+/* Messages */
+.message {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: #e6e6e6;
+  max-width: 70%;
+  word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.received-message {
+  background-color: #f1f1f1;
+  color: black;
+  margin-right: auto;
+  border-radius: 8px 8px 8px 0;
+  text-align: left;
+}
+
+.message-header {
+  font-weight: bold;
+}
+
+.message-content {
+  margin: 0.5rem 0;
+}
+
+.message-footer {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.message-input {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
 }
 
 textarea {
-  width: 100%;
-  height: 100px;
-  margin-bottom: 10px;
+  flex-grow: 1;
+  padding: 0.3rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  resize: none;
+  margin-right: 10px;
 }
 
-h3 {
-  margin-top: 20px;
+button {
+  background-color: $primary-text-color;
+  color: white;
+  font-size: 0.9rem;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-div {
-  margin-top: 10px;
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.no-conversation-message {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #888;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 1rem;
+}
+
+.chat-content {
+  padding-bottom: 60px;
 }

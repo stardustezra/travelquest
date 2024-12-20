@@ -114,3 +114,7 @@ form {
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-ripple {
   color: #f79449 !important;
 }
+
+.mdc-text-field--filled .mdc-text-field__input {
+  color: $neutral-black;
+}

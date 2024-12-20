@@ -67,10 +67,12 @@ export const routes: Routes = [
       {
         path: 'chat/:userId',
         component: ChatComponent,
+        data: { hideNavbar: true },
       },
       {
         path: 'conversation/:id',
         component: ChatComponent,
+        data: { hideNavbar: true },
       },
       {
         path: '**',

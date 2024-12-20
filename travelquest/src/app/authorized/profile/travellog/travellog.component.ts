@@ -118,6 +118,7 @@ export class TravellogComponent implements OnInit {
       }
 
       this.saveTravelLogs(); // Save updated logs to Firestore
+      this.loadTravelLogs(); // Reload logs to reflect the updates
       this.closeModal();
     }
   }
