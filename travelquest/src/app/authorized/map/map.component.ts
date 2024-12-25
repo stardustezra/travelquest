@@ -113,6 +113,14 @@ export class MapComponent implements AfterViewInit {
     }
   }
 
+  get locationMarkerForTesting() {
+    return this.locationMarker;
+  }
+
+  set locationMarkerForTesting(value: any) {
+    this.locationMarker = value;
+  }
+
   async ngAfterViewInit(): Promise<void> {
     await this.initMap();
   }
@@ -249,7 +257,15 @@ export class MapComponent implements AfterViewInit {
         }
       });
     });
-  } //TODO: Add #
+  }
+
+  get findNearbyCoffeePlacesForTesting() {
+    return this.findNearbyCoffeePlaces;
+  }
+
+  set findNearbyCoffeePlacesForTesting(value: any) {
+    this.findNearbyCoffeePlaces = value;
+  }
 
   dropPin(): void {
     if (this.locationMarker) {
