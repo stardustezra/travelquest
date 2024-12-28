@@ -19,8 +19,6 @@ export class SnackbarService {
       panelClass: this.getPanelClass('success'),
     };
 
-    console.log('Success Snackbar Config:', config);
-
     this.snackBar.open(message, action, config);
   }
 
@@ -31,8 +29,6 @@ export class SnackbarService {
       verticalPosition: 'top',
       panelClass: this.getPanelClass('error'),
     };
-
-    console.log('Error Snackbar Config:', config);
 
     this.snackBar.open(message, action, config);
   }

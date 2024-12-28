@@ -7,27 +7,39 @@
 
   <div *ngIf="nearbyUsers$ | async as users; else noUsers">
     <mat-card *ngFor="let user of users" class="user-card">
-      <img
-        *ngIf="user.profilePhoto"
-        [src]="user.profilePhoto"
-        alt="{{ user.name }}"
-        class="profile-photo"
-      />
-      <mat-card-content>
-        <h3>{{ user.name }}, {{ user.age || "N/A" }}</h3>
-        <p>{{ user.country }}</p>
+      <div class="profile-container">
+        <div class="profile-photo-container">
+          <img
+            *ngIf="user.profilePhoto; else defaultPhoto"
+            [src]="user.profilePhoto"
+            alt="{{ user.name }}"
+            class="profile-photo"
+          />
+          <ng-template #defaultPhoto>
+            <img
+              src="assets/images/default-pic-green.png"
+              alt="{{ user.name }}"
+              class="profile-photo"
+            />
+          </ng-template>
+        </div>
 
-        <!-- Use HashtagListComponent -->
+        <div class="user-info">
+          <h3>{{ user.name }}, {{ user.age || "N/A" }}</h3>
+          <p>{{ user.country }}</p>
+        </div>
+      </div>
+
+      <div class="user-info-hashtag">
         <travelquest-hashtag-list
           [hashtags]="user.hashtags"
         ></travelquest-hashtag-list>
-      </mat-card-content>
+      </div>
 
-      <!-- Explore Profile Button -->
       <button
         mat-raised-button
-        color="primary"
         [routerLink]="['/user', user.id]"
+        class="explore-button"
       >
         Explore Profile
       </button>

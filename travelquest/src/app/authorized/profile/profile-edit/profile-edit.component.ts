@@ -114,7 +114,6 @@ export class ProfileEditComponent implements OnInit {
       this.sessionStore
         .saveUserProfile(updatedData)
         .then(() => {
-          console.log('Profile updated successfully!');
           this.snackbarService.success('Profile updated successfully!');
           this.router.navigate(['/profile']);
         })

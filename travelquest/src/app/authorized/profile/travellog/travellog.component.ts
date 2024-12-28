@@ -118,6 +118,7 @@ export class TravellogComponent implements OnInit {
       }
 
       this.saveTravelLogs(); // Save updated logs to Firestore
+      this.loadTravelLogs(); // Reload logs to reflect the updates
       this.closeModal();
     }
   }
@@ -132,7 +133,6 @@ export class TravellogComponent implements OnInit {
           .then(() => {
             const newCount = this.travelLogs.length; // Update count after deletion
             this.sessionStore.updateTravelsCount(uid, newCount);
-            console.log('Travel log deleted and count updated successfully!');
           })
           .catch((error) => {
             console.error('Error deleting travel log:', error);

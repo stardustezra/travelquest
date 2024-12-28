@@ -54,7 +54,6 @@ export class ProfileCreationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('Initializing Profile Creation Component...');
     this.fetchAvailableLanguages();
     this.fetchPredefinedHashtags();
     this.fetchAvailableCountries();
@@ -64,13 +63,11 @@ export class ProfileCreationComponent implements OnInit {
       next: (uid) => {
         if (uid) {
           this.isAuthenticated = true;
-          console.log('Authenticated User UID:', uid);
 
           // Fetch user profile
           this.sessionStore.getUserProfile(uid).subscribe({
             next: (profile) => {
               this.currentUser = profile;
-              console.log('Current User Profile:', profile);
             },
             error: (err) => {
               console.error('Error fetching user profile:', err);
@@ -81,7 +78,6 @@ export class ProfileCreationComponent implements OnInit {
           });
         } else {
           this.isAuthenticated = false;
-          console.warn('No authenticated user found.');
         }
       },
       error: (err) => {
@@ -97,10 +93,6 @@ export class ProfileCreationComponent implements OnInit {
   fetchAvailableLanguages(): void {
     this.availableLanguages = ISO6391.getAllNames().sort(
       (a, b) => a.localeCompare(b) // Sort alphabetically
-    );
-    console.log(
-      'Available Languages (Alphabetically Sorted):',
-      this.availableLanguages
     );
   }
 
@@ -122,10 +114,8 @@ export class ProfileCreationComponent implements OnInit {
 
   async fetchPredefinedHashtags(): Promise<void> {
     try {
-      console.log('Fetching predefined hashtags...');
       this.predefinedHashtags =
         await this.sessionStore.fetchPredefinedHashtags();
-      console.log('Fetched Hashtags:', this.predefinedHashtags);
     } catch (error) {
       console.error('Error fetching predefined hashtags:', error);
       this.snackbarService.error(
@@ -149,7 +139,6 @@ export class ProfileCreationComponent implements OnInit {
     } else if (this.totalTagsSelected() < 10) {
       this.selectedHashtags.push({ tag, category: category ?? 'custom' });
     }
-    console.log('Selected Hashtags:', this.selectedHashtags);
   }
 
   addCustomHashtag(event: any): void {
@@ -165,7 +154,6 @@ export class ProfileCreationComponent implements OnInit {
 
     if (isValidHashtag && this.totalTagsSelected() < 10) {
       this.customHashtags.push(value);
-      console.log('Custom Hashtag Added:', value);
 
       // Sync with FormGroup
       this.profileForm.get('customHashtags')?.setValue(this.customHashtags);
@@ -176,15 +164,12 @@ export class ProfileCreationComponent implements OnInit {
     if (input) {
       input.value = '';
     }
-
-    console.log('Custom Hashtags:', this.customHashtags);
   }
 
   removeCustomHashtag(tagToRemove: string): void {
     this.customHashtags = this.customHashtags.filter(
       (tag) => tag !== tagToRemove
     );
-    console.log('Custom Hashtags after removal:', this.customHashtags);
   }
 
   totalTagsSelected(): number {
@@ -197,8 +182,6 @@ export class ProfileCreationComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    console.log('Submit button clicked.');
-
     if (!this.isAuthenticated) {
       console.error('User is not authenticated. Cannot save profile.');
       alert('Please log in to save your profile.');
@@ -212,8 +195,6 @@ export class ProfileCreationComponent implements OnInit {
     }
 
     try {
-      console.log('Current User:', this.currentUser);
-
       const hashtags = [
         ...this.selectedHashtags,
         ...this.customHashtags.map((tag) => ({ tag, category: 'custom' })),
@@ -227,17 +208,13 @@ export class ProfileCreationComponent implements OnInit {
       };
 
       if (this.selectedFile) {
-        console.log('Uploading profile photo...');
         const photoURL = await this.sessionStore.uploadProfilePhoto(
           this.selectedFile
         );
         userData.photoURL = photoURL;
-        console.log('Profile photo uploaded. URL:', photoURL);
       }
 
-      console.log('User Data to Save:', userData);
       await this.sessionStore.saveUserProfile(userData);
-      console.log('Profile saved successfully!');
 
       // Redirect to the home page
       this.router.navigate(['/home']);
@@ -251,12 +228,10 @@ export class ProfileCreationComponent implements OnInit {
     const fileInput = event.target as HTMLInputElement;
     if (fileInput.files && fileInput.files[0]) {
       this.selectedFile = fileInput.files[0];
-      console.log('Selected File:', this.selectedFile.name);
 
       const reader = new FileReader();
       reader.onload = () => {
         this.previewUrl = reader.result as string;
-        console.log('File preview updated.');
       };
       reader.readAsDataURL(this.selectedFile);
     }

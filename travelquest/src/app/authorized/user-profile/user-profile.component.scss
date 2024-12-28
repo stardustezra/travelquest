@@ -108,8 +108,9 @@
   border-radius: 4px;
 }
 
-.styled-button {
+.mat-mdc-raised-button:not(:disabled) {
   color: $primary-text-color !important;
+  box-shadow: none !important;
 }
 
 .action-buttons button mat-icon {

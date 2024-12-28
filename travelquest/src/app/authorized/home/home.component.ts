@@ -60,7 +60,6 @@ export class HomeComponent implements OnInit {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           };
-          console.log('User Location:', this.userLocation);
 
           // Fetch nearby places
           if (this.userLocation) {
