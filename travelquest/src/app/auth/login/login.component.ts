@@ -31,7 +31,7 @@ export class LoginComponent {
     this.isSubmitting = true;
 
     try {
-      await signInWithEmailAndPassword(this.auth, email, password);
+      await this.authService.signIn(email, password); // Use AuthService for signIn
       this.router.navigate(['/home']);
     } catch (error) {
       this.errorMessage = 'Invalid email or password';
