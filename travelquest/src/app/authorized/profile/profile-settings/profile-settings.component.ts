@@ -27,7 +27,6 @@ export class ProfileSettingsComponent {
     this.sessionStore
       .signOut()
       .then(() => {
-        console.log('User signed out');
         this.snackbarService.success('You have been signed out successfully.');
         this.router.navigate(['/auth/login']);
       })
@@ -43,7 +42,6 @@ export class ProfileSettingsComponent {
     this.sessionStore
       .deleteAccount()
       .then(() => {
-        console.log('User account and data deleted');
         this.snackbarService.success(
           'Your account has been deleted successfully.'
         );

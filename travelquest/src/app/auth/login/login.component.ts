@@ -32,7 +32,6 @@ export class LoginComponent {
 
     try {
       await signInWithEmailAndPassword(this.auth, email, password);
-      console.log('Login successful');
       this.router.navigate(['/home']);
     } catch (error) {
       this.errorMessage = 'Invalid email or password';

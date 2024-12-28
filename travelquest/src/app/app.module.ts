@@ -10,13 +10,7 @@ import { MaterialModule } from './material/material.config';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { firebaseAuth } from './shared/data-services/firebase-config';
 import { provideAuth, getAuth } from '@angular/fire/auth';
-// import {
-//   initializeAppCheck,
-//   ReCaptchaEnterpriseProvider,
-//   provideAppCheck,
-// } from '@angular/fire/app-check';
 import {
   FirestoreModule,
   getFirestore,
@@ -55,11 +49,6 @@ import { MatDialogModule } from '@angular/material/dialog';
       })
     ),
     provideAuth(() => getAuth()),
-    // provideAppCheck(() => {
-    //   TODO get a reCAPTCHA Enterprise here https://console.cloud.google.com/security/recaptcha?project=_
-    //   const provider = new ReCaptchaEnterpriseProvider(/* reCAPTCHA Enterprise site key */);
-    //   return initializeAppCheck(undefined, { provider, isTokenAutoRefreshEnabled: true });
-    // }),
     provideFirestore(() => getFirestore()),
     provideMessaging(() => getMessaging()),
     provideStorage(() => getStorage()),

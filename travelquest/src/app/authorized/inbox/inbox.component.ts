@@ -136,7 +136,6 @@ export class InboxComponent implements OnInit {
       return;
     }
 
-    console.log('Navigating to conversation:', conversationId);
     this.router.navigate([`/conversation/${conversationId}`]).catch((err) => {
       console.error('Failed to navigate to the conversation:', err);
     });

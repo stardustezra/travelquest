@@ -23,7 +23,6 @@ export class ProfileListComponent implements OnInit {
   ngOnInit(): void {
     this.sessionStore.getSignedInUserProfile().subscribe({
       next: (profile) => {
-        console.log('Fetched profile:', profile); // Debugging
         if (profile) {
           this.userProfile = profile;
         } else {

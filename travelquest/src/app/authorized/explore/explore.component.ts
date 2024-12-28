@@ -74,7 +74,6 @@ export class ExploreComponent implements OnInit {
                 hashtags: this.processHashtags(user.hashtags),
               }));
 
-            console.log('Processed users:', processedUsers);
             observer.next(processedUsers);
             observer.complete();
           })

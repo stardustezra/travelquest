@@ -46,7 +46,6 @@ export class RegisterComponent {
 
     this.sessionStore.register(email, name, password, dob).subscribe({
       next: () => {
-        console.log('Registration successful');
         this.router.navigate(['/profile-creation']); // Navigate to home after successful registration
       },
       error: (error) => {
@@ -60,7 +59,6 @@ export class RegisterComponent {
   async signInWithGoogle(): Promise<void> {
     this.sessionStore.googleSignIn().subscribe({
       next: () => {
-        console.log('Google Sign-In successful');
         this.router.navigate(['/profile-creation']); // Navigate to home after sign-in
       },
       error: (error) => {

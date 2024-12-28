@@ -27,7 +27,6 @@ export class UserProfileComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.userId = params.get('id');
       if (this.userId) {
-        console.log('User ID from route:', this.userId); // Debugging log
         this.fetchUserProfile(this.userId);
       } else {
         this.error = 'User ID not found in the route';
@@ -60,7 +59,6 @@ export class UserProfileComponent implements OnInit {
 
   navigateToChat(): void {
     if (this.userId) {
-      console.log('Navigating to chat with user ID:', this.userId); // Debugging log
       this.router.navigate([`/chat/${this.userId}`]); // Navigate to chat
     } else {
       this.error = 'User ID is missing!';

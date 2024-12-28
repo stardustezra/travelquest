@@ -59,8 +59,6 @@ export class ChatComponent implements OnInit {
       .toPromise();
     if (!this.currentUserUID) {
       console.error('User is not authenticated.');
-    } else {
-      console.log('Authenticated user UID:', this.currentUserUID);
     }
   }
 
@@ -70,11 +68,9 @@ export class ChatComponent implements OnInit {
       const otherUserId = params.get('userId'); // For `chat/:userId`
 
       if (conversationId) {
-        console.log('Loaded via conversation ID:', conversationId);
         this.currentConversationId = conversationId;
         this.fetchMessagesWithUserNames(conversationId);
       } else if (otherUserId) {
-        console.log('Loaded via user ID:', otherUserId);
         this.otherUserId = otherUserId;
         this.checkExistingConversation(this.otherUserId);
       } else {
@@ -110,14 +106,9 @@ export class ChatComponent implements OnInit {
       .subscribe(
         (existingConversation: Conversation | undefined) => {
           if (existingConversation) {
-            console.log(
-              'Existing conversation found:',
-              existingConversation.id
-            );
             this.currentConversationId = existingConversation.id;
             this.fetchMessagesWithUserNames(existingConversation.id);
           } else {
-            console.log('No existing conversation found. Creating a new one.');
             this.currentConversationId = null;
             this.loadingMessages = false;
           }
@@ -165,8 +156,7 @@ export class ChatComponent implements OnInit {
     );
 
     this.messages$.subscribe(
-      (messages: Message[]) => {
-        console.log('Fetched messages with user names:', messages);
+      () => {
         this.loadingMessages = false;
       },
       (error) => {
@@ -204,7 +194,6 @@ export class ChatComponent implements OnInit {
 
     addDoc(conversationsCollection, newConversation)
       .then((docRef) => {
-        console.log('New conversation created with ID:', docRef.id);
         this.currentConversationId = docRef.id;
         this.sendMessageToFirestore(docRef.id);
       })
@@ -228,7 +217,6 @@ export class ChatComponent implements OnInit {
 
     addDoc(messagesCollection, message)
       .then(() => {
-        console.log('Message sent successfully:', message);
         this.newMessage = '';
       })
       .catch((error) => {
