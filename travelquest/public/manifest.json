@@ -1,0 +1,30 @@
+{
+  "name": "TravelQuest",
+  "description": "An app to connect solo travelers",
+  "icons": [
+    {
+      "src": "./appicons/icon-50x50.png",
+      "type": "image/png",
+      "sizes": "50x50"
+    },
+    {
+      "src": "./appicons/icon-80x80.png",
+      "type": "image/png",
+      "sizes": "80x80"
+    },
+    {
+      "src": "./appicons/icon-180x180.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    },
+    {
+      "src": "./appicons/icon-1024x1024.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "/index.html",
+  "background_color": "#C7DDDB",
+  "theme_color": "#C7DDDB"
+}
